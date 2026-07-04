@@ -200,4 +200,7 @@ public class TowerShake : MonoBehaviour
         tex.Apply();
         return Sprite.Create(tex, new Rect(0, 0, 4, 4), new Vector2(0.5f, 0.5f), 4f);
     }
+
+    // ─── 外部公開（EnemySpawnerから参照） ────────────────────────
+    public List<Rigidbody2D> GetBlocks() => blocks;
 }
