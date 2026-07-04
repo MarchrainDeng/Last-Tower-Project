@@ -58,6 +58,16 @@ public class BlockMoveController : MonoBehaviour
 
         HandleMove();
         HandleRotate();
+        
+    }
+
+    private void FixedUpdate()
+    {
+        gamepad = Gamepad.current;
+
+        if (gamepad == null)
+            return;
+
         HandleFall();
     }
 
