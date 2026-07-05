@@ -18,32 +18,34 @@ public class EnemySpawner : MonoBehaviour
 
     void Start()
     {
-        Debug.Log("[EnemySpawner] Start");
-        Debug.Log($"[EnemySpawner] towerHP={towerHP}, towerObject={towerObject}, spawnPointL={spawnPointL}, spawnPointR={spawnPointR}, listCount={enemyStatsList.Count}");
+        //Debug.Log("[EnemySpawner] Start");
+        //Debug.Log($"[EnemySpawner] towerHP={towerHP}, towerObject={towerObject}, spawnPointL={spawnPointL}, spawnPointR={spawnPointR}, listCount={enemyStatsList.Count}");
         StartCoroutine(SpawnLoop());
     }
 
     IEnumerator SpawnLoop()
     {
-        Debug.Log("[EnemySpawner] SpawnLoop 開始");
+        //Debug.Log("[EnemySpawner] SpawnLoop 開始");
         while (!towerHP.IsDead)
         {
             Debug.Log("[EnemySpawner] SpawnEnemy 呼ぶ");
             SpawnEnemy();
             yield return new WaitForSeconds(spawnInterval);
         }
-        Debug.Log("[EnemySpawner] SpawnLoop 終了（IsDead=true）");
+        //Debug.Log("[EnemySpawner] SpawnLoop 終了（IsDead=true）");
     }
 
     void SpawnEnemy()
     {
         var stats = enemyStatsList[Random.Range(0, enemyStatsList.Count)];
-        Debug.Log($"[EnemySpawner] 生成: {stats.type}");
+        //Debug.Log($"[EnemySpawner] 生成: {stats.type}");
 
         // 左右どちらかのスポーンポイントをランダムで選ぶ
         var spawn = Random.value < 0.5f ? spawnPointL : spawnPointR;
         var go = new GameObject($"Enemy_{stats.type}");
         go.transform.position = spawn.position;
+
+        go.tag = "Enemy";
 
         EnemyBase enemy = stats.type switch
         {
