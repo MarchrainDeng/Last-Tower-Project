@@ -21,7 +21,6 @@ public class EnemyStats
     public float attackRate = 1.5f;  // 攻撃間隔（秒）
 
     [Header("── 見た目 ────────────────────")]
-    public Color color = Color.red;
 
     [Header("── 飛行共通 ──────────────────")]
     public float flightY = 8f;    // 飛行・停止するY座標
@@ -30,7 +29,6 @@ public class EnemyStats
     public float exitSpeedMultiplier = 1.5f; // 離脱速度倍率（FlyingBlock）
 
     [Header("── FlyingBlock専用 ───────────")]
-    public Color obstacleBlockColor = new Color(0.6f, 0.3f, 0.8f); // 邪魔ブロックの色
 
     [Header("── FlyingBeam専用 ────────────")]
     public float beamDuration = 0.4f;  // ビーム照射時間（秒）
