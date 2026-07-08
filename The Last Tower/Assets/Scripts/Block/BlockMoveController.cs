@@ -24,14 +24,21 @@ Deng Guangpeng
 追加了加速下落功能，相关函数：HandleFall()
 加速下降機能を追加しました。関連する関数：HandleFall()
 
+2026/07/07:
+修改了移动方式。由离散的固定距离移动改为了连续移动。相关函数：HandleMove()
+移動方法を変更しました。離散的な固定距離の移動から、連続的な移動へと変更しました。関連関数：HandleMove()
+
 ---------------------------------------
 */
 
 public class BlockMoveController : MonoBehaviour
 {
     [Header("Move")]
-    public float moveDistance = 0.5f;   // 每次移动一格的距离
-    public float stickThreshold = 0.5f; // 摇杆触发阈值
+    public float deadZone = 0.2f;
+    public float moveSpeed = 0.01f;
+
+    //public float moveDistance = 0.5f;   // 每次移动一格的距离
+    //public float stickThreshold = 0.5f; // 摇杆触发阈值
 
     [Header("Rotate")]
     public float rotateAngle = 90f;
@@ -73,29 +80,24 @@ public class BlockMoveController : MonoBehaviour
 
     private void HandleMove()
     {
-        float x = gamepad.leftStick.x.ReadValue();
+        // 获取左摇杆水平输入
+        // 左スティックの水平入力を取得する
+        float input = Gamepad.current.leftStick.x.ReadValue();
 
-        // 摇杆回到中间后，才允许下一次移动
-        if (Mathf.Abs(x) < 0.2f)
-        {
-            stickReturnedToCenter = true;
-            return;
-        }
+        Debug.Log(input);
 
-        // 持续推着摇杆时，不重复移动
-        if (!stickReturnedToCenter)
-            return;
+        // 死区处理
+        // デッドゾーン処理
+        if (Mathf.Abs(input) < deadZone)
+            input = 0f;
 
-        if (x > stickThreshold)
-        {
-            MoveRight();
-            stickReturnedToCenter = false;
-        }
-        else if (x < -stickThreshold)
-        {
-            MoveLeft();
-            stickReturnedToCenter = false;
-        }
+        // 平滑移动
+        // スムーズに移動する
+        transform.position +=
+            Vector3.right *
+            input *
+            moveSpeed *
+            Time.deltaTime;
     }
 
     private void HandleRotate()
@@ -113,12 +115,12 @@ public class BlockMoveController : MonoBehaviour
 
     private void MoveLeft()
     {
-        transform.position += Vector3.left * moveDistance;
+        //transform.position += Vector3.left * moveDistance;
     }
 
     private void MoveRight()
     {
-        transform.position += Vector3.right * moveDistance;
+        //transform.position += Vector3.right * moveDistance;
     }
 
     private void RotateClockwise()
