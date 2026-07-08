@@ -84,7 +84,7 @@ public class BlockMoveController : MonoBehaviour
         // 左スティックの水平入力を取得する
         float input = Gamepad.current.leftStick.x.ReadValue();
 
-        Debug.Log(input);
+        //Debug.Log(input);
 
         // 死区处理
         // デッドゾーン処理

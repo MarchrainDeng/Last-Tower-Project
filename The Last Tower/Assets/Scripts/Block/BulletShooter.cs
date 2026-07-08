@@ -1,5 +1,22 @@
 ﻿using UnityEngine;
 
+/*
+----------------------------------------
+【功能 / 機能】
+令攻击方块射出普通子弹
+
+攻撃ブロックから通常の弾丸を発射する
+
+【负责人 / 担当】
+Deng Guangpeng
+トウ　コウホウ
+
+【创建日期 / 作成日】
+2026/07/05
+
+---------------------------------------
+*/
+
 public class BulletShooter : MonoBehaviour
 {
     [Header("References")]
@@ -59,7 +76,7 @@ public class BulletShooter : MonoBehaviour
     /// </summary>
     private void ShootNearestEnemy()
     {
-        Debug.Log("shoot");
+        //Debug.Log("shoot");
 
         Vector3 spawnPos = firePoint != null ? firePoint.position : transform.position;
 

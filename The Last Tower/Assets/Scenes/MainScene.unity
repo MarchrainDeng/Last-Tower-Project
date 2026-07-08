@@ -552,104 +552,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &447554772
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 447554773}
-  - component: {fileID: 447554774}
-  m_Layer: 0
-  m_Name: 'EnemySpawner '
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &447554773
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 447554772}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1087879848}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &447554774
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 447554772}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 883eaa02ece53aa4fb8009c2011c26c3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
-  towerHP: {fileID: 1677760618}
-  towerObject: {fileID: 293305498}
-  spawnPointL: {fileID: 398533775}
-  spawnPointR: {fileID: 236863435}
-  spawnInterval: 4
-  enemyStatsList:
-  - type: 0
-    moveSpeed: 1
-    stopX: 3.5
-    attackDamage: 1
-    attackRate: 1
-    color: {r: 0, g: 0, b: 0, a: 1}
-    flightY: 3
-    flightYMin: 2
-    flightYMax: 3
-    exitSpeedMultiplier: 1.5
-    obstacleBlockColor: {r: 0.6, g: 0.3, b: 0.8, a: 1}
-    beamDuration: 0.4
-    beamStartWidth: 0.12
-    beamEndWidth: 0.05
-    beamStartColor: {r: 1, g: 0.3, b: 0.3, a: 0.9}
-    beamEndColor: {r: 1, g: 0.8, b: 0.3, a: 0.6}
-  - type: 1
-    moveSpeed: 1
-    stopX: 3
-    attackDamage: 0
-    attackRate: 1
-    color: {r: 0, g: 0, b: 0, a: 1}
-    flightY: 3
-    flightYMin: 2
-    flightYMax: 3
-    exitSpeedMultiplier: 1.5
-    obstacleBlockColor: {r: 0.6, g: 0.3, b: 0.8, a: 1}
-    beamDuration: 0.4
-    beamStartWidth: 0.12
-    beamEndWidth: 0.05
-    beamStartColor: {r: 1, g: 0.3, b: 0.3, a: 0.9}
-    beamEndColor: {r: 1, g: 0.8, b: 0.3, a: 0.6}
-  - type: 2
-    moveSpeed: 1
-    stopX: 3
-    attackDamage: 0
-    attackRate: 1
-    color: {r: 0, g: 0, b: 0, a: 1}
-    flightY: 3
-    flightYMin: 2
-    flightYMax: 3
-    exitSpeedMultiplier: 1.5
-    obstacleBlockColor: {r: 0.6, g: 0.3, b: 0.8, a: 1}
-    beamDuration: 0.4
-    beamStartWidth: 0.12
-    beamEndWidth: 0.05
-    beamStartColor: {r: 1, g: 0.3, b: 0.3, a: 0.9}
-    beamEndColor: {r: 1, g: 0.8, b: 0.3, a: 0.6}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -1004,9 +906,9 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1610763736}
   - {fileID: 1104107171}
   - {fileID: 1677760617}
-  - {fileID: 447554773}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1087879849
@@ -1217,6 +1119,64 @@ RectTransform:
   m_AnchoredPosition: {x: -5, y: 0}
   m_SizeDelta: {x: -20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &1610763735
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1610763736}
+  - component: {fileID: 1610763737}
+  m_Layer: 0
+  m_Name: 'EnemySpawner '
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1610763736
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1610763735}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1087879848}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1610763737
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1610763735}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 883eaa02ece53aa4fb8009c2011c26c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
+  towerHP: {fileID: 1677760618}
+  towerObject: {fileID: 293305498}
+  spawnPointL: {fileID: 398533775}
+  spawnPointR: {fileID: 236863435}
+  enemyEntries:
+  - prefab: {fileID: 3382112785025284562, guid: 74be494248d3c9b4bb506272bffde2eb, type: 3}
+    spawnWeight: 0.478
+  - prefab: {fileID: 3855724003299888675, guid: 26ff9e94c21cbcf4096f66becab92c3b, type: 3}
+    spawnWeight: 0.448
+  - prefab: {fileID: 8520560095020628245, guid: 4378b0fe889811c4e90ded675a72ec81, type: 3}
+    spawnWeight: 0.472
+  initialInterval: 4
+  minInterval: 1
+  intervalDecreaseRate: 0.1
 --- !u!1 &1626857998
 GameObject:
   m_ObjectHideFlags: 0

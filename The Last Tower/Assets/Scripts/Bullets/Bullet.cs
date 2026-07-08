@@ -1,5 +1,22 @@
 ﻿using UnityEngine;
 
+/*
+----------------------------------------
+【功能 / 機能】
+处理普通子弹的逻辑与事件
+
+普通弾丸に関するイベントを処理する
+
+【负责人 / 担当】
+Deng Guangpeng
+トウ　コウホウ
+
+【创建日期 / 作成日】
+2026/07/08
+
+---------------------------------------
+*/
+
 public class Bullet : MonoBehaviour
 {
     [Header("Bullet Setting")]
@@ -46,20 +63,27 @@ public class Bullet : MonoBehaviour
         target = nearestEnemy;
     }
 
-    /*
-    void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Enemy"))
+        // 只处理敌人
+        // 敵のみ処理する
+        if (!other.CompareTag("Enemy"))
+            return;
+
+        Debug.Log("bullet enter enemy");
+
+        EnemyHealth health = other.GetComponent<EnemyHealth>();
+
+        if (health != null)
         {
-            Enemy enemy = other.GetComponent<Enemy>();
-
-            if (enemy != null)
-            {
-                enemy.TakeDamage(damage);
-            }
-
-            Destroy(gameObject);
+            // 对敌人造成伤害
+            // 敵にダメージを与える
+            health.TakeDamage(damage);
         }
+
+        // 销毁子弹
+        // 弾を削除する
+        Destroy(gameObject);
     }
-    */
+
 }

@@ -13,9 +13,10 @@ GameObject:
   - component: {fileID: 4882959085641015369}
   - component: {fileID: 1990033898226447418}
   - component: {fileID: -6233177347363536291}
+  - component: {fileID: -7394126050171419177}
   m_Layer: 0
   m_Name: MeleeEnemy
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -108,16 +109,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyStatsHolder
   stats:
     type: 0
+    HP: 20
     moveSpeed: 3
     stopX: 3.3
     attackDamage: 1
     attackRate: 1.5
-    color: {r: 1, g: 0, b: 0, a: 1}
     flightY: 4
     flightYMin: 4
     flightYMax: 3
     exitSpeedMultiplier: 1.5
-    obstacleBlockColor: {r: 0.6, g: 0.3, b: 0.8, a: 1}
     beamDuration: 0.4
     beamStartWidth: 0.12
     beamEndWidth: 0.05
@@ -181,3 +181,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1b7f5d90adac4c43b7bd1eea5a240c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MeleeEnemy
+--- !u!114 &-7394126050171419177
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3382112785025284562}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6035db025e445f84f8ed9367883777fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth

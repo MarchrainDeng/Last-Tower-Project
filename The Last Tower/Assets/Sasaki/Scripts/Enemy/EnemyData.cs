@@ -1,5 +1,21 @@
 using UnityEngine;
 
+/*
+----------------------------------------
+【修改 / 変更】
+增加了HP属性。
+HP属性が追加されました。
+
+【修改人 / 担当者】
+Deng Guangpeng
+トウ　コウホウ
+
+【修改日期 / 日付】
+2026/07/08
+
+---------------------------------------
+*/
+
 public enum EnemyType
 {
     Melee,        // 近接：地上を歩いて台座下まで移動 → 塔を殴る
@@ -11,6 +27,10 @@ public enum EnemyType
 public class EnemyStats
 {
     public EnemyType type;
+
+    [Header("── HP ──────────────────────")]
+    //トウが追加した部分
+    public float HP = 100f;//HP
 
     [Header("── 移動 ──────────────────────")]
     public float moveSpeed = 3f;    // 移動速度
