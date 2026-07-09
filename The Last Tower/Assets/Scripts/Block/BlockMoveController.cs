@@ -28,6 +28,10 @@ Deng Guangpeng
 修改了移动方式。由离散的固定距离移动改为了连续移动。相关函数：HandleMove()
 移動方法を変更しました。離散的な固定距離の移動から、連続的な移動へと変更しました。関連関数：HandleMove()
 
+2026/07/09：
+增加了键盘操作
+キーボード操作を追加しました。
+
 ---------------------------------------
 */
 
@@ -86,6 +90,20 @@ public class BlockMoveController : MonoBehaviour
 
         //Debug.Log(input);
 
+        // 键盘输入（A/D）
+        // キーボード入力（A/D）
+        if (Keyboard.current != null)
+        {
+            if (Keyboard.current.aKey.isPressed)
+            {
+                input = -1f;
+            }
+            else if (Keyboard.current.dKey.isPressed)
+            {
+                input = 1f;
+            }
+        }
+
         // 死区处理
         // デッドゾーン処理
         if (Mathf.Abs(input) < deadZone)
@@ -108,6 +126,14 @@ public class BlockMoveController : MonoBehaviour
         }
 
         if (gamepad.rightShoulder.wasPressedThisFrame)
+        {
+            RotateClockwise();
+        }
+
+        // 键盘 W：顺时针旋转
+        // キーボードW：時計回りに回転
+        if (Keyboard.current != null &&
+            Keyboard.current.wKey.wasPressedThisFrame)
         {
             RotateClockwise();
         }
@@ -138,6 +164,11 @@ public class BlockMoveController : MonoBehaviour
         float currentSpeed = fallSpeed;
 
         if (Gamepad.current != null && Gamepad.current.buttonSouth.isPressed)
+        {
+            currentSpeed *= fastFallMultiplier;
+        }
+
+        if (Keyboard.current != null && Keyboard.current.spaceKey.isPressed)
         {
             currentSpeed *= fastFallMultiplier;
         }
