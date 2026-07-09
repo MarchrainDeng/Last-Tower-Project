@@ -23,6 +23,10 @@ public class EnemyHealth : MonoBehaviour
     // 敵ステータス
     private EnemyStatsHolder statsHolder;
 
+    [Header("── 死亡演出 ──────────────────────")]
+    public GameObject deathEffectPrefab;
+    public float deathEffectDuration = 2f;
+
     private void Awake()
     {
         // 获取敌人属性
@@ -65,6 +69,14 @@ public class EnemyHealth : MonoBehaviour
     {
         // TODO：以后播放死亡动画、掉落金币等
         // TODO：今後、死亡アニメーションやドロップ処理などを追加
+
+        // 死亡演出を生成して親から切り離す
+        if (deathEffectPrefab != null)
+        {
+            var effect = Instantiate(deathEffectPrefab, transform.position, transform.rotation);
+            effect.transform.SetParent(null);
+            Destroy(effect, deathEffectDuration);
+        }
 
         Destroy(gameObject);
         Debug.Log(gameObject + " is dead.");

@@ -193,3 +193,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6035db025e445f84f8ed9367883777fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
+  deathEffectPrefab: {fileID: 8929420834146319271, guid: f2f7ad1d00c37d549bad9ebeea20d541, type: 3}
+  deathEffectDuration: 1
