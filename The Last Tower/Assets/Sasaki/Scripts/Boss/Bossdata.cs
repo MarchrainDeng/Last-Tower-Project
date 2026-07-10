@@ -68,6 +68,11 @@ public class BossHandData
     [Header("── ペイント（Paint）専用 ────────")]
     public float paintDuration = 2f;  // ペイントUIを表示する時間
 
+    [Header("── デコピン（Flick）専用 ────────")]
+    public float flickForceX = 8f;   // 横方向の吹き飛ばし力
+    public float flickForceY = 6f;   // 上方向の吹き飛ばし力
+    public float flickTorque = 5f;   // 回転力
+
     [Header("── 攻撃順 ──────────────────────")]
     public BossPhaseOrder phaseOrder = BossPhaseOrder.HarassFirst;
 

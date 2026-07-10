@@ -288,12 +288,21 @@ public class BossHand : MonoBehaviour
         transform.position = startPos;
     }
 
-    // デコピン：高ダメージ
+    // デコピン：高ダメージ＋一番上のブロックを物理的に吹き飛ばす
     IEnumerator ActionFlick(BossActionData action)
     {
         Debug.Log($"[BossHand] Flick! ダメージ:{action.damage}");
         towerHP.TakeDamage(action.damage);
-        // TODO: 吹き飛ばし演出
+
+        var topBlock = GetTopBlock();
+        if (topBlock != null)
+        {
+            // 上方向＋横方向（side逆向き）にインパルスを加える
+            Vector2 flickDir = new Vector2(-side * handData.flickForceX, handData.flickForceY);
+            topBlock.AddForce(flickDir, ForceMode2D.Impulse);
+            topBlock.AddTorque(-side * handData.flickTorque, ForceMode2D.Impulse);
+        }
+
         yield return new WaitForSeconds(0.5f);
     }
 
