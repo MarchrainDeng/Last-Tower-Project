@@ -44,6 +44,10 @@ public class BossManager : MonoBehaviour
         if (bossRoot != null)
             bossRoot.SetActive(true);
 
+        // 両手の行動を開始
+        if (leftHand != null) leftHand.StartBehavior();
+        if (rightHand != null) rightHand.StartBehavior();
+
         // 両手の撃破イベントを購読
         if (leftHand != null) leftHand.OnDefeated += CheckVictory;
         if (rightHand != null) rightHand.OnDefeated += CheckVictory;

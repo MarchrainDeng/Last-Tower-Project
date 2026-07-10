@@ -12,6 +12,10 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 21300000, guid: 59ebe0aefa0e300448860ce7bd395cae, type: 3}
+    - target: {fileID: -839377021785076560, guid: ac3555821dae7f644a9f09f4d0b1b80d, type: 3}
+      propertyPath: m_SortingOrder
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 557866971683816032, guid: ac3555821dae7f644a9f09f4d0b1b80d, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.5
@@ -39,6 +43,10 @@ PrefabInstance:
     - target: {fileID: 4810722584337282222, guid: ac3555821dae7f644a9f09f4d0b1b80d, type: 3}
       propertyPath: m_Name
       value: AttackBlock_3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4810722584337282222, guid: ac3555821dae7f644a9f09f4d0b1b80d, type: 3}
+      propertyPath: m_TagString
+      value: TowerBlock
       objectReference: {fileID: 0}
     - target: {fileID: 6891305551786201964, guid: ac3555821dae7f644a9f09f4d0b1b80d, type: 3}
       propertyPath: m_LocalPosition.x

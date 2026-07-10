@@ -53,6 +53,21 @@ public class BossHandData
     public float pokeDistance = 1.5f;  // 突き出す距離
     public float pokeDuration = 0.15f; // 突き出す/引く時間（片道）
 
+    [Header("── パンチ（Punch）専用 ─────────")]
+    public float punchShakeAmplitude = 0.3f; // 揺れの振幅
+    public float punchShakeDuration = 0.5f; // 揺れの持続時間
+    public float punchShakeFrequency = 25f;  // 揺れの周波数
+
+    [Header("── ジャグリング（Juggling）専用 ──")]
+    public string towerBlockTag = "TowerBlock"; // タワーブロックに付けるTag
+    public float jugglingHoldOffsetY = 0.5f; // 手からの保持オフセット
+    public float jugglingHeight = 0.5f; // 揺れの高さ
+    public float jugglingFrequency = 8f;   // 揺れの速さ
+    public float jugglingDuration = 2f;   // ジャグリングを続ける時間
+
+    [Header("── ペイント（Paint）専用 ────────")]
+    public float paintDuration = 2f;  // ペイントUIを表示する時間
+
     [Header("── 攻撃順 ──────────────────────")]
     public BossPhaseOrder phaseOrder = BossPhaseOrder.HarassFirst;
 

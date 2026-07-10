@@ -12,9 +12,17 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 21300000, guid: e8e58e4869b94724fa532f7f59bfff6b, type: 3}
+    - target: {fileID: -4449305739068444206, guid: a58276dae366ca141829e63ae1f114df, type: 3}
+      propertyPath: m_SortingOrder
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 628772897732542642, guid: a58276dae366ca141829e63ae1f114df, type: 3}
       propertyPath: m_Name
-      value: TestPowerBlock Variant
+      value: PowerBlock_4
+      objectReference: {fileID: 0}
+    - target: {fileID: 628772897732542642, guid: a58276dae366ca141829e63ae1f114df, type: 3}
+      propertyPath: m_TagString
+      value: TowerBlock
       objectReference: {fileID: 0}
     - target: {fileID: 2254134303506114846, guid: a58276dae366ca141829e63ae1f114df, type: 3}
       propertyPath: m_LocalPosition.x

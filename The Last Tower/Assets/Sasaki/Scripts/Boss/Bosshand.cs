@@ -21,6 +21,7 @@ public class BossHand : MonoBehaviour
     public TowerHP towerHP;
     public Transform towerTransform;
     public UnityEngine.UI.Slider hpSlider;
+    public GameObject paintOverlay;  // ペイント演出用UI（Inspectorでアサイン）
 
     // ─── 内部状態 ─────────────────────────────────────────────────
     float currentHP;
@@ -50,6 +51,14 @@ public class BossHand : MonoBehaviour
         side = transform.position.x < towerTransform.position.x ? 1f : -1f;
 
         UpdateHPBar();
+        // 行動開始はBossManagerからStartBehavior()を呼んで行う
+    }
+
+    /// <summary>
+    /// BossManagerから呼ぶ。ボス出現時に行動を開始する
+    /// </summary>
+    public void StartBehavior()
+    {
         StartCoroutine(BehaviorLoop());
     }
 
@@ -137,30 +146,113 @@ public class BossHand : MonoBehaviour
 
     // ─── 各アクション実装 ─────────────────────────────────────────
 
-    // パンチ：タワー周辺を揺らす
+    // パンチ：タワー周辺の地面を揺らす
     IEnumerator ActionPunch(BossActionData action)
     {
         Debug.Log($"[BossHand] Punch! ダメージ:{action.damage}");
         towerHP.TakeDamage(action.damage);
-        // TODO: 地面揺れ演出
+
+        if (towerHP.pedestalRb != null)
+            yield return StartCoroutine(ShakePedestal());
+
         yield return new WaitForSeconds(0.5f);
     }
 
-    // ペイント：画面に視界妨害
+    // ─── 台座揺れ（TowerHP.ShakePedestalと同じ仕組み） ────────────
+    IEnumerator ShakePedestal()
+    {
+        var pedestalRb = towerHP.pedestalRb;
+        Vector2 origin = pedestalRb.position;
+        float timer = 0f;
+
+        // 揺れ中だけ移動を許可
+        pedestalRb.constraints = RigidbodyConstraints2D.FreezeRotation;
+
+        while (timer < handData.punchShakeDuration)
+        {
+            float envelope = Mathf.Sin(timer / handData.punchShakeDuration * Mathf.PI);
+            float offset = Mathf.Sin(timer * handData.punchShakeFrequency) * handData.punchShakeAmplitude * envelope;
+            pedestalRb.MovePosition(origin + new Vector2(offset, 0f));
+            timer += Time.deltaTime;
+            yield return null;
+        }
+
+        pedestalRb.MovePosition(origin);
+
+        // 揺れ終わったら再び固定
+        pedestalRb.constraints = RigidbodyConstraints2D.FreezeAll;
+    }
+
+    // ペイント：画面に視界妨害UIを表示
     IEnumerator ActionPaint(BossActionData action)
     {
         Debug.Log("[BossHand] Paint!");
-        // TODO: ペイントオーバーレイ表示
-        yield return new WaitForSeconds(0.5f);
+
+        if (paintOverlay != null)
+            paintOverlay.SetActive(true);
+
+        yield return new WaitForSeconds(handData.paintDuration);
+
+        if (paintOverlay != null)
+            paintOverlay.SetActive(false);
     }
 
-    // ジャグリング：ブロックを掴んでジャグリング
+    // ジャグリング：一番上のブロックを掴んでお手玉のように揺らす
     IEnumerator ActionJuggling(BossActionData action)
     {
         Debug.Log("[BossHand] Juggling!");
-        // TODO: ブロック掴み＆ジャグリング演出
-        towerHP.TakeDamage(action.damage);
-        yield return new WaitForSeconds(0.5f);
+
+        var topBlock = GetTopBlock();
+        if (topBlock == null)
+        {
+            yield return new WaitForSeconds(0.5f);
+            yield break;
+        }
+
+        // 掴む：物理を無効化して手に追従させる
+        var originalBodyType = topBlock.bodyType;
+        topBlock.bodyType = RigidbodyType2D.Kinematic;
+        topBlock.linearVelocity = Vector2.zero;
+
+        Vector3 grabOffset = new Vector3(0f, -handData.jugglingHoldOffsetY, 0f);
+
+        // お手玉のように上下に揺らす
+        float timer = 0f;
+        while (timer < handData.jugglingDuration)
+        {
+            timer += Time.deltaTime;
+            float bounce = Mathf.Abs(Mathf.Sin(timer * handData.jugglingFrequency)) * handData.jugglingHeight;
+            Vector3 handPos = transform.position + grabOffset + Vector3.up * bounce;
+            topBlock.position = handPos;
+            yield return null;
+        }
+
+        // 放す：物理を元に戻す
+        topBlock.bodyType = originalBodyType;
+
+        yield return new WaitForSeconds(0.3f);
+    }
+
+    // タワーの一番上のブロックを取得（タグで検索）
+    Rigidbody2D GetTopBlock()
+    {
+        var blocks = GameObject.FindGameObjectsWithTag(handData.towerBlockTag);
+        if (blocks.Length == 0) return null;
+
+        Rigidbody2D top = null;
+        float maxY = float.MinValue;
+
+        foreach (var block in blocks)
+        {
+            var rb = block.GetComponent<Rigidbody2D>();
+            if (rb == null) continue;
+            if (rb.position.y > maxY)
+            {
+                maxY = rb.position.y;
+                top = rb;
+            }
+        }
+        return top;
     }
 
     // 小突く：小ダメージ＋物理的に突き出して衝突させる

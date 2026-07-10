@@ -245,6 +245,81 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!1 &210881618
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 210881619}
+  - component: {fileID: 210881621}
+  - component: {fileID: 210881620}
+  m_Layer: 5
+  m_Name: Ink
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &210881619
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 210881618}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 14.21, y: 14.21, z: 14.21}
+  m_ConstrainProportionsScale: 1
+  m_Children: []
+  m_Father: {fileID: 563663865}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &210881620
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 210881618}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.7294118}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: 57640a5276483164f80f42447e5e8539, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &210881621
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 210881618}
+  m_CullTransparentMesh: 1
 --- !u!1 &216510596
 GameObject:
   m_ObjectHideFlags: 0
@@ -600,7 +675,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 2
+  m_SortingOrder: 1
   m_MaskInteraction: 0
   m_Sprite: {fileID: -5462051492725314732, guid: 76e5ee4c6f6249c47b3d07862b6a94ad, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -1060,6 +1135,7 @@ RectTransform:
   m_Children:
   - {fileID: 90049843}
   - {fileID: 216510597}
+  - {fileID: 210881619}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1320,7 +1396,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 2
+  m_SortingOrder: 1
   m_MaskInteraction: 0
   m_Sprite: {fileID: 3912922672440275718, guid: 45731adf8c376354dbb9d2f8f6cc39cf, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -1364,22 +1440,32 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BossHand
   handData:
-    maxHP: 100
+    maxHP: 1000
     moveSpeed: 2
     approachStopX: -3
-    knockbackThreshold: 30
+    knockbackThreshold: 100
     knockbackDistance: 2
     knockbackDuration: 0.3
     returnDuration: 0.5
     knockbackArcHeight: 1
     pokeDistance: 1.5
     pokeDuration: 0.15
+    punchShakeAmplitude: 0.3
+    punchShakeDuration: 0.5
+    punchShakeFrequency: 25
+    towerBlockTag: TowerBlock
+    jugglingHoldOffsetY: 0.5
+    jugglingHeight: 0.5
+    jugglingFrequency: 8
+    jugglingDuration: 2
+    paintDuration: 2
     phaseOrder: 0
     harassActions: []
     attackActions: []
   towerHP: {fileID: 1677760618}
   towerTransform: {fileID: 293305498}
   hpSlider: {fileID: 607826412}
+  paintOverlay: {fileID: 210881618}
 --- !u!4 &733188635
 Transform:
   m_ObjectHideFlags: 0
@@ -2118,22 +2204,41 @@ MonoBehaviour:
     maxHP: 1000
     moveSpeed: 2
     approachStopX: -3
-    knockbackThreshold: 500
+    knockbackThreshold: 100
     knockbackDistance: 2
     knockbackDuration: 0.3
     returnDuration: 0.5
     knockbackArcHeight: 1
     pokeDistance: 1.5
     pokeDuration: 0.15
+    punchShakeAmplitude: 0.3
+    punchShakeDuration: 0.5
+    punchShakeFrequency: 25
+    towerBlockTag: TowerBlock
+    jugglingHoldOffsetY: 0.5
+    jugglingHeight: 0.5
+    jugglingFrequency: 8
+    jugglingDuration: 2
+    paintDuration: 2
     phaseOrder: 0
     harassActions:
-    - type: 3
+    - type: 0
       weight: 1
       damage: 1
       cooldown: 2
-      range: 1
+      range: 2
+    - type: 1
+      weight: 1
+      damage: 1
+      cooldown: 2
+      range: 2
     attackActions:
     - type: 3
+      weight: 1
+      damage: 0
+      cooldown: 0
+      range: 0
+    - type: 2
       weight: 1
       damage: 0
       cooldown: 0
@@ -2141,6 +2246,7 @@ MonoBehaviour:
   towerHP: {fileID: 1677760618}
   towerTransform: {fileID: 293305498}
   hpSlider: {fileID: 1594349621}
+  paintOverlay: {fileID: 210881618}
 --- !u!4 &1332396915
 Transform:
   m_ObjectHideFlags: 0
@@ -2210,7 +2316,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
