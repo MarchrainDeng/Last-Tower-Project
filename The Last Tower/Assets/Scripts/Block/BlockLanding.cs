@@ -46,6 +46,10 @@ public class BlockLanding : MonoBehaviour
     // すでに着地したか
     private bool isLanded = false;
 
+    // 方块选择流程管理器
+    // ブロック選択フローマネージャー
+    private BlockSelectionFlowManager flowManager;
+
     private void Update()
     {
         // 已经落地后不再重复检测
@@ -56,32 +60,59 @@ public class BlockLanding : MonoBehaviour
         CheckLanding();
     }
 
+    /// <summary>
+    /// 设置流程管理器
+    /// フローマネージャーを設定する
+    /// </summary>
+    public void SetFlowManager(BlockSelectionFlowManager manager)
+    {
+        flowManager = manager;
+    }
+
     private void CheckLanding()
     {
         foreach (Transform child in childBlocks)
         {
-            // 检测位置：每个子方块的正下方
-            // 判定位置：各子ブロックの真下
-            Vector2 checkPos = (Vector2)child.position + Vector2.down * (blockSize.y / 2f + checkDistance);
+            if (child == null)
+                continue;
 
-            // 检测盒：稍微窄一点，避免侧面误判
-            // 判定ボックス：横幅を少し狭くし、側面の誤判定を防ぐ
-            Vector2 checkSize = new Vector2(blockSize.x * 0.8f, checkDistance * 2f);
+            // 子方块底部中心位置
+            // 子ブロック底面の中心位置
+            Vector2 bottomPosition =
+                (Vector2)child.position +
+                Vector2.down * (blockSize.y * 0.5f);
 
-            Collider2D hit = Physics2D.OverlapBox(
-                checkPos,
+            // 底部检测盒
+            // 底面判定ボックス
+            Vector2 checkSize = new Vector2(
+                blockSize.x * 0.95f,
+                checkDistance * 2f
+            );
+
+            // 检测底部区域内的所有Collider
+            // 底面範囲内にあるすべてのColliderを検出する
+            Collider2D[] hits = Physics2D.OverlapBoxAll(
+                bottomPosition,
                 checkSize,
                 0f,
                 landingLayer
             );
 
-            if (hit != null)
+            foreach (Collider2D hit in hits)
             {
-                // 避免检测到自己的子方块
-                // 自分自身の子ブロックを検出しないようにする
-                if (hit.transform.IsChildOf(transform))
+                if (hit == null)
                     continue;
 
+                // 排除当前方块自身以及自身的子方块
+                // 現在のブロック自身と子ブロックを除外する
+                if (hit.transform == transform ||
+                    hit.transform.IsChildOf(transform))
+                {
+                    continue;
+                }
+
+                // 检测到地面或其他已落地方块
+                // 地面または他の着地済みブロックを検出した
                 Land();
                 return;
             }
@@ -94,7 +125,16 @@ public class BlockLanding : MonoBehaviour
 
         // 落地后启用重力
         // 着地後、重力を有効にする
-        rb.gravityScale = 1f;
+        if (rb != null)
+        {
+            // 清除当前速度
+            // 現在の速度をリセットする
+            rb.linearVelocity = Vector2.zero;
+
+            // 落地后启用重力
+            // 着地後に重力を有効にする
+            rb.gravityScale = 1f;
+        }
 
         BlockMoveController moveController = GetComponent<BlockMoveController>();
 
@@ -102,7 +142,20 @@ public class BlockLanding : MonoBehaviour
         {
             moveController.enabled = false;
 
-            Debug.Log("false");
+            //Debug.Log("false");
+        }
+
+        // 通知流程管理器重新开启卡牌选择
+        // フローマネージャーにカード選択の再開を通知する
+        if (flowManager != null)
+        {
+            flowManager.OnCurrentBlockLanded();
+        }
+        else
+        {
+            Debug.LogWarning(
+                "Flow Manager is missing. / フローマネージャーが設定されていません。"
+            );
         }
     }
 

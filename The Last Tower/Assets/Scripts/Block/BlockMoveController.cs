@@ -32,6 +32,10 @@ Deng Guangpeng
 增加了键盘操作
 キーボード操作を追加しました。
 
+2026/07/11
+避免了选择方块卡牌后会直接处于高速下落状态的问题，相关函数：HandleFall()
+ブロックカードを選択した後に直接高速落下状態になる問題を回避しました。関連関数：HandleFall()
+
 ---------------------------------------
 */
 
@@ -59,6 +63,10 @@ public class BlockMoveController : MonoBehaviour
     private Gamepad gamepad;
 
     private bool stickReturnedToCenter = true;
+
+    // 是否已经等待A键松开
+    // Aボタンが一度離されるのを待っているか
+    private bool waitingForFastFallRelease = true;
 
     private void Update()
     {
@@ -163,14 +171,31 @@ public class BlockMoveController : MonoBehaviour
     {
         float currentSpeed = fallSpeed;
 
-        if (Gamepad.current != null && Gamepad.current.buttonSouth.isPressed)
-        {
-            currentSpeed *= fastFallMultiplier;
-        }
+        bool aPressed =
+            Gamepad.current != null &&
+            Gamepad.current.buttonSouth.isPressed;
 
-        if (Keyboard.current != null && Keyboard.current.spaceKey.isPressed)
+        bool spacePressed =
+            Keyboard.current != null &&
+            Keyboard.current.spaceKey.isPressed;
+
+        // 新方块生成后，必须先松开A键
+        // 新しいブロック生成後は、一度Aボタンを離す必要がある
+        if (waitingForFastFallRelease)
         {
-            currentSpeed *= fastFallMultiplier;
+            if (!aPressed)
+            {
+                waitingForFastFallRelease = false;
+            }
+        }
+        else
+        {
+            // 松开后再次按住A，才允许快速下落
+            // 一度離した後、再度Aを押している間のみ高速落下する
+            if (aPressed || spacePressed)
+            {
+                currentSpeed *= fastFallMultiplier;
+            }
         }
 
         transform.position += Vector3.down * currentSpeed * Time.deltaTime;

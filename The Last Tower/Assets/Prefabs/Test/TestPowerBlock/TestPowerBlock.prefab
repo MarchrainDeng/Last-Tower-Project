@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: -209563175386702930}
   m_Layer: 7
   m_Name: TestPowerBlock
-  m_TagString: Untagged
+  m_TagString: TowerBlock
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -321,7 +321,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.98, y: 0.98}
+  m_Size: {x: 0.95, y: 0.95}
   m_EdgeRadius: 0
 --- !u!1 &2719002332184594914
 GameObject:
@@ -459,7 +459,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.98, y: 0.98}
+  m_Size: {x: 0.95, y: 0.95}
   m_EdgeRadius: 0
 --- !u!1 &3038401784345326398
 GameObject:
@@ -597,7 +597,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.98, y: 0.98}
+  m_Size: {x: 0.95, y: 0.95}
   m_EdgeRadius: 0
 --- !u!1 &8821315399572459804
 GameObject:
@@ -735,5 +735,5 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.98, y: 0.98}
+  m_Size: {x: 0.95, y: 0.95}
   m_EdgeRadius: 0

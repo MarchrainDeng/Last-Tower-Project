@@ -30,6 +30,11 @@ public class CardSelector : MonoBehaviour
     // ブロック生成位置
     public Transform spawnPoint;
 
+    // 方块选择流程管理器
+    // ブロック選択フローマネージャー
+    [SerializeField] private BlockSelectionFlowManager flowManager;
+
+
     [Header("Input")]
     // 摇杆触发阈值
     // スティック入力の判定値
@@ -42,6 +47,10 @@ public class CardSelector : MonoBehaviour
     private int currentIndex = 0;
     private bool stickReturnedToCenter = true;
 
+    // 是否允许处理卡牌输入
+    // カード入力を処理可能か
+    private bool inputEnabled = false;
+
     private void Start()
     {
         RefreshCards();
@@ -50,11 +59,27 @@ public class CardSelector : MonoBehaviour
 
     private void Update()
     {
+        if (!inputEnabled)
+            return;
+
         HandleSelection();
         HandleConfirm();
     }
 
-    private void RefreshCards()
+    /// <summary>
+    /// 设置是否允许输入
+    /// 入力を許可するか設定する
+    /// </summary>
+    public void SetInputEnabled(bool enabled)
+    {
+        inputEnabled = enabled;
+
+        // 每次重新开启时让摇杆可以重新接受输入
+        // 再度有効化した時にスティック入力を受け付けられるようにする
+        stickReturnedToCenter = true;
+    }
+
+    public void RefreshCards()
     {
         if (cards == null || cards.Length == 0)
         {
@@ -69,8 +94,18 @@ public class CardSelector : MonoBehaviour
 
             card.RefreshCard();
         }
+
+        // 每次重新选择时默认选择第一张
+        // 選択開始時は最初のカードを選択する
+        currentIndex = 0;
+
+        UpdateCardVisuals();
     }
 
+    /// <summary>
+    /// 处理左右选择
+    /// 左右選択を処理する
+    /// </summary>
     private void HandleSelection()
     {
         float x = 0f;
@@ -121,14 +156,76 @@ public class CardSelector : MonoBehaviour
             SpawnSelectedBlock();
     }
 
+    /// <summary>
+    /// 生成当前选择的方块
+    /// 現在選択中のブロックを生成する
+    /// </summary>
     private void SpawnSelectedBlock()
     {
+        if (cards == null ||
+            cards.Length == 0 ||
+            currentIndex < 0 ||
+            currentIndex >= cards.Length)
+        {
+            return;
+        }
+
         BlockOption option = cards[currentIndex].GetOption();
 
-        if (option == null || option.blockPrefab == null || spawnPoint == null)
+        if (option == null)
+        {
+            Debug.LogWarning(
+                "Selected card has no data. / 選択中カードにデータがありません。"
+            );
             return;
+        }
 
-        Instantiate(option.blockPrefab, spawnPoint.position, Quaternion.identity);
+        if (option.blockPrefab == null)
+        {
+            Debug.LogWarning(
+                "Block Prefab is missing. / Block Prefabが設定されていません。"
+            );
+            return;
+        }
+
+        if (spawnPoint == null)
+        {
+            Debug.LogWarning(
+                "Spawn Point is missing. / Spawn Pointが設定されていません。"
+            );
+            return;
+        }
+
+        // 当前卡牌对应的方块を生成
+        // 現在のカードに対応するブロックを生成する
+        GameObject spawnedBlock = Instantiate(
+            option.blockPrefab,
+            spawnPoint.position,
+            Quaternion.identity
+        );
+
+        // 将流程管理器传递给生成的方块
+        // 生成したブロックにフローマネージャーを渡す
+        BlockLanding landing = spawnedBlock.GetComponent<BlockLanding>();
+
+        if (landing != null)
+        {
+            landing.SetFlowManager(flowManager);
+        }
+        else
+        {
+            Debug.LogWarning(
+                "Spawned block has no BlockLanding component. / " +
+                "生成したブロックにBlockLandingがありません。"
+            );
+        }
+
+        // 选择结束，隐藏卡牌UI
+        // 選択終了後、カードUIを非表示にする
+        if (flowManager != null)
+        {
+            flowManager.CloseBlockSelection();
+        }
     }
 
     private void SelectNextCard()

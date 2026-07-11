@@ -43,6 +43,10 @@ public class BlockCardUI : MonoBehaviour
 
         blockImage.sprite = currentOption.cardSprite;
         typeText.text = currentOption.typeName;
+
+        // 保持图片宽高比
+        // 画像のアスペクト比を維持する
+        blockImage.preserveAspect = true;
     }
 
     public BlockOption GetOption()
