@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 1990033898226447418}
   - component: {fileID: -6233177347363536291}
   - component: {fileID: -7394126050171419177}
+  - component: {fileID: -729343594897891515}
   m_Layer: 0
   m_Name: MeleeEnemy
   m_TagString: Enemy
@@ -85,7 +86,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -8264443839727491556, guid: 91be180fab9556f43ab568d943f9fe7c, type: 3}
+  m_Sprite: {fileID: -855298285791758126, guid: 4d71573c6263d3f4ba03ff9162878154, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -161,7 +162,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 11.63, y: 14.06}
+    oldSize: {x: 9.82, y: 9.9}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -195,3 +196,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
   deathEffectPrefab: {fileID: 8929420834146319271, guid: f2f7ad1d00c37d549bad9ebeea20d541, type: 3}
   deathEffectDuration: 1
+--- !u!95 &-729343594897891515
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3382112785025284562}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: d559bf5201c3b5443b150ee3c2f3dddc, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

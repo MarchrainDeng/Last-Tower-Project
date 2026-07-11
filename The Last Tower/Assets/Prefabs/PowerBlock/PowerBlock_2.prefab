@@ -14,7 +14,11 @@ PrefabInstance:
       objectReference: {fileID: 21300000, guid: 5f78c3f3232fc654db25c9fdf14b1dde, type: 3}
     - target: {fileID: 628772897732542642, guid: a58276dae366ca141829e63ae1f114df, type: 3}
       propertyPath: m_Name
-      value: TestPowerBlock Variant
+      value: PowerBlock_2
+      objectReference: {fileID: 0}
+    - target: {fileID: 628772897732542642, guid: a58276dae366ca141829e63ae1f114df, type: 3}
+      propertyPath: m_TagString
+      value: TowerBlock
       objectReference: {fileID: 0}
     - target: {fileID: 2254134303506114846, guid: a58276dae366ca141829e63ae1f114df, type: 3}
       propertyPath: m_LocalPosition.x

@@ -65,25 +65,26 @@ public class Bullet : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // 只处理敌人
-        // 敵のみ処理する
         if (!other.CompareTag("Enemy"))
             return;
 
         Debug.Log("bullet enter enemy");
 
         EnemyHealth health = other.GetComponent<EnemyHealth>();
-
         if (health != null)
         {
-            // 对敌人造成伤害
-            // 敵にダメージを与える
             health.TakeDamage(damage);
+            Destroy(gameObject);
+            return;
         }
 
-        // 销毁子弹
-        // 弾を削除する
-        Destroy(gameObject);
+        BossHand bossHand = other.GetComponent<BossHand>();
+        if (bossHand != null)
+        {
+            bossHand.TakeDamage(damage);
+            Destroy(gameObject);
+            return;
+        }
     }
 
 }
