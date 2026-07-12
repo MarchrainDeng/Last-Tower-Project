@@ -26,6 +26,19 @@ public class DebugBlockSpawner : MonoBehaviour
         {
             SpawnAttackBlock();
         }
+
+        if (Keyboard.current != null)
+        {
+            if (Keyboard.current.jKey.wasPressedThisFrame)
+            {
+                SpawnPowerBlock();
+            }
+
+            if (Keyboard.current.kKey.wasPressedThisFrame)
+            {
+                SpawnAttackBlock();
+            }
+        }
     }
 
     private void SpawnPowerBlock()

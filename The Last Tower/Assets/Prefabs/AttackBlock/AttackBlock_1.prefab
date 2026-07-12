@@ -8,6 +8,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -839377021785076560, guid: ac3555821dae7f644a9f09f4d0b1b80d, type: 3}
+      propertyPath: m_SortingOrder
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 485139397798059532, guid: ac3555821dae7f644a9f09f4d0b1b80d, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.5
@@ -34,7 +38,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4810722584337282222, guid: ac3555821dae7f644a9f09f4d0b1b80d, type: 3}
       propertyPath: m_Name
-      value: TestAttackBlock Variant
+      value: AttackBlock_1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4810722584337282222, guid: ac3555821dae7f644a9f09f4d0b1b80d, type: 3}
+      propertyPath: m_TagString
+      value: TowerBlock
       objectReference: {fileID: 0}
     - target: {fileID: 6891305551786201964, guid: ac3555821dae7f644a9f09f4d0b1b80d, type: 3}
       propertyPath: m_LocalPosition.x

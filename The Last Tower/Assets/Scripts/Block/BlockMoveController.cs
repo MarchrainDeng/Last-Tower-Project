@@ -28,6 +28,18 @@ Deng Guangpeng
 修改了移动方式。由离散的固定距离移动改为了连续移动。相关函数：HandleMove()
 移動方法を変更しました。離散的な固定距離の移動から、連続的な移動へと変更しました。関連関数：HandleMove()
 
+2026/07/09：
+增加了键盘操作
+キーボード操作を追加しました。
+
+2026/07/11
+避免了选择方块卡牌后会直接处于高速下落状态的问题，相关函数：HandleFall()
+ブロックカードを選択した後に直接高速落下状態になる問題を回避しました。関連関数：HandleFall()
+
+2026/07/12
+避免了让方块直接掉出地图时，无法继续选择方块的问题，相关函数：SetFlowManager(),HandleDeadZone()
+ブロックがマップから直接落ちた際に選択を続けることができなくなる問題を回避しました。関連する関数：SetFlowManager()、HandleDeadZone()
+
 ---------------------------------------
 */
 
@@ -56,6 +68,24 @@ public class BlockMoveController : MonoBehaviour
 
     private bool stickReturnedToCenter = true;
 
+    // 是否已经等待A键松开
+    // Aボタンが一度離されるのを待っているか
+    private bool waitingForFastFallRelease = true;
+
+    [Header("Dead Zone")]
+
+    // 越界判定Y坐标
+    // 範囲外判定Y座標
+    public float deadLineY = -8f;
+
+    // 是否已经触发越界
+    // 範囲外処理済みか
+    private bool isDead = false;
+
+    // 方块选择流程管理器
+    // ブロック選択フローマネージャー
+    private BlockSelectionFlowManager flowManager;
+
     private void Update()
     {
         gamepad = Gamepad.current;
@@ -65,7 +95,7 @@ public class BlockMoveController : MonoBehaviour
 
         HandleMove();
         HandleRotate();
-        
+        HandleDeadZone();
     }
 
     private void FixedUpdate()
@@ -85,6 +115,20 @@ public class BlockMoveController : MonoBehaviour
         float input = Gamepad.current.leftStick.x.ReadValue();
 
         //Debug.Log(input);
+
+        // 键盘输入（A/D）
+        // キーボード入力（A/D）
+        if (Keyboard.current != null)
+        {
+            if (Keyboard.current.aKey.isPressed)
+            {
+                input = -1f;
+            }
+            else if (Keyboard.current.dKey.isPressed)
+            {
+                input = 1f;
+            }
+        }
 
         // 死区处理
         // デッドゾーン処理
@@ -108,6 +152,14 @@ public class BlockMoveController : MonoBehaviour
         }
 
         if (gamepad.rightShoulder.wasPressedThisFrame)
+        {
+            RotateClockwise();
+        }
+
+        // 键盘 W：顺时针旋转
+        // キーボードW：時計回りに回転
+        if (Keyboard.current != null &&
+            Keyboard.current.wKey.wasPressedThisFrame)
         {
             RotateClockwise();
         }
@@ -137,11 +189,67 @@ public class BlockMoveController : MonoBehaviour
     {
         float currentSpeed = fallSpeed;
 
-        if (Gamepad.current != null && Gamepad.current.buttonSouth.isPressed)
+        bool aPressed =
+            Gamepad.current != null &&
+            Gamepad.current.buttonSouth.isPressed;
+
+        bool spacePressed =
+            Keyboard.current != null &&
+            Keyboard.current.spaceKey.isPressed;
+
+        // 新方块生成后，必须先松开A键
+        // 新しいブロック生成後は、一度Aボタンを離す必要がある
+        if (waitingForFastFallRelease)
         {
-            currentSpeed *= fastFallMultiplier;
+            if (!aPressed)
+            {
+                waitingForFastFallRelease = false;
+            }
+        }
+        else
+        {
+            // 松开后再次按住A，才允许快速下落
+            // 一度離した後、再度Aを押している間のみ高速落下する
+            if (aPressed || spacePressed)
+            {
+                currentSpeed *= fastFallMultiplier;
+            }
         }
 
         transform.position += Vector3.down * currentSpeed * Time.deltaTime;
+    }
+
+    /// <summary>
+    /// 设置流程管理器
+    /// フローマネージャーを設定する
+    /// </summary>
+    public void SetFlowManager(BlockSelectionFlowManager manager)
+    {
+        flowManager = manager;
+    }
+
+    /// <summary>
+    /// 检测是否进入死亡区域
+    /// デッドゾーンに入ったか判定する
+    /// </summary>
+    private void HandleDeadZone()
+    {
+        if (isDead)
+            return;
+
+        if (transform.position.y < deadLineY)
+        {
+            isDead = true;
+
+            // 通知流程管理器开始下一轮选择
+            // フローマネージャーへ次の選択開始を通知する
+            if (flowManager != null)
+            {
+                Debug.Log("next selection");
+                flowManager.OnCurrentBlockLanded();
+            }
+
+            Destroy(gameObject);
+        }
     }
 }
