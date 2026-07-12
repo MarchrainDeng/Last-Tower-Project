@@ -207,10 +207,12 @@ public class CardSelector : MonoBehaviour
         // 将流程管理器传递给生成的方块
         // 生成したブロックにフローマネージャーを渡す
         BlockLanding landing = spawnedBlock.GetComponent<BlockLanding>();
+        BlockMoveController controller = spawnedBlock.GetComponent<BlockMoveController>();
 
         if (landing != null)
         {
             landing.SetFlowManager(flowManager);
+            controller.SetFlowManager(flowManager);
         }
         else
         {

@@ -115,7 +115,7 @@ Rigidbody2D:
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_GravityScale: 0
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 05cb8a6ebe954344f83cb5c14e3598da, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -166,6 +166,7 @@ MonoBehaviour:
   rotateAngle: 90
   fallSpeed: 1
   fastFallMultiplier: 7
+  deadLineY: -6
 --- !u!114 &-209563175386702930
 MonoBehaviour:
   m_ObjectHideFlags: 0

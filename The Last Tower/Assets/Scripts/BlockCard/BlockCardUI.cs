@@ -46,7 +46,8 @@ public class BlockCardUI : MonoBehaviour
 
         // 保持图片宽高比
         // 画像のアスペクト比を維持する
-        blockImage.preserveAspect = true;
+        //blockImage.preserveAspect = true;
+        blockImage.SetNativeSize();
     }
 
     public BlockOption GetOption()

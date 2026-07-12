@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: c4decca9218487943b8870d921b74872
+guid: 4083deb2abad2e84989a9b6f5804d906
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 1954625145568903681
-    second: "\u653B\u6483\u30D6\u30ED\u30C3\u30AF_0"
+      213: -6118016267822173981
+    second: PowerBlock02_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: "\u653B\u6483\u30D6\u30ED\u30C3\u30AF_0"
+      name: PowerBlock02_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 545
-        height: 545
+        width: 1667
+        height: 1113
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 1024eaeb639302b10800000000000000
-      internalID: 1954625145568903681
+      spriteID: 3e0f56a7e90781ba0800000000000000
+      internalID: -6118016267822173981
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      "\u653B\u6483\u30D6\u30ED\u30C3\u30AF_0": 1954625145568903681
+      PowerBlock02_0: -6118016267822173981
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

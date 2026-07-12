@@ -36,6 +36,10 @@ Deng Guangpeng
 避免了选择方块卡牌后会直接处于高速下落状态的问题，相关函数：HandleFall()
 ブロックカードを選択した後に直接高速落下状態になる問題を回避しました。関連関数：HandleFall()
 
+2026/07/12
+避免了让方块直接掉出地图时，无法继续选择方块的问题，相关函数：SetFlowManager(),HandleDeadZone()
+ブロックがマップから直接落ちた際に選択を続けることができなくなる問題を回避しました。関連する関数：SetFlowManager()、HandleDeadZone()
+
 ---------------------------------------
 */
 
@@ -68,6 +72,20 @@ public class BlockMoveController : MonoBehaviour
     // Aボタンが一度離されるのを待っているか
     private bool waitingForFastFallRelease = true;
 
+    [Header("Dead Zone")]
+
+    // 越界判定Y坐标
+    // 範囲外判定Y座標
+    public float deadLineY = -8f;
+
+    // 是否已经触发越界
+    // 範囲外処理済みか
+    private bool isDead = false;
+
+    // 方块选择流程管理器
+    // ブロック選択フローマネージャー
+    private BlockSelectionFlowManager flowManager;
+
     private void Update()
     {
         gamepad = Gamepad.current;
@@ -77,7 +95,7 @@ public class BlockMoveController : MonoBehaviour
 
         HandleMove();
         HandleRotate();
-        
+        HandleDeadZone();
     }
 
     private void FixedUpdate()
@@ -199,5 +217,39 @@ public class BlockMoveController : MonoBehaviour
         }
 
         transform.position += Vector3.down * currentSpeed * Time.deltaTime;
+    }
+
+    /// <summary>
+    /// 设置流程管理器
+    /// フローマネージャーを設定する
+    /// </summary>
+    public void SetFlowManager(BlockSelectionFlowManager manager)
+    {
+        flowManager = manager;
+    }
+
+    /// <summary>
+    /// 检测是否进入死亡区域
+    /// デッドゾーンに入ったか判定する
+    /// </summary>
+    private void HandleDeadZone()
+    {
+        if (isDead)
+            return;
+
+        if (transform.position.y < deadLineY)
+        {
+            isDead = true;
+
+            // 通知流程管理器开始下一轮选择
+            // フローマネージャーへ次の選択開始を通知する
+            if (flowManager != null)
+            {
+                Debug.Log("next selection");
+                flowManager.OnCurrentBlockLanded();
+            }
+
+            Destroy(gameObject);
+        }
     }
 }

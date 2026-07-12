@@ -11,7 +11,7 @@ PrefabInstance:
     - target: {fileID: -4449305739068444206, guid: a58276dae366ca141829e63ae1f114df, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 5f78c3f3232fc654db25c9fdf14b1dde, type: 3}
+      objectReference: {fileID: 21300000, guid: 4083deb2abad2e84989a9b6f5804d906, type: 3}
     - target: {fileID: 628772897732542642, guid: a58276dae366ca141829e63ae1f114df, type: 3}
       propertyPath: m_Name
       value: PowerBlock_2
