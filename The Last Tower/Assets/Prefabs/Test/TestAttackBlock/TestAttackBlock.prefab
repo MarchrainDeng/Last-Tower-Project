@@ -136,8 +136,8 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.95, y: 0.95}
-  m_EdgeRadius: 0
+  m_Size: {x: 0.8, y: 0.8}
+  m_EdgeRadius: 0.03
 --- !u!1 &2315007616662656397
 GameObject:
   m_ObjectHideFlags: 0
@@ -274,8 +274,8 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.95, y: 0.95}
-  m_EdgeRadius: 0
+  m_Size: {x: 0.8, y: 0.8}
+  m_EdgeRadius: 0.03
 --- !u!1 &4810722584337282222
 GameObject:
   m_ObjectHideFlags: 0
@@ -401,7 +401,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 1
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 0
 --- !u!114 &4615417704075627382
 MonoBehaviour:
@@ -421,7 +421,7 @@ MonoBehaviour:
   - {fileID: 6891305551786201964}
   - {fileID: 557866971683816032}
   - {fileID: 485139397798059532}
-  blockSize: {x: 0.5, y: 0.5}
+  blockSize: {x: 0.55, y: 0.5}
   checkDistance: 0.02
   landingLayer:
     serializedVersion: 2
@@ -457,7 +457,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AttackBlock
   canAttack: 0
-  cellSize: {x: 0.5, y: 0.5}
+  cellSize: {x: 0.5, y: 0.7}
   checkDistance: 0.02
   poweredBlockLayer:
     serializedVersion: 2
@@ -617,8 +617,8 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.95, y: 0.95}
-  m_EdgeRadius: 0
+  m_Size: {x: 0.8, y: 0.8}
+  m_EdgeRadius: 0.03
 --- !u!1 &7529642115089077534
 GameObject:
   m_ObjectHideFlags: 0
@@ -755,5 +755,5 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.95, y: 0.95}
-  m_EdgeRadius: 0
+  m_Size: {x: 0.8, y: 0.8}
+  m_EdgeRadius: 0.03

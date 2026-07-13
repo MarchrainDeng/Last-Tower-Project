@@ -92,8 +92,53 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: -2885742830559115625, guid: ac3555821dae7f644a9f09f4d0b1b80d, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4810722584337282222, guid: ac3555821dae7f644a9f09f4d0b1b80d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6231471985804438900}
   m_SourcePrefab: {fileID: 100100000, guid: ac3555821dae7f644a9f09f4d0b1b80d, type: 3}
+--- !u!1 &34065507497652870 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4810722584337282222, guid: ac3555821dae7f644a9f09f4d0b1b80d, type: 3}
+  m_PrefabInstance: {fileID: 4808182858653025832}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6231471985804438900
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 34065507497652870}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b14af288fc5059a4cb51659a45058a54, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CannonShooter
+  attackState: {fileID: 6440646690847267344}
+  cannonBulletPrefab: {fileID: 3186346751555574874, guid: e4f01dd4e58de5b4ca00cfb46f6bbcac, type: 3}
+  firePoint: {fileID: 2330001888668667533}
+  shootInterval: 2
+  searchRadius: 20
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 1024
+--- !u!4 &2330001888668667533 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7129141631402838181, guid: ac3555821dae7f644a9f09f4d0b1b80d, type: 3}
+  m_PrefabInstance: {fileID: 4808182858653025832}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6440646690847267344 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2007443109803056184, guid: ac3555821dae7f644a9f09f4d0b1b80d, type: 3}
+  m_PrefabInstance: {fileID: 4808182858653025832}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 34065507497652870}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37c333d08e810934e9c71a399d233604, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AttackBlock
