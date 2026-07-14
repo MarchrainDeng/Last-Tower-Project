@@ -1464,7 +1464,7 @@ MonoBehaviour:
     flickTorque: 3
     phaseOrder: 3
     harassActions:
-    - type: 4
+    - type: 2
       weight: 1
       damage: 5
       cooldown: 3
@@ -2233,11 +2233,11 @@ MonoBehaviour:
     flickTorque: 2
     phaseOrder: 3
     harassActions:
-    - type: 3
+    - type: 1
       weight: 1
-      damage: 1
-      cooldown: 2
-      range: 2
+      damage: 0
+      cooldown: 3
+      range: 0
     attackActions: []
   towerHP: {fileID: 1677760618}
   towerTransform: {fileID: 293305498}
@@ -2995,7 +2995,7 @@ MonoBehaviour:
   rightHand: {fileID: 1332396914}
   bossRoot: {fileID: 548781288}
   towerHP: {fileID: 1677760618}
-  spawnDelay: 1
+  spawnDelay: 100
 --- !u!4 &1933127027
 Transform:
   m_ObjectHideFlags: 0
