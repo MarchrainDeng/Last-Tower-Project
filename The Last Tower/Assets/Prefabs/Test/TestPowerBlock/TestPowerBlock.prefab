@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 5500422783304295468}
   - component: {fileID: 1196579378171203833}
   - component: {fileID: -209563175386702930}
-  m_Layer: 7
+  m_Layer: 8
   m_Name: TestPowerBlock
   m_TagString: TowerBlock
   m_Icon: {fileID: 0}
@@ -180,12 +180,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PowerBlock
   isPowered: 0
-  cellSize: {x: 0.5, y: 0.7}
-  checkDistance: 0.02
-  powerSourceLayer:
+  verticalCheckSize: {x: 0.52, y: 0.08}
+  verticalCheckOffset: 0.23
+  horizontalCheckSize: {x: 0.07, y: 0.4}
+  horizontalCheckOffset: 0.23
+  groundLayer:
     serializedVersion: 2
-    m_Bits: 320
-  poweredLayerName: PowerBlock
+    m_Bits: 64
+  powerBlockLayer:
+    serializedVersion: 2
+    m_Bits: 256
+  spriteRenderer: {fileID: 0}
+  unpoweredSprite: {fileID: 0}
+  poweredSprite: {fileID: 0}
 --- !u!1 &1651153064709822673
 GameObject:
   m_ObjectHideFlags: 0
@@ -197,7 +204,7 @@ GameObject:
   - component: {fileID: 5805145911192015095}
   - component: {fileID: 5175356830712890021}
   - component: {fileID: 6405144903495858265}
-  m_Layer: 7
+  m_Layer: 8
   m_Name: TestChildBlock (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -322,7 +329,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.8, y: 0.8}
+  m_Size: {x: 0.87, y: 0.87}
   m_EdgeRadius: 0.03
 --- !u!1 &2719002332184594914
 GameObject:
@@ -335,7 +342,7 @@ GameObject:
   - component: {fileID: 9215363840378616594}
   - component: {fileID: 1030851507586073742}
   - component: {fileID: 7366973784031985633}
-  m_Layer: 7
+  m_Layer: 8
   m_Name: TestChildBlock (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -460,7 +467,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.8, y: 0.8}
+  m_Size: {x: 0.87, y: 0.87}
   m_EdgeRadius: 0.03
 --- !u!1 &3038401784345326398
 GameObject:
@@ -473,7 +480,7 @@ GameObject:
   - component: {fileID: 7518603948613206943}
   - component: {fileID: 5023245009891648563}
   - component: {fileID: 3589209330183630595}
-  m_Layer: 7
+  m_Layer: 8
   m_Name: TestChildBlock
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -598,7 +605,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.8, y: 0.8}
+  m_Size: {x: 0.87, y: 0.87}
   m_EdgeRadius: 0.03
 --- !u!1 &8821315399572459804
 GameObject:
@@ -611,7 +618,7 @@ GameObject:
   - component: {fileID: 1243060820637498598}
   - component: {fileID: 6835478084584746540}
   - component: {fileID: 981056082273263254}
-  m_Layer: 7
+  m_Layer: 8
   m_Name: TestChildBlock (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -736,5 +743,5 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.8, y: 0.8}
+  m_Size: {x: 0.87, y: 0.87}
   m_EdgeRadius: 0.03

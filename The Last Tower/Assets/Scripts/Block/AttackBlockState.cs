@@ -4,8 +4,13 @@
 ----------------------------------------
 【功能 / 機能】
 令攻击方块和已充能方块接触时，进入可以攻击的状态。
+上下方向与左右方向的检测范围可以分别调整，
+并且检测范围会跟随方块旋转。
 
-攻撃ブロックと充能済みブロックが接触すると、攻撃可能な状態になります。
+攻撃ブロックと通電済みブロックが接触すると、
+攻撃可能な状態になる。
+上下方向と左右方向の判定範囲を個別に調整でき、
+判定範囲はブロックの回転に追従する。
 
 【负责人 / 担当】
 Deng Guangpeng
@@ -13,7 +18,6 @@ Deng Guangpeng
 
 【创建日期 / 作成日】
 2026/07/05
-
 ---------------------------------------
 */
 
@@ -24,15 +28,25 @@ public class AttackBlockState : MonoBehaviour
     // 攻撃可能かどうか
     public bool canAttack = false;
 
-    [Header("Check Settings")]
-    // 子方块尺寸
-    // 子ブロックのサイズ
-    public Vector2 cellSize = new Vector2(0.5f, 0.5f);
+    [Header("Vertical Check Settings")]
+    // 上下方向检测盒大小
+    // 上下方向の判定ボックスサイズ
+    public Vector2 verticalCheckSize = new Vector2(0.4f, 0.08f);
 
-    // 检测距离
-    // 判定距離
-    public float checkDistance = 0.05f;
+    // 上下方向检测盒距离子方块中心的偏移
+    // 上下方向の判定ボックスの中心からの距離
+    public float verticalCheckOffset = 0.29f;
 
+    [Header("Horizontal Check Settings")]
+    // 左右方向检测盒大小
+    // 左右方向の判定ボックスサイズ
+    public Vector2 horizontalCheckSize = new Vector2(0.08f, 0.4f);
+
+    // 左右方向检测盒距离子方块中心的偏移
+    // 左右方向の判定ボックスの中心からの距離
+    public float horizontalCheckOffset = 0.29f;
+
+    [Header("Layer Settings")]
     // 已充能方块Layer
     // 通電済みブロックのLayer
     public LayerMask poweredBlockLayer;
@@ -43,8 +57,8 @@ public class AttackBlockState : MonoBehaviour
 
     private void Awake()
     {
-        // 自动获取所有子物体作为子方块
-        // すべての子オブジェクトを子ブロックとして自動取得する
+        // 自动获取所有直接子物体作为子方块
+        // すべての直接子オブジェクトを子ブロックとして自動取得する
         childCells = new Transform[transform.childCount];
 
         for (int i = 0; i < transform.childCount; i++)
@@ -64,57 +78,116 @@ public class AttackBlockState : MonoBehaviour
     /// </summary>
     private void CheckAttackState()
     {
-        bool foundPoweredBlock = false;
-
-        Vector2[] directions =
-        {
-            Vector2.up,
-            Vector2.down,
-            Vector2.left,
-            Vector2.right
-        };
-
         foreach (Transform cell in childCells)
         {
-            foreach (Vector2 dir in directions)
+            if (cell == null)
+                continue;
+
+            // 检测上方
+            // 上方向を判定する
+            if (CheckArea(
+                cell,
+                Vector2.up,
+                verticalCheckOffset,
+                verticalCheckSize))
             {
-                Vector2 checkPos = (Vector2)cell.position + dir * (cellSize.x / 2f + checkDistance);
-
-                Vector2 checkSize;
-
-                if (dir == Vector2.left || dir == Vector2.right)
-                {
-                    checkSize = new Vector2(checkDistance * 2f, cellSize.y * 0.8f);
-                }
-                else
-                {
-                    checkSize = new Vector2(cellSize.x * 0.8f, checkDistance * 2f);
-                }
-
-                Collider2D hit = Physics2D.OverlapBox(
-                    checkPos,
-                    checkSize,
-                    0f,
-                    poweredBlockLayer
-                );
-
-                if (hit == null)
-                    continue;
-
-                // 避免检测到自己
-                // 自分自身を検出しないようにする
-                if (hit.transform.IsChildOf(transform))
-                    continue;
-
-                foundPoweredBlock = true;
-                break;
+                SetAttackState(true);
+                return;
             }
 
-            if (foundPoweredBlock)
-                break;
+            // 检测下方
+            // 下方向を判定する
+            if (CheckArea(
+                cell,
+                Vector2.down,
+                verticalCheckOffset,
+                verticalCheckSize))
+            {
+                SetAttackState(true);
+                return;
+            }
+
+            // 检测左侧
+            // 左方向を判定する
+            if (CheckArea(
+                cell,
+                Vector2.left,
+                horizontalCheckOffset,
+                horizontalCheckSize))
+            {
+                SetAttackState(true);
+                return;
+            }
+
+            // 检测右侧
+            // 右方向を判定する
+            if (CheckArea(
+                cell,
+                Vector2.right,
+                horizontalCheckOffset,
+                horizontalCheckSize))
+            {
+                SetAttackState(true);
+                return;
+            }
         }
 
-        SetAttackState(foundPoweredBlock);
+        // 没有检测到已充能方块
+        // 通電済みブロックを検出しなかった
+        SetAttackState(false);
+    }
+
+    /// <summary>
+    /// 检测子方块指定局部方向的区域
+    /// 子ブロックの指定ローカル方向のエリアを判定する
+    /// </summary>
+    private bool CheckArea(
+        Transform cell,
+        Vector2 localDirection,
+        float checkOffset,
+        Vector2 checkSize)
+    {
+        // 将子方块的局部方向转换成世界方向
+        // 子ブロックのローカル方向をワールド方向へ変換する
+        Vector2 worldDirection =
+            cell.TransformDirection(localDirection).normalized;
+
+        // 计算检测盒中心位置
+        // 判定ボックスの中心位置を計算する
+        Vector2 checkPosition =
+            (Vector2)cell.position +
+            worldDirection * checkOffset;
+
+        // 检测盒跟随子方块旋转
+        // 判定ボックスを子ブロックの回転に追従させる
+        float checkAngle = cell.eulerAngles.z;
+
+        // 检测范围内所有已充能方块Collider
+        // 判定範囲内のすべての通電済みブロックColliderを取得する
+        Collider2D[] hits = Physics2D.OverlapBoxAll(
+            checkPosition,
+            checkSize,
+            checkAngle,
+            poweredBlockLayer
+        );
+
+        foreach (Collider2D hit in hits)
+        {
+            if (hit == null)
+                continue;
+
+            // 排除当前攻击方块自身以及自身子物体
+            // 現在の攻撃ブロック自身と子オブジェクトを除外する
+            if (hit.transform == transform ||
+                hit.transform.IsChildOf(transform))
+            {
+                continue;
+            }
+
+            return true;
+        }
+
+        return false;
     }
 
     /// <summary>
@@ -142,33 +215,72 @@ public class AttackBlockState : MonoBehaviour
     {
         Gizmos.color = Color.red;
 
-        Vector2[] directions =
-        {
-            Vector2.up,
-            Vector2.down,
-            Vector2.left,
-            Vector2.right
-        };
-
         foreach (Transform cell in transform)
         {
-            foreach (Vector2 dir in directions)
-            {
-                Vector2 checkPos = (Vector2)cell.position + dir * (cellSize.x / 2f + checkDistance);
+            if (cell == null)
+                continue;
 
-                Vector2 checkSize;
+            DrawCheckArea(
+                cell,
+                Vector2.up,
+                verticalCheckOffset,
+                verticalCheckSize
+            );
 
-                if (dir == Vector2.left || dir == Vector2.right)
-                {
-                    checkSize = new Vector2(checkDistance * 2f, cellSize.y * 0.8f);
-                }
-                else
-                {
-                    checkSize = new Vector2(cellSize.x * 0.8f, checkDistance * 2f);
-                }
+            DrawCheckArea(
+                cell,
+                Vector2.down,
+                verticalCheckOffset,
+                verticalCheckSize
+            );
 
-                Gizmos.DrawWireCube(checkPos, checkSize);
-            }
+            DrawCheckArea(
+                cell,
+                Vector2.left,
+                horizontalCheckOffset,
+                horizontalCheckSize
+            );
+
+            DrawCheckArea(
+                cell,
+                Vector2.right,
+                horizontalCheckOffset,
+                horizontalCheckSize
+            );
         }
+    }
+
+    /// <summary>
+    /// 绘制指定方向的检测范围
+    /// 指定方向の判定範囲を描画する
+    /// </summary>
+    private void DrawCheckArea(
+        Transform cell,
+        Vector2 localDirection,
+        float checkOffset,
+        Vector2 checkSize)
+    {
+        // 将局部方向转换成世界方向
+        // ローカル方向をワールド方向へ変換する
+        Vector2 worldDirection =
+            cell.TransformDirection(localDirection).normalized;
+
+        Vector2 checkPosition =
+            (Vector2)cell.position +
+            worldDirection * checkOffset;
+
+        Matrix4x4 oldMatrix = Gizmos.matrix;
+
+        // Gizmo跟随子方块的位置和旋转
+        // Gizmoを子ブロックの位置と回転に追従させる
+        Gizmos.matrix = Matrix4x4.TRS(
+            checkPosition,
+            Quaternion.Euler(0f, 0f, cell.eulerAngles.z),
+            Vector3.one
+        );
+
+        Gizmos.DrawWireCube(Vector3.zero, checkSize);
+
+        Gizmos.matrix = oldMatrix;
     }
 }
