@@ -23,6 +23,7 @@ public class BossHand : MonoBehaviour
     public UnityEngine.UI.Slider hpSlider;
     public GameObject paintOverlay;  // ペイント演出用UI（Inspectorでアサイン）
     public Collider2D handCollider;  // 手の当たり判定（Poke時のみIsTriggerをオフにする）
+    public BlockSelectionFlowManager flowManager; // Flickで操作中ブロックを飛ばした時に次の選択を進めるため
 
     // ─── 内部状態 ─────────────────────────────────────────────────
     float currentHP;
@@ -310,6 +311,25 @@ public class BossHand : MonoBehaviour
         var topBlock = GetTopBlock();
         if (topBlock != null)
         {
+            // 操作中のブロックかどうかを判定
+            var moveController = topBlock.GetComponent<BlockMoveController>();
+            if (moveController != null)
+            {
+                // 操作権を奪う
+                moveController.enabled = false;
+
+                // BlockLandingが二重にOnCurrentBlockLanded()を呼ばないよう無効化
+                var landing = topBlock.GetComponent<BlockLanding>();
+                if (landing != null)
+                    landing.enabled = false;
+
+                // 次のブロック選択に進める
+                if (flowManager != null)
+                    flowManager.OnCurrentBlockLanded();
+                else
+                    Debug.LogWarning("[BossHand] flowManager が未アサインです");
+            }
+
             // 上方向＋横方向（side逆向き）にインパルスを加える
             Vector2 flickDir = new Vector2(-side * handData.flickForceX, handData.flickForceY);
             topBlock.AddForce(flickDir, ForceMode2D.Impulse);
