@@ -74,6 +74,7 @@ public class BossManager : MonoBehaviour
     {
         // TODO: 勝利演出・シーン遷移
         Debug.Log("[BossManager] ゲームクリア！");
+        Destroy(gameObject);
     }
 
     void OnDefeat()

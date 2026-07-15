@@ -12,9 +12,21 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 21300000, guid: 1ef2fbf3fb074d74b96b4d055715e676, type: 3}
+    - target: {fileID: -209563175386702930, guid: a58276dae366ca141829e63ae1f114df, type: 3}
+      propertyPath: poweredSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 1ef2fbf3fb074d74b96b4d055715e676, type: 3}
+    - target: {fileID: -209563175386702930, guid: a58276dae366ca141829e63ae1f114df, type: 3}
+      propertyPath: spriteRenderer
+      value: 
+      objectReference: {fileID: 8729513519116099188}
+    - target: {fileID: -209563175386702930, guid: a58276dae366ca141829e63ae1f114df, type: 3}
+      propertyPath: unpoweredSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 73f7874e9cf80d94c973e73d2e8a7a16, type: 3}
     - target: {fileID: 628772897732542642, guid: a58276dae366ca141829e63ae1f114df, type: 3}
       propertyPath: m_Name
-      value: TestPowerBlock Variant
+      value: PowerBlock_5
       objectReference: {fileID: 0}
     - target: {fileID: 2254134303506114846, guid: a58276dae366ca141829e63ae1f114df, type: 3}
       propertyPath: m_LocalPosition.x
@@ -69,3 +81,8 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a58276dae366ca141829e63ae1f114df, type: 3}
+--- !u!212 &8729513519116099188 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: -4449305739068444206, guid: a58276dae366ca141829e63ae1f114df, type: 3}
+  m_PrefabInstance: {fileID: 4279987873942695846}
+  m_PrefabAsset: {fileID: 0}

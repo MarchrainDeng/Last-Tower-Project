@@ -18,8 +18,8 @@ TagManager:
   - NoPowerBlock
   - PowerBlock
   - AttackBlock
-  - 
-  - 
+  - Enemy
+  - EnemyBlock
   - 
   - 
   - 

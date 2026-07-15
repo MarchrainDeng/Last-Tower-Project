@@ -12,6 +12,18 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 21300000, guid: 69633a81cd0c2d54aaecd442762dfd9c, type: 3}
+    - target: {fileID: -209563175386702930, guid: a58276dae366ca141829e63ae1f114df, type: 3}
+      propertyPath: poweredSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 69633a81cd0c2d54aaecd442762dfd9c, type: 3}
+    - target: {fileID: -209563175386702930, guid: a58276dae366ca141829e63ae1f114df, type: 3}
+      propertyPath: spriteRenderer
+      value: 
+      objectReference: {fileID: 1449339000643659121}
+    - target: {fileID: -209563175386702930, guid: a58276dae366ca141829e63ae1f114df, type: 3}
+      propertyPath: unpoweredSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: dbee415bedafa0640b6b3d566af3de57, type: 3}
     - target: {fileID: 628772897732542642, guid: a58276dae366ca141829e63ae1f114df, type: 3}
       propertyPath: m_Name
       value: PowerBlock_3
@@ -89,3 +101,8 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a58276dae366ca141829e63ae1f114df, type: 3}
+--- !u!212 &1449339000643659121 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: -4449305739068444206, guid: a58276dae366ca141829e63ae1f114df, type: 3}
+  m_PrefabInstance: {fileID: 6223396498974692515}
+  m_PrefabAsset: {fileID: 0}

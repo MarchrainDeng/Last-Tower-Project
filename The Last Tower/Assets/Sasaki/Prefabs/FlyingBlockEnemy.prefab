@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8782939974016329670}
   - component: {fileID: 2446369092114966648}
   - component: {fileID: 4281436966370599592}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: FlyingBlockEnemy
   m_TagString: Enemy
   m_Icon: {fileID: 0}

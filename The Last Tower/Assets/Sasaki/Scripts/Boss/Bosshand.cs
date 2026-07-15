@@ -22,6 +22,7 @@ public class BossHand : MonoBehaviour
     public Transform towerTransform;
     public UnityEngine.UI.Slider hpSlider;
     public GameObject paintOverlay;  // ペイント演出用UI（Inspectorでアサイン）
+    public Collider2D handCollider;  // 手の当たり判定（Poke時のみIsTriggerをオフにする）
 
     // ─── 内部状態 ─────────────────────────────────────────────────
     float currentHP;
@@ -263,6 +264,14 @@ public class BossHand : MonoBehaviour
         Vector3 startPos = transform.position;
         Vector3 pokeDest = startPos + new Vector3(-side * handData.pokeDistance, 0f, 0f);
 
+        // Poke中だけIsTriggerをオフにして物理衝突させる
+        bool originalIsTrigger = false;
+        if (handCollider != null)
+        {
+            originalIsTrigger = handCollider.isTrigger;
+            handCollider.isTrigger = false;
+        }
+
         // 突き出す
         float timer = 0f;
         while (timer < handData.pokeDuration)
@@ -286,6 +295,10 @@ public class BossHand : MonoBehaviour
             yield return null;
         }
         transform.position = startPos;
+
+        // IsTriggerを元に戻す
+        if (handCollider != null)
+            handCollider.isTrigger = originalIsTrigger;
     }
 
     // デコピン：高ダメージ＋一番上のブロックを物理的に吹き飛ばす

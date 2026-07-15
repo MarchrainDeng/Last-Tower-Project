@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8913129897361975525}
   - component: {fileID: -826663301121439396}
   - component: {fileID: -1113425841345579991}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: FlyingBeamEnemy
   m_TagString: Enemy
   m_Icon: {fileID: 0}

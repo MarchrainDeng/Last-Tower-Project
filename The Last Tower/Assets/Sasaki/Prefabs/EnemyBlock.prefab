@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 6764435766541219493}
   - component: {fileID: 6659609017984706531}
   - component: {fileID: 1229086431561050085}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: EnemyBlock
-  m_TagString: Untagged
+  m_TagString: TowerBlock
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

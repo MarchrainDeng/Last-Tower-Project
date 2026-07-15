@@ -189,9 +189,9 @@ public class BlockMoveController : MonoBehaviour
     {
         float currentSpeed = fallSpeed;
 
-        bool aPressed =
+        bool xPressed =
             Gamepad.current != null &&
-            Gamepad.current.buttonSouth.isPressed;
+            Gamepad.current.buttonWest.isPressed;
 
         bool spacePressed =
             Keyboard.current != null &&
@@ -201,7 +201,7 @@ public class BlockMoveController : MonoBehaviour
         // 新しいブロック生成後は、一度Aボタンを離す必要がある
         if (waitingForFastFallRelease)
         {
-            if (!aPressed)
+            if (!xPressed)
             {
                 waitingForFastFallRelease = false;
             }
@@ -210,7 +210,7 @@ public class BlockMoveController : MonoBehaviour
         {
             // 松开后再次按住A，才允许快速下落
             // 一度離した後、再度Aを押している間のみ高速落下する
-            if (aPressed || spacePressed)
+            if (xPressed || spacePressed)
             {
                 currentSpeed *= fastFallMultiplier;
             }
