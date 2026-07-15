@@ -71,6 +71,12 @@ public class PowerBlock : MonoBehaviour
     // 通電時の画像
     public Sprite poweredSprite;
 
+    [Header("Special Settings")]
+
+    // 是否始终保持通电
+    // 常に通電状態を維持するか
+    public bool alwaysPowered = false;
+
     private void Awake()
     {
         // 自动获取所有子物体作为子方块
@@ -86,10 +92,22 @@ public class PowerBlock : MonoBehaviour
     private void Start()
     {
         UpdateSprite();
+
+        // 永远通电的方块，游戏开始立即通电
+        // 常時通電ブロックは開始時に通電する
+        if (alwaysPowered)
+        {
+            SetPowered(true);
+        }
     }
 
     private void Update()
     {
+        if (alwaysPowered)
+        {
+            return;
+        }
+
         CheckPower();
     }
 

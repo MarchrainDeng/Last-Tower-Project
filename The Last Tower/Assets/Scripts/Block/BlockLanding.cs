@@ -46,6 +46,10 @@ public class BlockLanding : MonoBehaviour
     // すでに着地したか
     private bool isLanded = false;
 
+    // 对外提供只读的落地状态
+    // 外部へ読み取り専用の着地状態を提供する
+    public bool IsLanded => isLanded;
+
     // 方块选择流程管理器
     // ブロック選択フローマネージャー
     private BlockSelectionFlowManager flowManager;
@@ -131,9 +135,29 @@ public class BlockLanding : MonoBehaviour
             // 現在の速度をリセットする
             rb.linearVelocity = Vector2.zero;
 
-            // 落地后启用重力
-            // 着地後に重力を有効にする
-            rb.gravityScale = 1f;
+            // 判断是否为落地后固定的特殊方块
+            // 着地後に固定される特殊ブロックか判定する
+            FixedBlock fixedBlock = GetComponent<FixedBlock>();
+
+            if (fixedBlock != null)
+            {
+                // 特殊方块：改为Kinematic，不受重力和碰撞推力影响
+                // 特殊ブロック：Kinematicに変更し、重力や衝突力の影響を受けない
+                rb.angularVelocity = 0f;
+                rb.gravityScale = 0f;
+                rb.bodyType = RigidbodyType2D.Kinematic;
+
+                // 防止物理旋转
+                // 物理回転を防止する
+                rb.freezeRotation = true;
+            }
+            else
+            {
+                // 普通方块：落地后受到重力影响
+                // 通常ブロック：着地後に重力の影響を受ける
+                rb.bodyType = RigidbodyType2D.Dynamic;
+                rb.gravityScale = 1f;
+            }
         }
 
         BlockMoveController moveController = GetComponent<BlockMoveController>();
