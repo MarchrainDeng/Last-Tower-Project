@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
 
 /*
 ----------------------------------------
@@ -86,6 +87,36 @@ public class BlockMoveController : MonoBehaviour
     // ブロック選択フローマネージャー
     private BlockSelectionFlowManager flowManager;
 
+    [Header("Input Settings")]
+
+    // 顺时针旋转按键
+    // 時計回り回転ボタン
+    [SerializeField]
+    private ConfigurableGamepadButton rotateClockwiseButton =
+    ConfigurableGamepadButton.East;
+
+    /// <summary>
+    /// 可配置的手柄按键
+    /// 設定可能なゲームパッドボタン
+    /// </summary>
+    public enum ConfigurableGamepadButton
+    {
+        South,
+        North,
+        West,
+        East,
+        LeftShoulder,
+        RightShoulder,
+        LeftStick,
+        RightStick,
+        Start,
+        Select,
+        DpadUp,
+        DpadDown,
+        DpadLeft,
+        DpadRight
+    }
+
     private void Update()
     {
         gamepad = Gamepad.current;
@@ -156,6 +187,17 @@ public class BlockMoveController : MonoBehaviour
             RotateClockwise();
         }
 
+        ButtonControl clockwiseButton =
+        GetGamepadButton(rotateClockwiseButton);
+
+        // 手柄：顺时针旋转
+        // ゲームパッド：時計回りに回転
+        if (clockwiseButton != null &&
+            clockwiseButton.wasPressedThisFrame)
+        {
+            RotateClockwise();
+        }
+
         // 键盘 W：顺时针旋转
         // キーボードW：時計回りに回転
         if (Keyboard.current != null &&
@@ -191,7 +233,7 @@ public class BlockMoveController : MonoBehaviour
 
         bool xPressed =
             Gamepad.current != null &&
-            Gamepad.current.buttonWest.isPressed;
+            Gamepad.current.buttonSouth.isPressed;
 
         bool spacePressed =
             Keyboard.current != null &&
@@ -250,6 +292,65 @@ public class BlockMoveController : MonoBehaviour
             }
 
             Destroy(gameObject);
+        }
+    }
+
+    /// <summary>
+    /// 根据配置获取手柄按键
+    /// 設定に応じたゲームパッドボタンを取得する
+    /// </summary>
+    private ButtonControl GetGamepadButton(
+        ConfigurableGamepadButton button)
+    {
+        if (gamepad == null)
+            return null;
+
+        switch (button)
+        {
+            case ConfigurableGamepadButton.South:
+                return gamepad.buttonSouth;
+
+            case ConfigurableGamepadButton.North:
+                return gamepad.buttonNorth;
+
+            case ConfigurableGamepadButton.West:
+                return gamepad.buttonWest;
+
+            case ConfigurableGamepadButton.East:
+                return gamepad.buttonEast;
+
+            case ConfigurableGamepadButton.LeftShoulder:
+                return gamepad.leftShoulder;
+
+            case ConfigurableGamepadButton.RightShoulder:
+                return gamepad.rightShoulder;
+
+            case ConfigurableGamepadButton.LeftStick:
+                return gamepad.leftStickButton;
+
+            case ConfigurableGamepadButton.RightStick:
+                return gamepad.rightStickButton;
+
+            case ConfigurableGamepadButton.Start:
+                return gamepad.startButton;
+
+            case ConfigurableGamepadButton.Select:
+                return gamepad.selectButton;
+
+            case ConfigurableGamepadButton.DpadUp:
+                return gamepad.dpad.up;
+
+            case ConfigurableGamepadButton.DpadDown:
+                return gamepad.dpad.down;
+
+            case ConfigurableGamepadButton.DpadLeft:
+                return gamepad.dpad.left;
+
+            case ConfigurableGamepadButton.DpadRight:
+                return gamepad.dpad.right;
+
+            default:
+                return null;
         }
     }
 }

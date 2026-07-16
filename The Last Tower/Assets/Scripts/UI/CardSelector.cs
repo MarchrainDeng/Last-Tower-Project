@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
 
 /*
 ----------------------------------------
@@ -67,6 +68,36 @@ public class CardSelector : MonoBehaviour
     // 同一フレームでの重複生成を防止する
     private bool isConfirming;
 
+    private Gamepad gamepad;
+
+    // 顺时针旋转按键
+    // 時計回り回転ボタン
+    [SerializeField]
+    private ConfigurableGamepadButton chooseButton =
+    ConfigurableGamepadButton.East;
+
+    /// <summary>
+    /// 可配置的手柄按键
+    /// 設定可能なゲームパッドボタン
+    /// </summary>
+    public enum ConfigurableGamepadButton
+    {
+        South,
+        North,
+        West,
+        East,
+        LeftShoulder,
+        RightShoulder,
+        LeftStick,
+        RightStick,
+        Start,
+        Select,
+        DpadUp,
+        DpadDown,
+        DpadLeft,
+        DpadRight
+    }
+
     private void Awake()
     {
         // 自动查找流程管理器
@@ -79,6 +110,8 @@ public class CardSelector : MonoBehaviour
 
     private void Update()
     {
+        gamepad = Gamepad.current;
+
         if (!inputEnabled)
             return;
 
@@ -221,13 +254,25 @@ public class CardSelector : MonoBehaviour
 
         bool confirmPressed = false;
 
+        ButtonControl chooseCardButton =
+        GetGamepadButton(chooseButton);
+
+        if (chooseCardButton != null &&
+            chooseCardButton.wasPressedThisFrame)
+        {
+            confirmPressed = true;
+        }
+
         // 手柄A键
         // ゲームパッドAボタン
+        /*
         if (Gamepad.current != null &&
             Gamepad.current.buttonSouth.wasPressedThisFrame)
         {
             confirmPressed = true;
         }
+        */
+        
 
         // 键盘Enter或小键盘Enter
         // EnterキーまたはテンキーEnter
@@ -430,6 +475,61 @@ public class CardSelector : MonoBehaviour
                 continue;
 
             cards[i].SetSelected(i == currentIndex);
+        }
+    }
+
+    private ButtonControl GetGamepadButton(
+        ConfigurableGamepadButton button)
+    {
+        if (gamepad == null)
+            return null;
+
+        switch (button)
+        {
+            case ConfigurableGamepadButton.South:
+                return gamepad.buttonSouth;
+
+            case ConfigurableGamepadButton.North:
+                return gamepad.buttonNorth;
+
+            case ConfigurableGamepadButton.West:
+                return gamepad.buttonWest;
+
+            case ConfigurableGamepadButton.East:
+                return gamepad.buttonEast;
+
+            case ConfigurableGamepadButton.LeftShoulder:
+                return gamepad.leftShoulder;
+
+            case ConfigurableGamepadButton.RightShoulder:
+                return gamepad.rightShoulder;
+
+            case ConfigurableGamepadButton.LeftStick:
+                return gamepad.leftStickButton;
+
+            case ConfigurableGamepadButton.RightStick:
+                return gamepad.rightStickButton;
+
+            case ConfigurableGamepadButton.Start:
+                return gamepad.startButton;
+
+            case ConfigurableGamepadButton.Select:
+                return gamepad.selectButton;
+
+            case ConfigurableGamepadButton.DpadUp:
+                return gamepad.dpad.up;
+
+            case ConfigurableGamepadButton.DpadDown:
+                return gamepad.dpad.down;
+
+            case ConfigurableGamepadButton.DpadLeft:
+                return gamepad.dpad.left;
+
+            case ConfigurableGamepadButton.DpadRight:
+                return gamepad.dpad.right;
+
+            default:
+                return null;
         }
     }
 }

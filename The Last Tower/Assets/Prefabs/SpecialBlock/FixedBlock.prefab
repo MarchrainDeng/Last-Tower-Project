@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 4108486845636120783}
   - component: {fileID: 6296377786133942452}
   - component: {fileID: -2745356613143426154}
-  m_Layer: 8
+  m_Layer: 7
   m_Name: FixedBlock
   m_TagString: TowerBlock
   m_Icon: {fileID: 0}
@@ -167,6 +167,7 @@ MonoBehaviour:
   fallSpeed: 1
   fastFallMultiplier: 7
   deadLineY: -6
+  rotateClockwiseButton: 3
 --- !u!114 &-2745356613143426154
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -190,7 +191,7 @@ GameObject:
   - component: {fileID: 1637920224962161802}
   - component: {fileID: 5606107554665986031}
   - component: {fileID: 1653971200936132643}
-  m_Layer: 8
+  m_Layer: 7
   m_Name: TestChildBlock (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -328,7 +329,7 @@ GameObject:
   - component: {fileID: 3989598274366209833}
   - component: {fileID: 6588950857586673309}
   - component: {fileID: 8413844968251760749}
-  m_Layer: 8
+  m_Layer: 7
   m_Name: TestChildBlock (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -466,7 +467,7 @@ GameObject:
   - component: {fileID: 8946388087573804679}
   - component: {fileID: 5850231155489206711}
   - component: {fileID: 4006946688240843762}
-  m_Layer: 8
+  m_Layer: 7
   m_Name: TestChildBlock
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -604,7 +605,7 @@ GameObject:
   - component: {fileID: 8601287537197328609}
   - component: {fileID: 3029317352786451894}
   - component: {fileID: 922437748194208358}
-  m_Layer: 8
+  m_Layer: 7
   m_Name: TestChildBlock (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -771,6 +771,7 @@ MonoBehaviour:
   flowManager: {fileID: 1612657617}
   stickThreshold: 0.5
   returnThreshold: 0.2
+  chooseButton: 1
 --- !u!1 &216510596
 GameObject:
   m_ObjectHideFlags: 0
@@ -1475,6 +1476,7 @@ MonoBehaviour:
   hpSlider: {fileID: 1790012846}
   paintOverlay: {fileID: 994465138}
   handCollider: {fileID: 435722933}
+  flowManager: {fileID: 0}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -2180,6 +2182,7 @@ MonoBehaviour:
   hpSlider: {fileID: 89848920}
   paintOverlay: {fileID: 994465138}
   handCollider: {fileID: 704723152}
+  flowManager: {fileID: 0}
 --- !u!1 &707808662
 GameObject:
   m_ObjectHideFlags: 0
