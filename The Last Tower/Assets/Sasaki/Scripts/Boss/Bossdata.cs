@@ -43,7 +43,7 @@ public class BossHandData
     public float approachStopX = 3f;   // タワーからの停止距離
 
     [Header("── ノックバック ────────────────")]
-    public float knockbackThreshold = 30f;  // この累積ダメージでノックバック発動
+    public int knockbackHitThreshold = 3;    // この被弾回数でノックバック発動
     public float knockbackDistance = 4f;   // 後退距離
     public float knockbackDuration = 0.3f; // 後退にかかる時間（秒）
     public float returnDuration = 0.5f; // 戻るのにかかる時間（秒）

@@ -27,7 +27,7 @@ public class BossHand : MonoBehaviour
 
     // ─── 内部状態 ─────────────────────────────────────────────────
     float currentHP;
-    float accumulatedDamage = 0f;   // ノックバック用累積ダメージ
+    int hitCount = 0;   // ノックバック用被弾回数
 
     bool isKnockbacking = false;
     bool isApproaching = false;
@@ -398,16 +398,16 @@ public class BossHand : MonoBehaviour
         Debug.Log($"[BossHand] {gameObject.name} HP : {currentHP}");
         UpdateHPBar();
 
-        // ノックバック中は累積しない
-        Debug.Log($"[BossHand] isKnockbacking={isKnockbacking} accumulated={accumulatedDamage} threshold={handData.knockbackThreshold}");
+        // ノックバック中はカウントしない
+        Debug.Log($"[BossHand] isKnockbacking={isKnockbacking} hitCount={hitCount} threshold={handData.knockbackHitThreshold}");
         if (!isKnockbacking)
         {
-            accumulatedDamage += amount;
-            Debug.Log($"[BossHand] 累積後 accumulated={accumulatedDamage}");
-            if (accumulatedDamage >= handData.knockbackThreshold)
+            hitCount++;
+            Debug.Log($"[BossHand] 被弾回数 hitCount={hitCount}");
+            if (hitCount >= handData.knockbackHitThreshold)
             {
                 Debug.Log("[BossHand] ノックバック発動！");
-                accumulatedDamage = 0f;
+                hitCount = 0;
                 isKnockbacking = true;  // コルーチン開始前に立てる
                 StartCoroutine(Knockback());
             }
@@ -462,7 +462,7 @@ public class BossHand : MonoBehaviour
         }
         transform.position = returnDest;
 
-        accumulatedDamage = 0f;  // 終了時にリセット
+        hitCount = 0;  // 終了時にリセット
         isKnockbacking = false;
     }
 
