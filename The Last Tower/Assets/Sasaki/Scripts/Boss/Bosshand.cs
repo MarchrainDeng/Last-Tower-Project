@@ -69,6 +69,9 @@ public class BossHand : MonoBehaviour
     {
         while (!isDead)
         {
+            // ゲーム一時停止中は待機
+            while (GameStateManager.IsPaused) yield return null;
+
             // ノックバック中は完全に待機
             while (isKnockbacking) yield return null;
             if (isDead) yield break;

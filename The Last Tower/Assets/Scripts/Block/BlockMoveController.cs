@@ -124,6 +124,10 @@ public class BlockMoveController : MonoBehaviour
         if (gamepad == null)
             return;
 
+        // 追加：一時停止中は操作を無効化
+        if (GameStateManager.IsPaused)
+            return;
+
         HandleMove();
         HandleRotate();
         HandleDeadZone();
@@ -134,6 +138,10 @@ public class BlockMoveController : MonoBehaviour
         gamepad = Gamepad.current;
 
         if (gamepad == null)
+            return;
+
+        // 追加：一時停止中は操作を無効化
+        if (GameStateManager.IsPaused)
             return;
 
         HandleFall();

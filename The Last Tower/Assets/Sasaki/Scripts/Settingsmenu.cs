@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.LowLevel;
 
 /// <summary>
 /// 設定メニュー
@@ -24,6 +25,10 @@ public class SettingsMenu : MonoBehaviour
 {
     [Header("── シーン ──────────────────────")]
     public string homeSceneName = "MainMenu";
+
+    [Header("── 操作 ──────────────────────")]
+    public Key toggleKey = Key.Escape;              // 開閉に使うキーボードキー
+    public GamepadButton toggleGamepadButton = GamepadButton.Start; // 開閉に使うコントローラーボタン
 
     [Header("── UI ─────────────────────────")]
     public GameObject settingsPanel;
@@ -57,7 +62,10 @@ public class SettingsMenu : MonoBehaviour
 
     void Update()
     {
-        if (Keyboard.current.escapeKey.wasPressedThisFrame)
+        bool keyboardPressed = Keyboard.current != null && Keyboard.current[toggleKey].wasPressedThisFrame;
+        bool gamepadPressed = Gamepad.current != null && Gamepad.current[toggleGamepadButton].wasPressedThisFrame;
+
+        if (keyboardPressed || gamepadPressed)
             Toggle();
     }
 
@@ -66,6 +74,7 @@ public class SettingsMenu : MonoBehaviour
         isOpen = !isOpen;
         settingsPanel.SetActive(isOpen);
         Time.timeScale = isOpen ? 0f : 1f;
+        GameStateManager.SetPaused(isOpen);
     }
 
     // ─── コールバック ─────────────────────────────────────────────
