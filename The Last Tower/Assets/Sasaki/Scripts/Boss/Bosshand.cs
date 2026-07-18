@@ -23,10 +23,11 @@ public class BossHand : MonoBehaviour
     public UnityEngine.UI.Slider hpSlider;
     public GameObject paintOverlay;  // ペイント演出用UI（Inspectorでアサイン）
     public Collider2D handCollider;  // 手の当たり判定（Poke時のみIsTriggerをオフにする）
+    public BlockSelectionFlowManager flowManager; // Flickで操作中ブロックを飛ばした時に次の選択を進めるため
 
     // ─── 内部状態 ─────────────────────────────────────────────────
     float currentHP;
-    float accumulatedDamage = 0f;   // ノックバック用累積ダメージ
+    int hitCount = 0;   // ノックバック用被弾回数
 
     bool isKnockbacking = false;
     bool isApproaching = false;
@@ -68,6 +69,9 @@ public class BossHand : MonoBehaviour
     {
         while (!isDead)
         {
+            // ゲーム一時停止中は待機
+            while (GameStateManager.IsPaused) yield return null;
+
             // ノックバック中は完全に待機
             while (isKnockbacking) yield return null;
             if (isDead) yield break;
@@ -310,6 +314,25 @@ public class BossHand : MonoBehaviour
         var topBlock = GetTopBlock();
         if (topBlock != null)
         {
+            // 操作中のブロックかどうかを判定
+            var moveController = topBlock.GetComponent<BlockMoveController>();
+            if (moveController != null)
+            {
+                // 操作権を奪う
+                moveController.enabled = false;
+
+                // BlockLandingが二重にOnCurrentBlockLanded()を呼ばないよう無効化
+                var landing = topBlock.GetComponent<BlockLanding>();
+                if (landing != null)
+                    landing.enabled = false;
+
+                // 次のブロック選択に進める
+                if (flowManager != null)
+                    flowManager.OnCurrentBlockLanded();
+                else
+                    Debug.LogWarning("[BossHand] flowManager が未アサインです");
+            }
+
             // 上方向＋横方向（side逆向き）にインパルスを加える
             Vector2 flickDir = new Vector2(-side * handData.flickForceX, handData.flickForceY);
             topBlock.AddForce(flickDir, ForceMode2D.Impulse);
@@ -375,16 +398,16 @@ public class BossHand : MonoBehaviour
         Debug.Log($"[BossHand] {gameObject.name} HP : {currentHP}");
         UpdateHPBar();
 
-        // ノックバック中は累積しない
-        Debug.Log($"[BossHand] isKnockbacking={isKnockbacking} accumulated={accumulatedDamage} threshold={handData.knockbackThreshold}");
+        // ノックバック中はカウントしない
+        Debug.Log($"[BossHand] isKnockbacking={isKnockbacking} hitCount={hitCount} threshold={handData.knockbackHitThreshold}");
         if (!isKnockbacking)
         {
-            accumulatedDamage += amount;
-            Debug.Log($"[BossHand] 累積後 accumulated={accumulatedDamage}");
-            if (accumulatedDamage >= handData.knockbackThreshold)
+            hitCount++;
+            Debug.Log($"[BossHand] 被弾回数 hitCount={hitCount}");
+            if (hitCount >= handData.knockbackHitThreshold)
             {
                 Debug.Log("[BossHand] ノックバック発動！");
-                accumulatedDamage = 0f;
+                hitCount = 0;
                 isKnockbacking = true;  // コルーチン開始前に立てる
                 StartCoroutine(Knockback());
             }
@@ -439,7 +462,7 @@ public class BossHand : MonoBehaviour
         }
         transform.position = returnDest;
 
-        accumulatedDamage = 0f;  // 終了時にリセット
+        hitCount = 0;  // 終了時にリセット
         isKnockbacking = false;
     }
 

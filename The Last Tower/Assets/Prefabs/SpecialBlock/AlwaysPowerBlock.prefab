@@ -32,6 +32,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: AlwaysPowerBlock
       objectReference: {fileID: 0}
+    - target: {fileID: 1196579378171203833, guid: a58276dae366ca141829e63ae1f114df, type: 3}
+      propertyPath: rotateClockwiseButton
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1243060820637498598, guid: a58276dae366ca141829e63ae1f114df, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.5

@@ -164,9 +164,11 @@ MonoBehaviour:
   deadZone: 0.2
   moveSpeed: 3
   rotateAngle: 90
+  rotateSpeed: 180
   fallSpeed: 1
   fastFallMultiplier: 7
   deadLineY: -6
+  rotateClockwiseButton: 1
 --- !u!114 &-209563175386702930
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -193,6 +195,7 @@ MonoBehaviour:
   spriteRenderer: {fileID: 0}
   unpoweredSprite: {fileID: 0}
   poweredSprite: {fileID: 0}
+  alwaysPowered: 0
 --- !u!1 &1651153064709822673
 GameObject:
   m_ObjectHideFlags: 0

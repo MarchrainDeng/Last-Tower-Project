@@ -143,9 +143,8 @@ public class BlockSelectionFlowManager : MonoBehaviour
 
         if (pauseGameDuringSelection)
         {
-            // 暂停游戏时间
-            // ゲーム時間を停止する
             Time.timeScale = 0f;
+            GameStateManager.SetPaused(true);
         }
 
         Debug.Log(
@@ -188,9 +187,8 @@ public class BlockSelectionFlowManager : MonoBehaviour
 
         if (pauseGameDuringSelection)
         {
-            // 恢复游戏时间
-            // ゲーム時間を再開する
             Time.timeScale = 1f;
+            GameStateManager.SetPaused(false);
         }
     }
 
@@ -214,11 +212,10 @@ public class BlockSelectionFlowManager : MonoBehaviour
 
     private void OnDisable()
     {
-        // 防止对象被禁用或切换场景后仍保持暂停
-        // 無効化やシーン切り替え後も停止状態が残らないようにする
         if (pauseGameDuringSelection)
         {
             Time.timeScale = 1f;
+            GameStateManager.SetPaused(false);
         }
     }
 }

@@ -135,6 +135,9 @@ public class BlockLanding : MonoBehaviour
             // 現在の速度をリセットする
             rb.linearVelocity = Vector2.zero;
 
+            Camera.main.GetComponent<CameraShake>().Shake();
+
+
             // 判断是否为落地后固定的特殊方块
             // 着地後に固定される特殊ブロックか判定する
             FixedBlock fixedBlock = GetComponent<FixedBlock>();

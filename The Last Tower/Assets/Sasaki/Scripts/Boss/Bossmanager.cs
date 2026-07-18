@@ -21,6 +21,10 @@ public class BossManager : MonoBehaviour
     public GameObject bossRoot;
     public TowerHP towerHP;
 
+    [Header("── リザルトUI ──────────────────")]
+    public GameObject victoryResultUI;  // 勝利時に表示するUI
+    public GameObject defeatResultUI;   // 敗北時に表示するUI
+
     [Header("── 出現タイミング ──────────────")]
     public float spawnDelay = 70f;
 
@@ -72,14 +76,24 @@ public class BossManager : MonoBehaviour
 
     void OnVictory()
     {
-        // TODO: 勝利演出・シーン遷移
         Debug.Log("[BossManager] ゲームクリア！");
+
+        if (victoryResultUI != null)
+            victoryResultUI.SetActive(true);
+
+        Time.timeScale = 0f;
+        GameStateManager.SetPaused(true);
+
         Destroy(gameObject);
     }
 
     void OnDefeat()
     {
-        // TODO: 敗北演出・シーン遷移
         Debug.Log("[BossManager] タワーHP0 ゲームオーバー！");
+
+        if (defeatResultUI != null)
+            defeatResultUI.SetActive(true);
+
+        GameStateManager.SetPaused(true);
     }
 }
