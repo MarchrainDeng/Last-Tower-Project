@@ -56,6 +56,10 @@ public class BlockMoveController : MonoBehaviour
     [Header("Rotate")]
     public float rotateAngle = 90f;
 
+    // 旋转速度（度/秒）
+    // 回転速度（度/秒）
+    public float rotateSpeed = 180f;
+
     [Header("Fall Settings")]
     // 下落速度（单位：Unity单位/秒）
     // 落下速度（単位：Unityユニット/秒）
@@ -185,14 +189,14 @@ public class BlockMoveController : MonoBehaviour
 
     private void HandleRotate()
     {
-        if (gamepad.leftShoulder.wasPressedThisFrame)
+        if (gamepad.leftShoulder.isPressed)
         {
-            RotateCounterClockwise();
+            SmoothRotateCounterClockwise();
         }
 
-        if (gamepad.rightShoulder.wasPressedThisFrame)
+        if (gamepad.rightShoulder.isPressed)
         {
-            RotateClockwise();
+            SmoothRotateClockwise();
         }
 
         ButtonControl clockwiseButton =
@@ -233,6 +237,32 @@ public class BlockMoveController : MonoBehaviour
     private void RotateCounterClockwise()
     {
         transform.Rotate(0, 0, rotateAngle);
+    }
+
+    /// <summary>
+    /// 顺时针持续旋转
+    /// 時計回りに連続回転
+    /// </summary>
+    private void SmoothRotateClockwise()
+    {
+        transform.Rotate(
+            0,
+            0,
+            -rotateSpeed * Time.deltaTime
+        );
+    }
+
+    /// <summary>
+    /// 逆时针持续旋转
+    /// 反時計回りに連続回転
+    /// </summary>
+    private void SmoothRotateCounterClockwise()
+    {
+        transform.Rotate(
+            0,
+            0,
+            rotateSpeed * Time.deltaTime
+        );
     }
 
     private void HandleFall()

@@ -164,10 +164,11 @@ MonoBehaviour:
   deadZone: 0.2
   moveSpeed: 3
   rotateAngle: 90
+  rotateSpeed: 180
   fallSpeed: 1
   fastFallMultiplier: 7
   deadLineY: -6
-  rotateClockwiseButton: 3
+  rotateClockwiseButton: 1
 --- !u!114 &-2745356613143426154
 MonoBehaviour:
   m_ObjectHideFlags: 0
