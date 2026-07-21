@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// ゲーム全体の一時停止状態を管理するシングルトン
@@ -25,6 +26,21 @@ public class GameStateManager : MonoBehaviour
         }
         Instance = this;
         DontDestroyOnLoad(gameObject);
+
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    // シーンが切り替わったら必ずリセットする
+    // （前のシーンの一時停止状態を持ち越さないため）
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        IsPaused = false;
+        Time.timeScale = 1f;
     }
 
     /// <summary>
