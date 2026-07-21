@@ -1,16 +1,10 @@
 fileFormatVersion: 2
-guid: 6e3a777a08d6cac4791643cdbb726062
+guid: 5a08561e7dd8a954fa6b9b3700a16ab9
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 621641982016630095
-    second: "\u53F0\u5EA7-39_0"
-  - first:
-      213: -2757717950686835581
-    second: "\u53F0\u5EA7-39_1"
-  - first:
-      213: 8672155738981474058
-    second: "\u53F0\u5EA7-39_2"
+      213: 5134633659004546140
+    second: CanAttack02_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -106,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: "\u53F0\u5EA7-39_0"
+      name: CanAttack02_0
       rect:
         serializedVersion: 2
-        x: 268
+        x: 0
         y: 0
-        width: 970
-        height: 527
+        width: 1113
+        height: 1113
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -121,52 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f4d229bc61480a800800000000000000
-      internalID: 621641982016630095
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: "\u53F0\u5EA7-39_1"
-      rect:
-        serializedVersion: 2
-        x: 2247
-        y: 0
-        width: 1062
-        height: 706
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 38cc796822e9ab9d0800000000000000
-      internalID: -2757717950686835581
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: "\u53F0\u5EA7-39_2"
-      rect:
-        serializedVersion: 2
-        x: 3514
-        y: 0
-        width: 3039
-        height: 569
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: a0f1bd292bfa95870800000000000000
-      internalID: 8672155738981474058
+      spriteID: c5ceab0cb12e14740800000000000000
+      internalID: 5134633659004546140
       vertices: []
       indices: 
       edges: []
@@ -185,9 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      "\u53F0\u5EA7-39_0": 621641982016630095
-      "\u53F0\u5EA7-39_1": -2757717950686835581
-      "\u53F0\u5EA7-39_2": 8672155738981474058
+      CanAttack02_0: 5134633659004546140
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -109,7 +109,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyStatsHolder
   stats:
     type: 2
-    HP: 20
+    HP: 50
     moveSpeed: 3
     stopX: 3.3
     attackDamage: 1

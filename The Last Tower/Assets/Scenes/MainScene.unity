@@ -5854,14 +5854,17 @@ MonoBehaviour:
     cardSprite: {fileID: 21300000, guid: d43e6bca77382784388df2b2ae9b0893, type: 3}
     blockPrefab: {fileID: 7630906839395595884, guid: 1f60c2645a82da24fa0a024b016700f8, type: 3}
   - typeName: Attack
-    cardSprite: {fileID: 21300000, guid: e5334c5ef58327040a7d490c79c17336, type: 3}
+    cardSprite: {fileID: 21300000, guid: d8a3ebd734210d942896eef889fd9f98, type: 3}
     blockPrefab: {fileID: 34065507497652870, guid: 7dbf3a957daec764eaf31e05607cf15e, type: 3}
   - typeName: Attack
-    cardSprite: {fileID: 21300000, guid: 7ee488735d1f3f84cb4fd773ec68d0c8, type: 3}
+    cardSprite: {fileID: 21300000, guid: 3dea76a55ba0d2048b9c4843dfce6786, type: 3}
     blockPrefab: {fileID: 1918330240339288222, guid: 9d5fc29753b365e458fd4998d3f4d54a, type: 3}
   - typeName: Attack
-    cardSprite: {fileID: 21300000, guid: 59ebe0aefa0e300448860ce7bd395cae, type: 3}
+    cardSprite: {fileID: 21300000, guid: 4b539694aa54a724c8551c8e7e816f59, type: 3}
     blockPrefab: {fileID: 6967059836585324227, guid: 4e43d83c950bea34fa93c33dff49148e, type: 3}
+  - typeName: Attack
+    cardSprite: {fileID: 21300000, guid: f08215051f2e9284db24f8950faed54b, type: 3}
+    blockPrefab: {fileID: 5661478519432820911, guid: ff0f1f2d377fdc042a577caed4d344f6, type: 3}
   specialCardPool:
   - typeName: AlwaysPower
     cardSprite: {fileID: 21300000, guid: 69633a81cd0c2d54aaecd442762dfd9c, type: 3}
@@ -7939,8 +7942,8 @@ MonoBehaviour:
     spawnWeight: 0.035
   - prefab: {fileID: 8520560095020628245, guid: 4378b0fe889811c4e90ded675a72ec81, type: 3}
     spawnWeight: 0.472
-  initialInterval: 10
-  minInterval: 0.2
+  initialInterval: 8
+  minInterval: 0.5
   intervalDecreaseRate: 0.1
 --- !u!1 &1612657616
 GameObject:
@@ -9188,14 +9191,17 @@ MonoBehaviour:
   highlightFrame: {fileID: 173939919}
   normalCardPool:
   - typeName: Attack
-    cardSprite: {fileID: 21300000, guid: e5334c5ef58327040a7d490c79c17336, type: 3}
+    cardSprite: {fileID: 21300000, guid: d8a3ebd734210d942896eef889fd9f98, type: 3}
     blockPrefab: {fileID: 34065507497652870, guid: 7dbf3a957daec764eaf31e05607cf15e, type: 3}
   - typeName: Attack
-    cardSprite: {fileID: 21300000, guid: 7ee488735d1f3f84cb4fd773ec68d0c8, type: 3}
+    cardSprite: {fileID: 21300000, guid: 3dea76a55ba0d2048b9c4843dfce6786, type: 3}
     blockPrefab: {fileID: 1918330240339288222, guid: 9d5fc29753b365e458fd4998d3f4d54a, type: 3}
   - typeName: Attack
-    cardSprite: {fileID: 21300000, guid: 59ebe0aefa0e300448860ce7bd395cae, type: 3}
+    cardSprite: {fileID: 21300000, guid: 4b539694aa54a724c8551c8e7e816f59, type: 3}
     blockPrefab: {fileID: 6967059836585324227, guid: 4e43d83c950bea34fa93c33dff49148e, type: 3}
+  - typeName: Attack
+    cardSprite: {fileID: 21300000, guid: f08215051f2e9284db24f8950faed54b, type: 3}
+    blockPrefab: {fileID: 5661478519432820911, guid: ff0f1f2d377fdc042a577caed4d344f6, type: 3}
   specialCardPool:
   - typeName: FixedBlock
     cardSprite: {fileID: 3416543745242346271, guid: 74abd5c361422eb4ab284faeaf18a2c0, type: 3}

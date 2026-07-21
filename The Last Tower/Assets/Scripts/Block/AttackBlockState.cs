@@ -7,10 +7,18 @@
 上下方向与左右方向的检测范围可以分别调整，
 并且检测范围会跟随方块旋转。
 
+无法攻击时使用未充能图像。
+可以攻击时切换为已充能图像，
+并额外显示枪的图像。
+
 攻撃ブロックと通電済みブロックが接触すると、
 攻撃可能な状態になる。
 上下方向と左右方向の判定範囲を個別に調整でき、
 判定範囲はブロックの回転に追従する。
+
+攻撃不可の場合は非通電画像を使用する。
+攻撃可能の場合は通電画像へ切り替え、
+さらに銃の画像を表示する。
 
 【负责人 / 担当】
 Deng Guangpeng
@@ -24,11 +32,27 @@ Deng Guangpeng
 public class AttackBlockState : MonoBehaviour
 {
     [Header("Attack State")]
+
     // 是否可以攻击
     // 攻撃可能かどうか
     public bool canAttack = false;
 
+    [Header("Visual Settings")]
+
+    // 无法攻击时使用的图像
+    // 攻撃不可時に使用する画像
+    public Sprite inactiveSprite;
+
+    // 可以攻击时使用的图像
+    // 攻撃可能時に使用する画像
+    public Sprite activeSprite;
+
+    // 枪的图像对象
+    // 銃画像のオブジェクト
+    public GameObject gunVisual;
+
     [Header("Vertical Check Settings")]
+
     // 上下方向检测盒大小
     // 上下方向の判定ボックスサイズ
     public Vector2 verticalCheckSize = new Vector2(0.4f, 0.08f);
@@ -38,6 +62,7 @@ public class AttackBlockState : MonoBehaviour
     public float verticalCheckOffset = 0.29f;
 
     [Header("Horizontal Check Settings")]
+
     // 左右方向检测盒大小
     // 左右方向の判定ボックスサイズ
     public Vector2 horizontalCheckSize = new Vector2(0.08f, 0.4f);
@@ -47,6 +72,7 @@ public class AttackBlockState : MonoBehaviour
     public float horizontalCheckOffset = 0.29f;
 
     [Header("Layer Settings")]
+
     // 已充能方块Layer
     // 通電済みブロックのLayer
     public LayerMask poweredBlockLayer;
@@ -54,6 +80,10 @@ public class AttackBlockState : MonoBehaviour
     // 所有子方块
     // すべての子ブロック
     private Transform[] childCells;
+
+    // 所有子方块上的SpriteRenderer
+    // すべての子ブロックのSpriteRenderer
+    private SpriteRenderer[] childSpriteRenderers;
 
     private void Awake()
     {
@@ -65,6 +95,15 @@ public class AttackBlockState : MonoBehaviour
         {
             childCells[i] = transform.GetChild(i);
         }
+
+        // 获取所有子物体中的SpriteRenderer
+        // すべての子オブジェクト内のSpriteRendererを取得する
+        childSpriteRenderers =
+            GetComponentsInChildren<SpriteRenderer>(true);
+
+        // 初始化显示状态
+        // 表示状態を初期化する
+        UpdateVisualState();
     }
 
     private void Update()
@@ -201,6 +240,10 @@ public class AttackBlockState : MonoBehaviour
 
         canAttack = state;
 
+        // 更新图像显示
+        // 画像表示を更新する
+        UpdateVisualState();
+
         if (canAttack)
         {
             Debug.Log("Attack Block Ready / 攻撃ブロック起動");
@@ -208,6 +251,39 @@ public class AttackBlockState : MonoBehaviour
         else
         {
             Debug.Log("Attack Block Disabled / 攻撃ブロック停止");
+        }
+    }
+
+    /// <summary>
+    /// 根据攻击状态更新图像
+    /// 攻撃状態に応じて画像を更新する
+    /// </summary>
+    private void UpdateVisualState()
+    {
+        Sprite targetSprite =
+            canAttack ? activeSprite : inactiveSprite;
+
+        foreach (SpriteRenderer spriteRenderer in childSpriteRenderers)
+        {
+            if (spriteRenderer == null)
+                continue;
+
+            // 避免修改枪图像本身
+            // 銃画像自身のSpriteを変更しない
+            if (gunVisual != null &&
+                spriteRenderer.transform.IsChildOf(gunVisual.transform))
+            {
+                continue;
+            }
+
+            spriteRenderer.sprite = targetSprite;
+        }
+
+        // 可以攻击时显示枪，否则隐藏
+        // 攻撃可能時のみ銃を表示する
+        if (gunVisual != null)
+        {
+            gunVisual.SetActive(canAttack);
         }
     }
 
