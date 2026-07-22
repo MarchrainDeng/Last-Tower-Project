@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 /*
 ----------------------------------------
@@ -53,6 +54,22 @@ public class BlockLanding : MonoBehaviour
     // 方块选择流程管理器
     // ブロック選択フローマネージャー
     private BlockSelectionFlowManager flowManager;
+
+    [Header("Fixed Block Settings")]
+
+    // 特殊方块落地后需要稳定的物理帧数
+    // 特殊ブロック着地後に安定を待つ物理フレーム数
+    [SerializeField]
+    private int fixedBlockSettleFrames = 3;
+
+    // 判断方块已经稳定的最大速度
+    // ブロックが安定したと判断する最大速度
+    [SerializeField]
+    private float fixedBlockMaxSpeed = 0.05f;
+
+    // 是否正在进行固定流程
+    // 固定処理中かどうか
+    private bool isFixingBlock;
 
     private void Update()
     {
@@ -125,18 +142,34 @@ public class BlockLanding : MonoBehaviour
 
     private void Land()
     {
+        // 防止重复执行落地逻辑
+        // 着地処理の重複実行を防止する
+        if (isLanded)
+            return;
+
         isLanded = true;
 
-        // 落地后启用重力
-        // 着地後、重力を有効にする
         if (rb != null)
         {
             // 清除当前速度
             // 現在の速度をリセットする
             rb.linearVelocity = Vector2.zero;
+            rb.angularVelocity = 0f;
 
-            Camera.main.GetComponent<CameraShake>().Shake();
+            // 播放相机震动
+            // カメラシェイクを再生する
+            Camera mainCamera = Camera.main;
 
+            if (mainCamera != null)
+            {
+                CameraShake cameraShake =
+                    mainCamera.GetComponent<CameraShake>();
+
+                if (cameraShake != null)
+                {
+                    cameraShake.Shake();
+                }
+            }
 
             // 判断是否为落地后固定的特殊方块
             // 着地後に固定される特殊ブロックか判定する
@@ -144,15 +177,30 @@ public class BlockLanding : MonoBehaviour
 
             if (fixedBlock != null)
             {
-                // 特殊方块：改为Kinematic，不受重力和碰撞推力影响
-                // 特殊ブロック：Kinematicに変更し、重力や衝突力の影響を受けない
-                rb.angularVelocity = 0f;
-                rb.gravityScale = 0f;
-                rb.bodyType = RigidbodyType2D.Kinematic;
+                // 特殊方块先保持Dynamic，
+                // 让物理引擎有时间解除与下方方块的轻微重叠
+                // 特殊ブロックは一時的にDynamicを維持し、
+                // 下のブロックとのわずかな重なりを物理計算で解消させる
+                rb.bodyType = RigidbodyType2D.Dynamic;
 
-                // 防止物理旋转
-                // 物理回転を防止する
+                // 无重力方块不受重力影响
+                // 無重力ブロックは重力の影響を受けない
+                rb.gravityScale = 0f;
+
+                // 防止稳定期间旋转
+                // 安定待機中の回転を防止する
                 rb.freezeRotation = true;
+
+                // 提高Kinematic与其他刚体的接触稳定性
+                // Kinematicと他のRigidbodyとの接触を安定させる
+                rb.useFullKinematicContacts = true;
+
+                if (!isFixingBlock)
+                {
+                    StartCoroutine(
+                        FixBlockAfterSettled()
+                    );
+                }
             }
             else
             {
@@ -163,13 +211,12 @@ public class BlockLanding : MonoBehaviour
             }
         }
 
-        BlockMoveController moveController = GetComponent<BlockMoveController>();
+        BlockMoveController moveController =
+            GetComponent<BlockMoveController>();
 
         if (moveController != null)
         {
             moveController.enabled = false;
-
-            //Debug.Log("false");
         }
 
         // 通知流程管理器重新开启卡牌选择
@@ -181,9 +228,74 @@ public class BlockLanding : MonoBehaviour
         else
         {
             Debug.LogWarning(
-                "Flow Manager is missing. / フローマネージャーが設定されていません。"
+                "Flow Manager is missing. / " +
+                "フローマネージャーが設定されていません。"
             );
         }
+    }
+
+    /// <summary>
+    /// 等待特殊方块稳定后再切换为Kinematic
+    /// 特殊ブロックが安定してからKinematicへ変更する
+    /// </summary>
+    private IEnumerator FixBlockAfterSettled()
+    {
+        if (rb == null)
+            yield break;
+
+        isFixingBlock = true;
+
+        int stableFrameCount = 0;
+
+        while (stableFrameCount < fixedBlockSettleFrames)
+        {
+            // 等待下一次物理解算
+            // 次の物理計算まで待機する
+            yield return new WaitForFixedUpdate();
+
+            if (rb == null)
+            {
+                isFixingBlock = false;
+                yield break;
+            }
+
+            // 检查当前线速度与角速度
+            // 現在の線速度と角速度を確認する
+            float currentSpeed =
+                rb.linearVelocity.magnitude;
+
+            float currentAngularSpeed =
+                Mathf.Abs(rb.angularVelocity);
+
+            // 连续多个物理帧速度足够小时，才视为稳定
+            // 複数の物理フレームで速度が十分小さい場合のみ
+            // 安定したと判断する
+            if (currentSpeed <= fixedBlockMaxSpeed &&
+                currentAngularSpeed <= fixedBlockMaxSpeed)
+            {
+                stableFrameCount++;
+            }
+            else
+            {
+                stableFrameCount = 0;
+            }
+        }
+
+        // 切换前再次清除残留速度
+        // 切り替え前に残留速度を再度リセットする
+        rb.linearVelocity = Vector2.zero;
+        rb.angularVelocity = 0f;
+
+        // 固定为Kinematic，同时保留Collider，
+        // 因此依然可以托举其他方块
+        // Colliderを維持したままKinematicに固定するため、
+        // 他のブロックを支えることができる
+        rb.bodyType = RigidbodyType2D.Kinematic;
+        rb.gravityScale = 0f;
+        rb.freezeRotation = true;
+        rb.useFullKinematicContacts = true;
+
+        isFixingBlock = false;
     }
 
     private void OnDrawGizmosSelected()

@@ -621,7 +621,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 13
+  m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 9ff099aa4a782474d9ef9c20009d45fc, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -2308,12 +2308,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 447045743}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 794.4411, y: 532.4292, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1087879848}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &457449224
 GameObject:
@@ -4739,6 +4739,7 @@ Transform:
   - {fileID: 1612657618}
   - {fileID: 1142064382}
   - {fileID: 809420579}
+  - {fileID: 447045745}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1087879849
@@ -4840,7 +4841,7 @@ MonoBehaviour:
     blockPrefab: {fileID: 5661478519432820911, guid: ff0f1f2d377fdc042a577caed4d344f6, type: 3}
   specialCardPool:
   - typeName: AlwaysPower
-    cardSprite: {fileID: 21300000, guid: 69633a81cd0c2d54aaecd442762dfd9c, type: 3}
+    cardSprite: {fileID: 21300000, guid: 8a6f7c33b018f6f4fab2db5b65ddbf16, type: 3}
     blockPrefab: {fileID: 512358414728350629, guid: 0e9d283cef31bd54caeeb593d7784399, type: 3}
   selectedScaleMultiplier: 1.15
 --- !u!1 &1104107170
@@ -7737,7 +7738,7 @@ MonoBehaviour:
     blockPrefab: {fileID: 5661478519432820911, guid: ff0f1f2d377fdc042a577caed4d344f6, type: 3}
   specialCardPool:
   - typeName: FixedBlock
-    cardSprite: {fileID: 3416543745242346271, guid: 74abd5c361422eb4ab284faeaf18a2c0, type: 3}
+    cardSprite: {fileID: 21300000, guid: 3545b79cfa38d40499dda7525c3479b1, type: 3}
     blockPrefab: {fileID: 2776347681360423159, guid: f56adb4f6b253ef48b55ed4d2b1fba43, type: 3}
   selectedScaleMultiplier: 1.15
 --- !u!1 &1945584096
@@ -8629,6 +8630,5 @@ SceneRoots:
   - {fileID: 1135500096}
   - {fileID: 1506091873}
   - {fileID: 913501574}
-  - {fileID: 447045745}
   - {fileID: 406464030436235049}
   - {fileID: 293305498}

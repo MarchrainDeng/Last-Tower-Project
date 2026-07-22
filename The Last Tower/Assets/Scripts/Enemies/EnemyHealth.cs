@@ -38,7 +38,7 @@ public class EnemyHealth : MonoBehaviour
     /// 受到伤害
     /// ダメージを受ける
     /// </summary>
-    public void TakeDamage(int damage)
+    public void TakeDamage(float damage)
     {
         if (statsHolder == null)
             return;
