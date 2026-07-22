@@ -24,6 +24,7 @@ public class BossHand : MonoBehaviour
     public GameObject paintOverlay;  // ペイント演出用UI（Inspectorでアサイン）
     public Collider2D handCollider;  // 手の当たり判定（Poke時のみIsTriggerをオフにする）
     public BlockSelectionFlowManager flowManager; // Flickで操作中ブロックを飛ばした時に次の選択を進めるため
+    public Animator animator; // アニメーション再生用
 
     // ─── 内部状態 ─────────────────────────────────────────────────
     float currentHP;
@@ -155,12 +156,19 @@ public class BossHand : MonoBehaviour
     IEnumerator ActionPunch(BossActionData action)
     {
         Debug.Log($"[BossHand] Punch! ダメージ:{action.damage}");
+
+        if (animator != null)
+            animator.SetBool(handData.punchAnimTrigger, true);
+
         towerHP.TakeDamage(action.damage);
 
         if (towerHP.pedestalRb != null)
             yield return StartCoroutine(ShakePedestal());
 
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(handData.punchAnimDuration);
+
+        if (animator != null)
+            animator.SetBool(handData.punchAnimTrigger, false);
     }
 
     // ─── 台座揺れ（TowerHP.ShakePedestalと同じ仕組み） ────────────
@@ -265,6 +273,9 @@ public class BossHand : MonoBehaviour
     {
         Debug.Log($"[BossHand] Poke! ダメージ:{action.damage}");
 
+        if (animator != null)
+            animator.SetBool(handData.pokeAnimTrigger, true);
+
         Vector3 startPos = transform.position;
         Vector3 pokeDest = startPos + new Vector3(-side * handData.pokeDistance, 0f, 0f);
 
@@ -303,12 +314,19 @@ public class BossHand : MonoBehaviour
         // IsTriggerを元に戻す
         if (handCollider != null)
             handCollider.isTrigger = originalIsTrigger;
+
+        if (animator != null)
+            animator.SetBool(handData.pokeAnimTrigger, false);
     }
 
     // デコピン：高ダメージ＋一番上のブロックを物理的に吹き飛ばす
     IEnumerator ActionFlick(BossActionData action)
     {
         Debug.Log($"[BossHand] Flick! ダメージ:{action.damage}");
+
+        if (animator != null)
+            animator.SetBool(handData.flickAnimTrigger, true);
+
         towerHP.TakeDamage(action.damage);
 
         var topBlock = GetTopBlock();
@@ -339,7 +357,10 @@ public class BossHand : MonoBehaviour
             topBlock.AddTorque(-side * handData.flickTorque, ForceMode2D.Impulse);
         }
 
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(handData.flickAnimDuration);
+
+        if (animator != null)
+            animator.SetBool(handData.flickAnimTrigger, false);
     }
 
     // ─── フェーズ切り替え ─────────────────────────────────────────

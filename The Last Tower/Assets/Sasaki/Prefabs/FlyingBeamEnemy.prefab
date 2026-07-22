@@ -118,6 +118,13 @@ MonoBehaviour:
     flightYMin: 4
     flightYMax: 3
     exitSpeedMultiplier: 1.5
+    beamFlightYMin: 4
+    beamFlightYMax: 2
+    warpCount: 5
+    warpTotalDuration: 2
+    warpDeviation: 1
+    hoverAmplitude: 0.5
+    hoverFrequency: 0.91
     beamDuration: 0.4
     beamStartWidth: 0.12
     beamEndWidth: 0.05
