@@ -6603,11 +6603,11 @@ MonoBehaviour:
   spawnPointR: {fileID: 236863435}
   enemyEntries:
   - prefab: {fileID: 3382112785025284562, guid: 74be494248d3c9b4bb506272bffde2eb, type: 3}
-    spawnWeight: 0.478
+    spawnWeight: 0.015
   - prefab: {fileID: 3855724003299888675, guid: 26ff9e94c21cbcf4096f66becab92c3b, type: 3}
-    spawnWeight: 0.035
+    spawnWeight: 1
   - prefab: {fileID: 8520560095020628245, guid: 4378b0fe889811c4e90ded675a72ec81, type: 3}
-    spawnWeight: 0.472
+    spawnWeight: 0
   initialInterval: 10
   minInterval: 0.2
   intervalDecreaseRate: 0.1

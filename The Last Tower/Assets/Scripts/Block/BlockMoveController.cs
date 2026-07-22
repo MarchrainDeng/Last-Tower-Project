@@ -121,6 +121,28 @@ public class BlockMoveController : MonoBehaviour
         DpadRight
     }
 
+    private void Awake()
+    {
+        // 作为保险，自动寻找场景中的流程管理器
+        // 念のため、シーン内のフローマネージャーを自動検索する
+        if (flowManager == null)
+        {
+            flowManager =
+                FindFirstObjectByType<BlockSelectionFlowManager>();
+        }
+
+        if (flowManager == null)
+        {
+            Debug.LogWarning(
+                $"{gameObject.name}: BlockSelectionFlowManager " +
+                "没有找到。请确认场景中存在并处于启用状态。" +
+                "\nBlockSelectionFlowManagerが見つかりません。" +
+                "シーン内に存在し、有効になっているか確認してください。",
+                gameObject
+            );
+        }
+    }
+
     private void Update()
     {
         gamepad = Gamepad.current;

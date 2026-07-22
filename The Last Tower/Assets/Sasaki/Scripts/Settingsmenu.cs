@@ -42,6 +42,7 @@ public class SettingsMenu : MonoBehaviour
     void Start()
     {
         // 起動時は閉じた状態
+            Time.timeScale = 1;      
         settingsPanel.SetActive(false);
 
         // 保存済み値を反映

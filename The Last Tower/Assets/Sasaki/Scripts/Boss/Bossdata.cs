@@ -73,6 +73,16 @@ public class BossHandData
     public float flickForceY = 6f;   // 上方向の吹き飛ばし力
     public float flickTorque = 5f;   // 回転力
 
+    [Header("── アニメーション ────────────")]
+    public string punchAnimTrigger = "Punch";
+    public float punchAnimDuration = 0.5f;  // Punchアニメーションの再生時間
+
+    public string pokeAnimTrigger = "Tuttuki";
+    public float pokeAnimDuration = 0.3f;  // Tuttukiアニメーションの再生時間
+
+    public string flickAnimTrigger = "Dekopin";
+    public float flickAnimDuration = 0.5f;  // Dekopinアニメーションの再生時間
+
     [Header("── 攻撃順 ──────────────────────")]
     public BossPhaseOrder phaseOrder = BossPhaseOrder.HarassFirst;
 

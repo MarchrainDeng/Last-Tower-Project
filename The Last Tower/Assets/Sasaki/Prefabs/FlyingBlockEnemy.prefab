@@ -118,6 +118,20 @@ MonoBehaviour:
     flightYMin: 4
     flightYMax: 3
     exitSpeedMultiplier: 1.5
+    blockCarryPeakHeight: 0.3
+    blockCarryRiseDuration: 0.2
+    blockCarrySettleHeight: 0.3
+    blockCarrySettleDuration: 0.2
+    blockCarryHoldDuration: 0.2
+    blockCarrySwayAmount: 0.06
+    blockCarrySwaySpeed: 10
+    beamFlightYMin: 5
+    beamFlightYMax: 9
+    warpCount: 3
+    warpTotalDuration: 3
+    warpDeviation: 1
+    hoverAmplitude: 0.3
+    hoverFrequency: 2
     beamDuration: 0.4
     beamStartWidth: 0.12
     beamEndWidth: 0.05
