@@ -8384,7 +8384,7 @@ PrefabInstance:
       objectReference: {fileID: 1677760618}
     - target: {fileID: 349996878208468420, guid: bc9fea9ed9c1b0446bdc867306a6666d, type: 3}
       propertyPath: spawnDelay
-      value: 1
+      value: 90
       objectReference: {fileID: 0}
     - target: {fileID: 349996878208468420, guid: bc9fea9ed9c1b0446bdc867306a6666d, type: 3}
       propertyPath: defeatResultUI
@@ -8491,9 +8491,17 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 994465138}
     - target: {fileID: 6727219361773651212, guid: bc9fea9ed9c1b0446bdc867306a6666d, type: 3}
+      propertyPath: handData.maxHP
+      value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 6727219361773651212, guid: bc9fea9ed9c1b0446bdc867306a6666d, type: 3}
       propertyPath: towerTransform
       value: 
       objectReference: {fileID: 293305498}
+    - target: {fileID: 6727219361773651212, guid: bc9fea9ed9c1b0446bdc867306a6666d, type: 3}
+      propertyPath: handData.approachStopX
+      value: -4
+      objectReference: {fileID: 0}
     - target: {fileID: 6727219361773651212, guid: bc9fea9ed9c1b0446bdc867306a6666d, type: 3}
       propertyPath: handData.harassActions.Array.size
       value: 3
@@ -8555,9 +8563,17 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 994465138}
     - target: {fileID: 8599183966103226738, guid: bc9fea9ed9c1b0446bdc867306a6666d, type: 3}
+      propertyPath: handData.maxHP
+      value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 8599183966103226738, guid: bc9fea9ed9c1b0446bdc867306a6666d, type: 3}
       propertyPath: towerTransform
       value: 
       objectReference: {fileID: 293305498}
+    - target: {fileID: 8599183966103226738, guid: bc9fea9ed9c1b0446bdc867306a6666d, type: 3}
+      propertyPath: handData.approachStopX
+      value: -4
+      objectReference: {fileID: 0}
     - target: {fileID: 8599183966103226738, guid: bc9fea9ed9c1b0446bdc867306a6666d, type: 3}
       propertyPath: handData.harassActions.Array.size
       value: 3
