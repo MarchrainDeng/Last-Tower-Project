@@ -62,7 +62,7 @@ public class FlyingBlockEnemy : EnemyBase
         // ⑤ 通常の離脱移動（揺れなし）
         var exit = new Vector2(transform.position.x + 20f, flightY);
         float timer = 0f;
-        while (timer < 3f)
+        while (timer < stats.blockExitDuration)
         {
             MoveToward(exit, stats.moveSpeed * stats.exitSpeedMultiplier);
             timer += Time.deltaTime;
