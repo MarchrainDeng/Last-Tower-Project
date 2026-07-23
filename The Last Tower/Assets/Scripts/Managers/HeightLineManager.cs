@@ -58,6 +58,16 @@ public class HeightLineManager : MonoBehaviour
     // ブロック選択フローマネージャー
     [SerializeField] private BlockSelectionFlowManager flowManager;
 
+    [Header("Moving Objects")]
+    [SerializeField] private GameObject leftEnemySpawnPoint;
+    [SerializeField] private float moveLeftDistance = 1f;
+
+    [SerializeField] private GameObject rightEnemySpawnPoint;
+    [SerializeField] private float moveRightDistance = 1f;
+
+    [SerializeField] private GameObject blockSpawner;
+    [SerializeField] private float moveUpDistance = 1f;
+
     // 当前正在等待触发的高度线编号
     // 現在発動待ちの高さライン番号
     private int currentLineIndex;
@@ -361,6 +371,7 @@ public class HeightLineManager : MonoBehaviour
             case "CameraExpand":
                 //TODO:カメラ拡張
                 ExecuteCameraExpand();
+                MoveObjects();
                 break;
 
             default:
@@ -500,5 +511,23 @@ public class HeightLineManager : MonoBehaviour
         // 誤差補正
         cam.transform.position = targetPosition;
         cam.orthographicSize = targetSize;
+    }
+
+    private void MoveObjects()
+    {
+        if (leftEnemySpawnPoint != null)
+        {
+            leftEnemySpawnPoint.transform.position += Vector3.left * moveLeftDistance;
+        }
+
+        if(rightEnemySpawnPoint != null)
+        {
+            rightEnemySpawnPoint.transform.position += Vector3.right * moveRightDistance;
+        }
+
+        if(blockSpawner != null)
+        {
+            blockSpawner.transform.position += Vector3.up * moveUpDistance;
+        }
     }
 }
