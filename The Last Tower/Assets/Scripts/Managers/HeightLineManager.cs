@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections;
 
 /*
 ----------------------------------------
@@ -36,6 +37,16 @@ public class HeightLineManager : MonoBehaviour
     // 子ブロックColliderの上端を高さとして使用するか
     [SerializeField] private bool useColliderTop = true;
 
+    [Header("Camera Setting")]
+    [SerializeField]
+    private float cameraMoveDistance = 5f;
+
+    [SerializeField]
+    private float cameraSizeIncrease = 1f;
+
+    [SerializeField]
+    private float cameraMoveDuration = 1f;
+
     [Header("Height Check")]
     // 高度线判定容差
     // 高さライン判定の許容値
@@ -68,11 +79,6 @@ public class HeightLineManager : MonoBehaviour
 
     private void Update()
     {
-        // 所有高度线都已经触发后，不再检测
-        // すべての高さラインが発動済みなら判定しない
-        if (AllLinesTriggered)
-            return;
-
         checkTimer += Time.deltaTime;
 
         if (checkTimer < checkInterval)
@@ -80,7 +86,7 @@ public class HeightLineManager : MonoBehaviour
 
         checkTimer = 0f;
 
-        CheckCurrentHeightLine();
+        CheckAllHeightLines();
     }
 
     /// <summary>
@@ -114,7 +120,7 @@ public class HeightLineManager : MonoBehaviour
             {
                 // 游戏开始时只显示第一条线
                 // ゲーム開始時は最初のラインだけを表示する
-                line.lineObject.SetActive(i == 0);
+                line.lineObject.SetActive(true);
             }
         }
     }
@@ -167,6 +173,42 @@ public class HeightLineManager : MonoBehaviour
     }
 
     /// <summary>
+    /// 检查所有尚未触发的高度线
+    /// まだ発動していないすべての高さラインを確認する
+    /// </summary>
+    private void CheckAllHeightLines()
+    {
+        if (heightLines == null || heightLines.Length == 0)
+            return;
+
+        float highestY = GetHighestLandedBlockY();
+
+        // 当前没有任何已落地方块
+        // 現在、着地済みブロックが存在しない
+        if (highestY == float.MinValue)
+            return;
+
+        foreach (HeightLineData line in heightLines)
+        {
+            if (line == null ||
+                line.lineObject == null ||
+                line.hasTriggered)
+            {
+                continue;
+            }
+
+            float lineY = line.lineObject.transform.position.y;
+
+            // 已落地方块到达高度线
+            // 着地済みブロックが高さラインに到達した
+            if (highestY >= lineY - triggerOffset)
+            {
+                TriggerLine(line);
+            }
+        }
+    }
+
+    /// <summary>
     /// 触发当前高度线
     /// 現在の高さラインを発動する
     /// </summary>
@@ -205,6 +247,34 @@ public class HeightLineManager : MonoBehaviour
         // 进入下一条高度线
         // 次の高さラインへ進む
         AdvanceToNextLine();
+    }
+
+    /// <summary>
+    /// 触发指定高度线
+    /// 指定された高さラインを発動する
+    /// </summary>
+    private void TriggerLine(HeightLineData line)
+    {
+        if (line == null || line.hasTriggered)
+            return;
+
+        line.hasTriggered = true;
+
+        Debug.Log(
+            $"Height Line Triggered: {line.lineName} / " +
+            $"高さライン発動：{line.lineName}"
+        );
+
+        // 触发后隐藏当前高度线
+        // 発動後、現在の高さラインを非表示にする
+        if (line.lineObject != null)
+        {
+            line.lineObject.SetActive(false);
+        }
+
+        // 执行对应事件
+        // 対応するイベントを実行する
+        ExecuteLineEvent(line);
     }
 
     /// <summary>
@@ -248,7 +318,7 @@ public class HeightLineManager : MonoBehaviour
         // 次の高さラインを表示する
         nextLine.lineObject.SetActive(true);
     }
-
+        
     /// <summary>
     /// 执行高度线对应事件
     /// 高さラインに対応するイベントを実行する
@@ -287,6 +357,10 @@ public class HeightLineManager : MonoBehaviour
                 // TODO：敌人强化事件
                 // TODO：敵強化イベント
                 Debug.Log("Enemy Upgrade / 敵強化");
+                break;
+            case "CameraExpand":
+                //TODO:カメラ拡張
+                ExecuteCameraExpand();
                 break;
 
             default:
@@ -355,5 +429,76 @@ public class HeightLineManager : MonoBehaviour
     public void ResetHeightLines()
     {
         InitializeHeightLines();
+    }
+
+    private void ExecuteCameraExpand()
+    {
+        StartCoroutine(CameraExpandRoutine());
+    }
+
+    /// <summary>
+    /// 平滑移动相机并扩大视野
+    /// カメラを滑らかに移動し、視野を拡大する
+    /// </summary>
+    private IEnumerator CameraExpandRoutine()
+    {
+        Camera cam = Camera.main;
+
+        if (cam == null)
+            yield break;
+
+        // 起始位置
+        // 開始位置
+        Vector3 startPosition = cam.transform.position;
+
+        // 目标位置（当前位置 + 向上偏移）
+        // 目標位置（現在位置 + 上方向オフセット）
+        Vector3 targetPosition =
+            startPosition + Vector3.up * cameraMoveDistance;
+
+        // 起始Size
+        // 開始Size
+        float startSize = cam.orthographicSize;
+
+        // 目标Size（当前Size + 增量）
+        // 目標Size（現在Size + 増加量）
+        float targetSize =
+            startSize + cameraSizeIncrease;
+
+        float timer = 0f;
+
+        while (timer < cameraMoveDuration)
+        {
+            timer += Time.deltaTime;
+
+            float t = Mathf.Clamp01(timer / cameraMoveDuration);
+
+            // 缓入缓出
+            // イージング
+            t = Mathf.SmoothStep(0f, 1f, t);
+
+            // 相机位置
+            // カメラ位置
+            cam.transform.position =
+                Vector3.Lerp(
+                    startPosition,
+                    targetPosition,
+                    t);
+
+            // 相机大小
+            // カメラサイズ
+            cam.orthographicSize =
+                Mathf.Lerp(
+                    startSize,
+                    targetSize,
+                    t);
+
+            yield return null;
+        }
+
+        // 防止误差
+        // 誤差補正
+        cam.transform.position = targetPosition;
+        cam.orthographicSize = targetSize;
     }
 }
