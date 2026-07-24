@@ -51,7 +51,7 @@ public class EnemyHealth : MonoBehaviour
         // HPが0未満にならないようにする
         statsHolder.stats.HP = Mathf.Max(0, statsHolder.stats.HP);
 
-        Debug.Log($"Enemy HP : {statsHolder.stats.HP}");
+        //Debug.Log($"Enemy HP : {statsHolder.stats.HP}");
 
         // 判断是否死亡
         // 死亡判定
