@@ -111,11 +111,11 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 1
+  m_Mass: 0.0001
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_GravityScale: 0
-  m_Material: {fileID: 6200000, guid: 05cb8a6ebe954344f83cb5c14e3598da, type: 2}
+  m_Material: {fileID: 6200000, guid: 1a8e6cdc8c458d549aff8fa4e8481b5f, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -144,11 +144,16 @@ MonoBehaviour:
   - {fileID: 1637920224962161802}
   - {fileID: 8601287537197328609}
   - {fileID: 3989598274366209833}
-  blockSize: {x: 0.5, y: 0.5}
+  blockSize: {x: 0.65, y: 0.5}
   checkDistance: 0.02
   landingLayer:
     serializedVersion: 2
     m_Bits: 3008
+  fixedBlockSettleFrames: 3
+  fixedBlockMaxSpeed: 0.05
+  materialChangeDelay: 0.2
+  fallingMaterial: {fileID: 6200000, guid: 1a8e6cdc8c458d549aff8fa4e8481b5f, type: 2}
+  landMaterial: {fileID: 6200000, guid: 05cb8a6ebe954344f83cb5c14e3598da, type: 2}
 --- !u!114 &6296377786133942452
 MonoBehaviour:
   m_ObjectHideFlags: 0
