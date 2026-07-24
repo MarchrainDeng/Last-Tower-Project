@@ -91,6 +91,12 @@ public class BlockMoveController : MonoBehaviour
     // ブロック選択フローマネージャー
     private BlockSelectionFlowManager flowManager;
 
+    // 刚体
+    // Rigidbody
+    private Rigidbody2D rb;
+
+    private float moveInput;
+
     [Header("Input Settings")]
 
     // 顺时针旋转按键
@@ -123,6 +129,8 @@ public class BlockMoveController : MonoBehaviour
 
     private void Awake()
     {
+        rb = GetComponent<Rigidbody2D>();
+
         // 作为保险，自动寻找场景中的流程管理器
         // 念のため、シーン内のフローマネージャーを自動検索する
         if (flowManager == null)
@@ -154,7 +162,8 @@ public class BlockMoveController : MonoBehaviour
         if (GameStateManager.IsPaused)
             return;
 
-        HandleMove();
+        ReadMoveInput();
+
         HandleRotate();
         HandleDeadZone();
     }
@@ -170,7 +179,9 @@ public class BlockMoveController : MonoBehaviour
         if (GameStateManager.IsPaused)
             return;
 
-        HandleFall();
+        //HandleMove();
+        //HandleFall();
+        HandleMovement();
     }
 
     private void HandleMove()
@@ -202,11 +213,14 @@ public class BlockMoveController : MonoBehaviour
 
         // 平滑移动
         // スムーズに移動する
-        transform.position +=
-            Vector3.right *
+        Vector2 targetPosition =
+            rb.position +
+            Vector2.right *
             input *
             moveSpeed *
-            Time.deltaTime;
+            Time.fixedDeltaTime;
+
+        rb.MovePosition(targetPosition);
     }
 
     private void HandleRotate()
@@ -318,7 +332,15 @@ public class BlockMoveController : MonoBehaviour
             }
         }
 
-        transform.position += Vector3.down * currentSpeed * Time.deltaTime;
+        //transform.position += Vector3.down * currentSpeed * Time.deltaTime;
+
+        Vector2 targetPosition =
+            rb.position +
+            Vector2.down *
+            currentSpeed *
+            Time.fixedDeltaTime;
+
+        rb.MovePosition(targetPosition);
     }
 
     /// <summary>
@@ -353,6 +375,76 @@ public class BlockMoveController : MonoBehaviour
 
             Destroy(gameObject);
         }
+    }
+
+    private void ReadMoveInput()
+    {
+        moveInput = 0f;
+
+        if (Gamepad.current != null)
+        {
+            moveInput =
+                Gamepad.current.leftStick.x.ReadValue();
+        }
+
+        if (Keyboard.current != null)
+        {
+            if (Keyboard.current.aKey.isPressed)
+                moveInput = -1f;
+            else if (Keyboard.current.dKey.isPressed)
+                moveInput = 1f;
+        }
+
+        if (Mathf.Abs(moveInput) < deadZone)
+            moveInput = 0f;
+    }
+
+    /// <summary>
+    /// 处理方块移动（左右移动+下落）
+    /// ブロックの移動（左右移動＋落下）
+    /// </summary>
+    private void HandleMovement()
+    {
+        float currentFallSpeed = fallSpeed;
+
+        bool xPressed =
+            Gamepad.current != null &&
+            Gamepad.current.buttonSouth.isPressed;
+
+        bool spacePressed =
+            Keyboard.current != null &&
+            Keyboard.current.spaceKey.isPressed;
+
+        // 新方块生成后，必须先松开A键
+        // 新しいブロック生成後は、一度Aボタンを離す必要がある
+        if (waitingForFastFallRelease)
+        {
+            if (!xPressed)
+            {
+                waitingForFastFallRelease = false;
+            }
+        }
+        else
+        {
+            // 松开后再次按住A，才允许高速下落
+            // 一度離した後、再度Aを押した時のみ高速落下
+            if (xPressed || spacePressed)
+            {
+                currentFallSpeed *= fastFallMultiplier;
+            }
+        }
+
+        // 合并水平移动和下落
+        // 左右移動と落下をまとめて処理する
+        Vector2 movement = new Vector2(
+            moveInput * moveSpeed,
+            -currentFallSpeed
+        );
+
+        rb.MovePosition(
+            rb.position +
+            movement * Time.fixedDeltaTime
+        );
     }
 
     /// <summary>

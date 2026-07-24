@@ -4796,14 +4796,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DebugBlockSpawner
   powerBlockPrefab:
-  - {fileID: 910735518559704705, guid: cfc13a59a70c25847b4f57f63d37c43d, type: 3}
-  - {fileID: 7293525734129942407, guid: 051ae85f9d67c204eac64c6888dd5d13, type: 3}
-  - {fileID: 6837638216086328337, guid: 7f74b1a24bdf8924891ae15b5b94ce7b, type: 3}
-  - {fileID: 7822559887562711069, guid: 9a66c3a1f78ab8545a61df12321d9c68, type: 3}
+  - {fileID: 2776347681360423159, guid: f56adb4f6b253ef48b55ed4d2b1fba43, type: 3}
   attackBlockPrefab:
-  - {fileID: 34065507497652870, guid: 7dbf3a957daec764eaf31e05607cf15e, type: 3}
-  - {fileID: 1918330240339288222, guid: 9d5fc29753b365e458fd4998d3f4d54a, type: 3}
-  - {fileID: 6967059836585324227, guid: 4e43d83c950bea34fa93c33dff49148e, type: 3}
+  - {fileID: 2776347681360423159, guid: f56adb4f6b253ef48b55ed4d2b1fba43, type: 3}
   spawnPoint: {fileID: 1199447509}
 --- !u!1 &1113083663
 GameObject:
@@ -5015,7 +5010,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!212 &1201652293
 SpriteRenderer:
   serializedVersion: 2
@@ -6986,7 +6981,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 11
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 6e3a777a08d6cac4791643cdbb726062, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -7354,7 +7349,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!212 &1872117406
 SpriteRenderer:
   serializedVersion: 2
@@ -8236,7 +8231,7 @@ PrefabInstance:
       objectReference: {fileID: 1677760618}
     - target: {fileID: 349996878208468420, guid: bc9fea9ed9c1b0446bdc867306a6666d, type: 3}
       propertyPath: spawnDelay
-      value: 90
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 349996878208468420, guid: bc9fea9ed9c1b0446bdc867306a6666d, type: 3}
       propertyPath: defeatResultUI
