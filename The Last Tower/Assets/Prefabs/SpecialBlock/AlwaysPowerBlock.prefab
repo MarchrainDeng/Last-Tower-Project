@@ -11,7 +11,7 @@ PrefabInstance:
     - target: {fileID: -4449305739068444206, guid: a58276dae366ca141829e63ae1f114df, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 69633a81cd0c2d54aaecd442762dfd9c, type: 3}
+      objectReference: {fileID: 21300000, guid: 8a6f7c33b018f6f4fab2db5b65ddbf16, type: 3}
     - target: {fileID: -209563175386702930, guid: a58276dae366ca141829e63ae1f114df, type: 3}
       propertyPath: alwaysPowered
       value: 1
@@ -19,7 +19,7 @@ PrefabInstance:
     - target: {fileID: -209563175386702930, guid: a58276dae366ca141829e63ae1f114df, type: 3}
       propertyPath: poweredSprite
       value: 
-      objectReference: {fileID: 21300000, guid: 69633a81cd0c2d54aaecd442762dfd9c, type: 3}
+      objectReference: {fileID: 21300000, guid: 8a6f7c33b018f6f4fab2db5b65ddbf16, type: 3}
     - target: {fileID: -209563175386702930, guid: a58276dae366ca141829e63ae1f114df, type: 3}
       propertyPath: spriteRenderer
       value: 
@@ -27,7 +27,7 @@ PrefabInstance:
     - target: {fileID: -209563175386702930, guid: a58276dae366ca141829e63ae1f114df, type: 3}
       propertyPath: unpoweredSprite
       value: 
-      objectReference: {fileID: 21300000, guid: dbee415bedafa0640b6b3d566af3de57, type: 3}
+      objectReference: {fileID: 21300000, guid: 8a6f7c33b018f6f4fab2db5b65ddbf16, type: 3}
     - target: {fileID: 628772897732542642, guid: a58276dae366ca141829e63ae1f114df, type: 3}
       propertyPath: m_Name
       value: AlwaysPowerBlock

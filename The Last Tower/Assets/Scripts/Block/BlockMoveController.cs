@@ -147,8 +147,8 @@ public class BlockMoveController : MonoBehaviour
     {
         gamepad = Gamepad.current;
 
-        if (gamepad == null)
-            return;
+        //if (gamepad == null)
+          //  return;
 
         // 追加：一時停止中は操作を無効化
         if (GameStateManager.IsPaused)
@@ -163,8 +163,8 @@ public class BlockMoveController : MonoBehaviour
     {
         gamepad = Gamepad.current;
 
-        if (gamepad == null)
-            return;
+        //if (gamepad == null)
+            //return;
 
         // 追加：一時停止中は操作を無効化
         if (GameStateManager.IsPaused)
