@@ -19,6 +19,27 @@ public class TowerHP : MonoBehaviour
     [Header("UI")]
     public Slider hpSlider;
     public Text hpText;    // 未アサインなら自動生成
+    public Image colorTargetImage; // 色を変えるImage（未アサインならhpSliderのfillRectを使用）
+
+    [Header("── HPゲージ色（5段階グラデーション） ──")]
+    [Tooltip("この割合(%)以上でcolor1")]
+    [Range(0f, 100f)] public float threshold1 = 80f;
+    public Color color1 = new Color(0x00 / 255f, 0xC8 / 255f, 0x53 / 255f); // #00C853
+
+    [Tooltip("この割合(%)以上でcolor2")]
+    [Range(0f, 100f)] public float threshold2 = 60f;
+    public Color color2 = new Color(0x7E / 255f, 0xD3 / 255f, 0x21 / 255f); // #7ED321
+
+    [Tooltip("この割合(%)以上でcolor3")]
+    [Range(0f, 100f)] public float threshold3 = 40f;
+    public Color color3 = new Color(0xFF / 255f, 0xEB / 255f, 0x3B / 255f); // #FFEB3B
+
+    [Tooltip("この割合(%)以上でcolor4")]
+    [Range(0f, 100f)] public float threshold4 = 20f;
+    public Color color4 = new Color(0xFF / 255f, 0x98 / 255f, 0x00 / 255f); // #FF9800
+
+    [Tooltip("threshold4未満の色")]
+    public Color color5 = new Color(0xD5 / 255f, 0x00 / 255f, 0x00 / 255f); // #D50000
 
     public System.Action OnDead;
 
@@ -97,13 +118,30 @@ public class TowerHP : MonoBehaviour
     void UpdateBar()
     {
         if (hpSlider != null)
-        {
             hpSlider.value = currentHP / maxHP;
-            var fill = hpSlider.fillRect?.GetComponent<Image>();
-            if (fill != null) fill.color = Color.Lerp(Color.red, Color.green, currentHP / maxHP);
-        }
+
+        // 色を変える対象：Inspectorで指定があればそちら、なければSliderのfillRectを使用
+        Image target = colorTargetImage;
+        if (target == null)
+            target = hpSlider?.fillRect?.GetComponent<Image>();
+
+        if (target != null)
+            target.color = GetGradientColor();
+
         if (hpText != null)
             hpText.text = $"{Mathf.CeilToInt(currentHP)} / {Mathf.CeilToInt(maxHP)}";
+    }
+
+    // ─── HP残量に応じた5段階の色を返す ─────────────────────────────
+    Color GetGradientColor()
+    {
+        float hpPercent = (currentHP / maxHP) * 100f;
+
+        if (hpPercent >= threshold1) return color1;
+        if (hpPercent >= threshold2) return color2;
+        if (hpPercent >= threshold3) return color3;
+        if (hpPercent >= threshold4) return color4;
+        return color5;
     }
 
     Slider CreateHPBar()
@@ -146,7 +184,7 @@ public class TowerHP : MonoBehaviour
         var fill = new GameObject("Fill");
         fill.transform.SetParent(fillArea.transform, false);
         var fillImg = fill.AddComponent<Image>();
-        fillImg.color = Color.green;
+        fillImg.color = color1;
         var fillRect = fill.GetComponent<RectTransform>();
         fillRect.anchorMin = Vector2.zero;
         fillRect.anchorMax = Vector2.one;

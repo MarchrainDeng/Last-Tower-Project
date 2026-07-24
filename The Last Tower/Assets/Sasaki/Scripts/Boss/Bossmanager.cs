@@ -35,6 +35,11 @@ public class BossManager : MonoBehaviour
         if (bossRoot != null)
             bossRoot.SetActive(false);
 
+        // タワーHP0の監視はボス出現前から開始する
+        // （ボスが出る前に力尽きた場合もデス判定を取るため）
+        if (towerHP != null)
+            towerHP.OnDead += OnDefeat;
+
         StartCoroutine(SpawnBoss());
     }
 
@@ -55,10 +60,6 @@ public class BossManager : MonoBehaviour
         // 両手の撃破イベントを購読
         if (leftHand != null) leftHand.OnDefeated += CheckVictory;
         if (rightHand != null) rightHand.OnDefeated += CheckVictory;
-
-        // タワーHP0で敗北監視
-        if (towerHP != null)
-            towerHP.OnDead += OnDefeat;
     }
 
     // ─── 勝利判定（どちらかの手が倒された時に呼ばれる） ──────────

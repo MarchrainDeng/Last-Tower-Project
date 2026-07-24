@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 8913129897361975525}
   - component: {fileID: -826663301121439396}
   - component: {fileID: -1113425841345579991}
+  - component: {fileID: -1550991009225822352}
   m_Layer: 10
   m_Name: FlyingBeamEnemy
   m_TagString: Enemy
@@ -109,7 +110,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyStatsHolder
   stats:
     type: 2
-    HP: 20
+    HP: 50
     moveSpeed: 3
     stopX: 3.3
     attackDamage: 1
@@ -125,13 +126,16 @@ MonoBehaviour:
     blockCarryHoldDuration: 2
     blockCarrySwayAmount: 0.2
     blockCarrySwaySpeed: 1.5
+    blockExitDuration: 3
     beamFlightYMin: 4
     beamFlightYMax: 2
     warpCount: 5
     warpTotalDuration: 2
     warpDeviation: 1
+    warpFadeDuration: 0.15
     hoverAmplitude: 0.5
     hoverFrequency: 0.91
+    beamSettleDuration: 0
     beamDuration: 0.4
     beamStartWidth: 0.12
     beamEndWidth: 0.05
@@ -209,3 +213,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
   deathEffectPrefab: {fileID: 8929420834146319271, guid: f2f7ad1d00c37d549bad9ebeea20d541, type: 3}
   deathEffectDuration: 1
+--- !u!95 &-1550991009225822352
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8520560095020628245}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 3d49a910f75b4d64f8a7a3021af91da7, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

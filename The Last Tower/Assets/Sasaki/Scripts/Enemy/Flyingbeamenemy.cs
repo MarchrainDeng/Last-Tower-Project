@@ -7,12 +7,16 @@ using System.Collections;
 public class FlyingBeamEnemy : EnemyBase
 {
     LineRenderer beamLine;
+    SpriteRenderer sr;
     float _stopX;
     float _stopY;
     bool _isFiring = false; // ビーム発射中はふわふわ揺れを止める
+    float _hoverPhase = 0f;  // 揺れの位相を途切れさせないための通しタイマー
 
     protected override void OnInit()
     {
+        sr = GetComponent<SpriteRenderer>();
+
         // 停止するY座標をランダムで決定（個体ごとに変化を出す）
         _stopY = Random.Range(stats.beamFlightYMin, stats.beamFlightYMax);
 
@@ -52,6 +56,10 @@ public class FlyingBeamEnemy : EnemyBase
         float totalTime = stats.warpTotalDuration;
         float intervalTime = totalTime / warpCount;
 
+        // 待機時間からフェード分を差し引く（フェードアウト＋フェードインの合計）
+        float fadeEach = stats.warpFadeDuration;
+        float waitTime = Mathf.Max(0f, intervalTime - fadeEach * 2f);
+
         for (int i = 1; i <= warpCount; i++)
         {
             float t = (float)i / warpCount;
@@ -66,24 +74,53 @@ public class FlyingBeamEnemy : EnemyBase
                 warpPos += new Vector3(offsetX, offsetY, 0f);
             }
 
-            yield return new WaitForSeconds(intervalTime);
+            yield return new WaitForSeconds(waitTime);
+
+            // 消える瞬間：フェードアウト
+            yield return StartCoroutine(FadeSprite(1f, 0f, fadeEach));
+
             transform.position = warpPos;
+
+            // 現れる瞬間：フェードイン
+            yield return StartCoroutine(FadeSprite(0f, 1f, fadeEach));
         }
     }
 
+    // ─── SpriteRendererのアルファをフェードさせる ──────────────────
+    IEnumerator FadeSprite(float from, float to, float duration)
+    {
+        if (sr == null) yield break;
+
+        float timer = 0f;
+        while (timer < duration)
+        {
+            timer += Time.deltaTime;
+            float alpha = Mathf.Lerp(from, to, timer / duration);
+            var c = sr.color;
+            sr.color = new Color(c.r, c.g, c.b, alpha);
+            yield return null;
+        }
+
+        var final = sr.color;
+        sr.color = new Color(final.r, final.g, final.b, to);
+    }
+
     // ─── 攻撃地点で常時ふわふわ揺れ、発射の瞬間だけ静止 ────────────
+    // 挙動: ワープ→攻撃位置→ホバリング→攻撃時→停止(freezeIn)→攻撃→停止解除(freezeOut)→ホバリング再開
     IEnumerator HoverUntilFire()
     {
-        float hoverTimer = 0f;
+        float waitTimer = 0f;
 
-        while (hoverTimer < stats.attackRate)
+        while (waitTimer < stats.attackRate)
         {
-            if (!_isFiring)
-            {
-                float hoverOffset = Mathf.Sin(hoverTimer * stats.hoverFrequency) * stats.hoverAmplitude;
-                transform.position = new Vector3(_stopX, _stopY + hoverOffset, transform.position.z);
-            }
-            hoverTimer += Time.deltaTime;
+            // _hoverPhaseは常時進み続ける通しタイマーなので、
+            // 止まって再開しても揺れが途切れず自然につながる
+            _hoverPhase += Time.deltaTime;
+
+            float hoverOffset = Mathf.Sin(_hoverPhase * stats.hoverFrequency) * stats.hoverAmplitude;
+            transform.position = new Vector3(_stopX, _stopY + hoverOffset, transform.position.z);
+
+            waitTimer += Time.deltaTime;
             yield return null;
         }
 
@@ -94,14 +131,19 @@ public class FlyingBeamEnemy : EnemyBase
     {
         _isFiring = true;
 
-        // 発射の瞬間は静止位置に固定
-        transform.position = new Vector3(_stopX, _stopY, transform.position.z);
+        // 現在のふわふわ位置でそのままピタッと止める
+        Vector3 freezePos = transform.position;
+
+        // 停止クッション：揺れが止まってから少し間を置く
+        yield return new WaitForSeconds(stats.beamFreezeInDuration);
+        transform.position = freezePos;
 
         beamLine.enabled = true;
         float timer = 0f;
 
         while (timer < stats.beamDuration)
         {
+            transform.position = freezePos; // 攻撃中も完全に静止
             beamLine.SetPosition(0, transform.position);
             beamLine.SetPosition(1, towerTransform.position + Vector3.up * 2f);
             timer += Time.deltaTime;
@@ -110,6 +152,10 @@ public class FlyingBeamEnemy : EnemyBase
 
         beamLine.enabled = false;
         towerHP.TakeDamage(stats.attackDamage);
+
+        // 停止解除クッション：攻撃後もしばらく静止を維持してから揺れ再開
+        yield return new WaitForSeconds(stats.beamFreezeOutDuration);
+        transform.position = freezePos;
 
         _isFiring = false;
     }
