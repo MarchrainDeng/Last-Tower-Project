@@ -62,10 +62,18 @@ public class TitleMenu : MonoBehaviour
 
     void Update()
     {
-        if (Gamepad.current == null) return;
+        if (Gamepad.current == null)
+        {
+            Debug.Log("[TitleMenu] Gamepad.current が null");
+            return;
+        }
 
         // 設定画面が開いている間は操作を無効化
-        if (GameStateManager.IsPaused) return;
+        if (GameStateManager.IsPaused)
+        {
+            Debug.Log("[TitleMenu] GameStateManager.IsPaused=true のため操作無効");
+            return;
+        }
 
         // スタッフロール表示中はBボタンで閉じる
         if (staffRollObject != null && staffRollObject.activeSelf)

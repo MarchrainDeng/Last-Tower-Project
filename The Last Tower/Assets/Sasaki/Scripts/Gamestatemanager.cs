@@ -39,6 +39,7 @@ public class GameStateManager : MonoBehaviour
     // （前のシーンの一時停止状態を持ち越さないため）
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        Debug.Log($"[GameStateManager] OnSceneLoaded: {scene.name}, IsPausedを false にリセット");
         IsPaused = false;
         Time.timeScale = 1f;
     }
