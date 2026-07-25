@@ -16,7 +16,8 @@ public class FlyingBlockEnemy : EnemyBase
 
     protected override void OnInit()
     {
-        flightY = Random.Range(stats.flightYMin, stats.flightYMax);
+        float ratio = Random.Range(stats.flightRatioMin, stats.flightRatioMax);
+        flightY = GetWorldYFromViewportRatio(ratio);
         transform.position = new Vector3(transform.position.x, flightY, 0f);
 
         // スポーンと同時に持っているブロックを生成（子として追従）
@@ -62,7 +63,7 @@ public class FlyingBlockEnemy : EnemyBase
         // ⑤ 通常の離脱移動（揺れなし）
         var exit = new Vector2(transform.position.x + 20f, flightY);
         float timer = 0f;
-        while (timer < 3f)
+        while (timer < stats.blockExitDuration)
         {
             MoveToward(exit, stats.moveSpeed * stats.exitSpeedMultiplier);
             timer += Time.deltaTime;

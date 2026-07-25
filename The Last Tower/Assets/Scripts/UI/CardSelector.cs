@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
+using System.Collections;
 
 /*
 ----------------------------------------
@@ -76,6 +77,8 @@ public class CardSelector : MonoBehaviour
     private ConfigurableGamepadButton chooseButton =
     ConfigurableGamepadButton.East;
 
+    [SerializeField] private CardEnterController cardEnterController;
+
     /// <summary>
     /// 可配置的手柄按键
     /// 設定可能なゲームパッドボタン
@@ -110,6 +113,11 @@ public class CardSelector : MonoBehaviour
 
     private void Update()
     {
+        // 卡牌进入动画期间不接受输入
+        // カード登場アニメーション中は入力を受け付けない
+        if (!cardEnterController.CanAcceptInput)
+            return;
+
         gamepad = Gamepad.current;
 
         if (!inputEnabled)
@@ -199,6 +207,11 @@ public class CardSelector : MonoBehaviour
     /// </summary>
     private void HandleSelection()
     {
+        if (!cardEnterController.CanAcceptInput)
+        {
+            return;
+        }
+
         float stickInput = 0f;
 
         // 手柄左摇杆输入
@@ -284,10 +297,32 @@ public class CardSelector : MonoBehaviour
         }
 
         if (!confirmPressed)
-            return;
+            return;  
 
-        isConfirming = true;
+        StartCoroutine(ConfirmCoroutine());
+
+        //isConfirming = true;
+
+    }
+    private IEnumerator ConfirmCoroutine()
+    {
+        isConfirming = false;
+
+        // 被选择的卡牌先下沉，然后完全飞到上方
+        // 選択されたカードを下げてから完全に上へ移動させる
+        yield return StartCoroutine(
+            cardEnterController.PlaySelectedAnimation(currentIndex)
+        );
+
         SpawnSelectedBlock();
+
+        // 被选择卡牌完全离开后，其他卡牌同时向上飞出
+        // 選択カードが完全に退場した後、他のカードを同時に上へ移動させる
+        yield return StartCoroutine(
+            cardEnterController.PlayUnselectedCardsAnimation(currentIndex)
+        );
+        
+        
     }
 
     /// <summary>

@@ -300,6 +300,19 @@ public class PowerBlock : MonoBehaviour
 
         isPowered = powered;
 
+        if (isPowered)
+        {
+            // 修改整个方块的Layer
+            // ブロック全体のLayerを変更する
+            SetLayerRecursively(gameObject, LayerMask.NameToLayer("PowerBlock"));
+        }
+        else
+        {
+            // 修改整个方块的Layer
+            // ブロック全体のLayerを変更する
+            SetLayerRecursively(gameObject, LayerMask.NameToLayer("NoPowerBlock"));
+        }
+
         // 根据状态更新图片
         // 状態に応じて画像を更新する
         UpdateSprite();

@@ -1,78 +1,95 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-/*
-----------------------------------------
-【功能 / 機能】
-控制相机震动。
-
-カメラのシェイクを制御する。
-
-【负责人 / 担当】
-Deng Guangpeng
-トウ　コウホウ
-----------------------------------------
-*/
-
 public class CameraShake : MonoBehaviour
 {
-    [Header("Shake")]
+    [Header("Shake Settings")]
 
-    // 默认震动时间
-    // デフォルトのシェイク時間
-    public float duration = 0.15f;
+    // 震动持续时间
+    // シェイクの継続時間
+    [SerializeField]
+    private float shakeDuration = 0.2f;
 
-    // 默认震动幅度
-    // デフォルトのシェイク強度
-    public float magnitude = 0.08f;
+    // 震动强度
+    // シェイクの強さ
+    [SerializeField]
+    private float shakeMagnitude = 0.1f;
 
-    private Vector3 originalPosition;
+    // 当前震动协程
+    // 現在のシェイクコルーチン
     private Coroutine shakeCoroutine;
 
-    private void Awake()
-    {
-        originalPosition = transform.localPosition;
-    }
+    // 本次震动开始时的相机位置
+    // 今回のシェイク開始時のカメラ位置
+    private Vector3 shakeBasePosition;
 
     /// <summary>
-    /// 播放震动
-    /// シェイクを再生する
+    /// 开始相机震动
+    /// カメラシェイクを開始する
     /// </summary>
     public void Shake()
     {
-        Shake(duration, magnitude);
-    }
-
-    /// <summary>
-    /// 自定义震动参数
-    /// パラメータ指定でシェイクを再生する
-    /// </summary>
-    public void Shake(float duration, float magnitude)
-    {
+        // 如果上一次震动尚未结束，先停止
+        // 前回のシェイクが終了していない場合は停止する
         if (shakeCoroutine != null)
         {
             StopCoroutine(shakeCoroutine);
+
+            // 恢复上一次震动前的位置
+            // 前回のシェイク前の位置へ戻す
+            transform.position = shakeBasePosition;
         }
 
-        shakeCoroutine = StartCoroutine(ShakeCoroutine(duration, magnitude));
+        // 每次震动时保存当前相机位置
+        // シェイク開始時に現在のカメラ位置を保存する
+        shakeBasePosition = transform.position;
+
+        shakeCoroutine = StartCoroutine(ShakeRoutine());
     }
 
-    private IEnumerator ShakeCoroutine(float duration, float magnitude)
+    private IEnumerator ShakeRoutine()
     {
-        float timer = 0;
+        float timer = 0f;
 
-        while (timer < duration)
+        while (timer < shakeDuration)
         {
-            Vector2 offset = Random.insideUnitCircle * magnitude;
-
-            transform.localPosition = originalPosition +
-                                      new Vector3(offset.x, offset.y, 0);
-
             timer += Time.deltaTime;
+
+            // 生成随机震动偏移
+            // ランダムなシェイクオフセットを生成する
+            Vector2 randomOffset =
+                Random.insideUnitCircle * shakeMagnitude;
+
+            transform.position =
+                shakeBasePosition +
+                new Vector3(
+                    randomOffset.x,
+                    randomOffset.y,
+                    0f
+                );
 
             yield return null;
         }
 
-        transform.localPosition = originalPosition;
+        // 返回本次震动开始前的位置
+        // 今回のシェイク開始前の位置へ戻す
+        transform.position = shakeBasePosition;
+
+        shakeCoroutine = null;
+    }
+
+    /// <summary>
+    /// 立即停止震动
+    /// シェイクを即座に停止する
+    /// </summary>
+    public void StopShake()
+    {
+        if (shakeCoroutine != null)
+        {
+            StopCoroutine(shakeCoroutine);
+            shakeCoroutine = null;
+        }
+
+        transform.position = shakeBasePosition;
     }
 }

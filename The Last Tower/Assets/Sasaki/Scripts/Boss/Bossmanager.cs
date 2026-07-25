@@ -25,6 +25,11 @@ public class BossManager : MonoBehaviour
     public GameObject victoryResultUI;  // 勝利時に表示するUI
     public GameObject defeatResultUI;   // 敗北時に表示するUI
 
+    [Header("── リザルトBGM ──────────────────")]
+    public AudioSource bgmSource;   // BGM再生用AudioSource
+    public AudioClip victoryBGM;  // 勝利時のBGM
+    public AudioClip defeatBGM;   // 敗北時のBGM
+
     [Header("── 出現タイミング ──────────────")]
     public float spawnDelay = 70f;
 
@@ -34,6 +39,11 @@ public class BossManager : MonoBehaviour
         // ボスは最初非表示
         if (bossRoot != null)
             bossRoot.SetActive(false);
+
+        // タワーHP0の監視はボス出現前から開始する
+        // （ボスが出る前に力尽きた場合もデス判定を取るため）
+        if (towerHP != null)
+            towerHP.OnDead += OnDefeat;
 
         StartCoroutine(SpawnBoss());
     }
@@ -55,10 +65,6 @@ public class BossManager : MonoBehaviour
         // 両手の撃破イベントを購読
         if (leftHand != null) leftHand.OnDefeated += CheckVictory;
         if (rightHand != null) rightHand.OnDefeated += CheckVictory;
-
-        // タワーHP0で敗北監視
-        if (towerHP != null)
-            towerHP.OnDead += OnDefeat;
     }
 
     // ─── 勝利判定（どちらかの手が倒された時に呼ばれる） ──────────
@@ -81,6 +87,8 @@ public class BossManager : MonoBehaviour
         if (victoryResultUI != null)
             victoryResultUI.SetActive(true);
 
+        PlayBGM(victoryBGM);
+
         Time.timeScale = 0f;
         GameStateManager.SetPaused(true);
 
@@ -94,6 +102,33 @@ public class BossManager : MonoBehaviour
         if (defeatResultUI != null)
             defeatResultUI.SetActive(true);
 
+        PlayBGM(defeatBGM);
+
         GameStateManager.SetPaused(true);
+    }
+
+    // ─── リザルトBGM再生 ─────────────────────────────────────────
+    void PlayBGM(AudioClip clip)
+    {
+        if (bgmSource == null || clip == null) return;
+
+        bgmSource.Stop();
+        bgmSource.clip = clip;
+        bgmSource.loop = true;
+        bgmSource.Play();
+    }
+
+    // ─── 破棄時にイベント購読を必ず解除する ───────────────────────
+    // （敵やタワーが別シーンでも生き残ってイベントを発火し続けるのを防ぐ）
+    void OnDestroy()
+    {
+        if (towerHP != null)
+            towerHP.OnDead -= OnDefeat;
+
+        if (leftHand != null)
+            leftHand.OnDefeated -= CheckVictory;
+
+        if (rightHand != null)
+            rightHand.OnDefeated -= CheckVictory;
     }
 }

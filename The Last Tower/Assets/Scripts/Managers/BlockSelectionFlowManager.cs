@@ -40,6 +40,8 @@ public class BlockSelectionFlowManager : MonoBehaviour
     // ブロック選択中にゲーム時間を停止するか
     [SerializeField] private bool pauseGameDuringSelection = true;
 
+    [SerializeField] private CardEnterController cardEnterController;
+
     // 当前正在进行的选择类型
     // 現在実行中の選択タイプ
     public BlockSelectionType CurrentSelectionType
@@ -125,6 +127,8 @@ public class BlockSelectionFlowManager : MonoBehaviour
     {
         CurrentSelectionType = selectionType;
 
+        cardEnterController.ShowCardSelection();
+
         if (cardSelectionUI != null)
         {
             cardSelectionUI.SetActive(true);
@@ -147,10 +151,12 @@ public class BlockSelectionFlowManager : MonoBehaviour
             GameStateManager.SetPaused(true);
         }
 
+        /*
         Debug.Log(
             $"Open Selection: {selectionType} / " +
             $"選択開始：{selectionType}"
         );
+        */
     }
 
     /// <summary>
@@ -180,7 +186,7 @@ public class BlockSelectionFlowManager : MonoBehaviour
 
         if (cardSelectionUI != null)
         {
-            cardSelectionUI.SetActive(false);
+            //cardSelectionUI.SetActive(false);
         }
 
         CurrentSelectionType = BlockSelectionType.None;

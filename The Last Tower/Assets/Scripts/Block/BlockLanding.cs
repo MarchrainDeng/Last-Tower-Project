@@ -71,6 +71,32 @@ public class BlockLanding : MonoBehaviour
     // 固定処理中かどうか
     private bool isFixingBlock;
 
+    [Header("Physics Material")]
+
+    // 落地后多久切换材质
+    // 着地後、何秒で材質を切り替えるか
+    [SerializeField]
+    private float materialChangeDelay = 0.2f;
+
+    // 落地下落时使用的材质
+    // 落下中に使用するマテリアル
+    [SerializeField]
+    private PhysicsMaterial2D fallingMaterial;
+
+    public PhysicsMaterial2D landMaterial;
+
+    private Collider2D[] colliders;
+
+    private void Awake()
+    {
+        colliders = GetComponentsInChildren<Collider2D>();
+
+        foreach (Collider2D c in colliders)
+        {
+            c.sharedMaterial = fallingMaterial;
+        }
+    }
+
     private void Update()
     {
         // 已经落地后不再重复检测
@@ -155,6 +181,10 @@ public class BlockLanding : MonoBehaviour
             // 現在の速度をリセットする
             rb.linearVelocity = Vector2.zero;
             rb.angularVelocity = 0f;
+            rb.mass = 100f;
+            //rb.sharedMaterial = landMaterial;
+
+            StartCoroutine(ChangeMaterialLater());
 
             // 播放相机震动
             // カメラシェイクを再生する
@@ -296,6 +326,19 @@ public class BlockLanding : MonoBehaviour
         rb.useFullKinematicContacts = true;
 
         isFixingBlock = false;
+    }
+
+    private IEnumerator ChangeMaterialLater()
+    {
+        yield return new WaitForSeconds(materialChangeDelay);
+
+        foreach (Collider2D c in colliders)
+        {
+            if (c != null)
+                c.sharedMaterial = landMaterial;
+        }
+
+        rb.sharedMaterial = landMaterial;
     }
 
     private void OnDrawGizmosSelected()
