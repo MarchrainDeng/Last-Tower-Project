@@ -13,6 +13,10 @@ public class BlockCardUI : MonoBehaviour
     // ブロックタイプテキスト
     [SerializeField] private TMP_Text typeText;
 
+    [SerializeField] private Image cardImage;
+
+    [SerializeField] private Image cardBackground;
+
     // 选中高亮边框
     // 選択中のハイライト枠
     [SerializeField] private GameObject highlightFrame;
@@ -88,6 +92,20 @@ public class BlockCardUI : MonoBehaviour
             // 使用图片原始尺寸
             // 画像の元サイズを使用する
             blockImage.SetNativeSize();
+        }
+
+        if(cardImage != null)
+        {
+            cardImage.sprite = currentOption.cardUI;
+
+            cardImage.preserveAspect = true;
+        }
+
+        if(cardBackground != null)
+        {
+            cardBackground.sprite = currentOption.cardBackground;
+
+            cardBackground.preserveAspect = true;
         }
 
         if (typeText != null)

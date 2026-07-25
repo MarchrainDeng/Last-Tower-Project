@@ -14,4 +14,10 @@ public class BlockOption
     // 实际生成的方块Prefab
     // 実際に生成するブロックPrefab
     public GameObject blockPrefab;
+
+    //UI枠素材
+    public Sprite cardUI;
+
+    //背景
+    public Sprite cardBackground;
 }
