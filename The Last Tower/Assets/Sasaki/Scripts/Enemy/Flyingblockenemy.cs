@@ -16,7 +16,8 @@ public class FlyingBlockEnemy : EnemyBase
 
     protected override void OnInit()
     {
-        flightY = Random.Range(stats.flightYMin, stats.flightYMax);
+        float ratio = Random.Range(stats.flightRatioMin, stats.flightRatioMax);
+        flightY = GetWorldYFromViewportRatio(ratio);
         transform.position = new Vector3(transform.position.x, flightY, 0f);
 
         // スポーンと同時に持っているブロックを生成（子として追従）

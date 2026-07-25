@@ -57,23 +57,20 @@ public class TitleMenu : MonoBehaviour
 
     void Start()
     {
+        // タイトル画面である以上、必ずポーズ状態を解除する
+        // （リザルト画面や別シーンから持ち越された古いポーズ状態を防ぐ）
+        GameStateManager.SetPaused(false);
+        Time.timeScale = 1f;
+
         UpdateVisuals();
     }
 
     void Update()
     {
-        if (Gamepad.current == null)
-        {
-            Debug.Log("[TitleMenu] Gamepad.current が null");
-            return;
-        }
+        if (Gamepad.current == null) return;
 
         // 設定画面が開いている間は操作を無効化
-        if (GameStateManager.IsPaused)
-        {
-            Debug.Log("[TitleMenu] GameStateManager.IsPaused=true のため操作無効");
-            return;
-        }
+        if (GameStateManager.IsPaused) return;
 
         // スタッフロール表示中はBボタンで閉じる
         if (staffRollObject != null && staffRollObject.activeSelf)

@@ -9,7 +9,7 @@ public class TowerHP : MonoBehaviour
     public float maxHP = 100f;
 
     [Header("台座")]
-    public Rigidbody2D pedestalRb;
+    public Rigidbody2D pedestalRb; // Ground（親オブジェクト）にRigidbody2Dを追加してアサイン
 
     [Header("揺れ設定")]
     public float shakeAmplitude = 0.3f;

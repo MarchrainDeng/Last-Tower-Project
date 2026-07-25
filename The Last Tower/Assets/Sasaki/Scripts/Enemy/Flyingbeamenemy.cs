@@ -18,7 +18,8 @@ public class FlyingBeamEnemy : EnemyBase
         sr = GetComponent<SpriteRenderer>();
 
         // 停止するY座標をランダムで決定（個体ごとに変化を出す）
-        _stopY = Random.Range(stats.beamFlightYMin, stats.beamFlightYMax);
+        float ratio = Random.Range(stats.beamFlightRatioMin, stats.beamFlightRatioMax);
+        _stopY = GetWorldYFromViewportRatio(ratio);
 
         // スポーン位置が台座より左なら左側、右なら右側で停止
         float side = transform.position.x < towerTransform.position.x ? -1f : 1f;

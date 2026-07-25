@@ -835,20 +835,20 @@ MonoBehaviour:
     knockbackDuration: 0.3
     returnDuration: 0.5
     knockbackArcHeight: 1
-    pokeDistance: 1.5
-    pokeDuration: 0.15
+    pokeDistance: -5
+    pokeDuration: 0.3
     punchShakeAmplitude: 0.3
     punchShakeDuration: 0.5
-    punchShakeFrequency: 25
+    punchShakeFrequency: 10
     towerBlockTag: TowerBlock
     jugglingHoldOffsetY: 0.5
     jugglingHeight: 0.5
     jugglingFrequency: 8
     jugglingDuration: 2
     paintDuration: 2
-    flickForceX: 5
-    flickForceY: 5
-    flickTorque: 5
+    flickForceX: 3
+    flickForceY: 3
+    flickTorque: 3
     punchAnimTrigger: Punch
     punchAnimDuration: 0.5
     pokeAnimTrigger: Tuttuki
@@ -859,8 +859,18 @@ MonoBehaviour:
     harassActions:
     - type: 4
       weight: 1
-      damage: 0
-      cooldown: 3
+      damage: 1
+      cooldown: 5
+      range: 0
+    - type: 0
+      weight: 1
+      damage: 1
+      cooldown: 5
+      range: 0
+    - type: 3
+      weight: 1
+      damage: 1
+      cooldown: 5
       range: 0
     attackActions: []
   towerHP: {fileID: 0}
@@ -904,8 +914,8 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
-  m_Size: {x: 3.39, y: 1.88}
+  m_Offset: {x: -1.0524459, y: 0.5297836}
+  m_Size: {x: 2.951942, y: 0.8204427}
   m_Direction: 1
 --- !u!50 &3700958713992089429
 Rigidbody2D:
@@ -1066,20 +1076,20 @@ MonoBehaviour:
     knockbackDuration: 0.3
     returnDuration: 0.5
     knockbackArcHeight: 1
-    pokeDistance: 1.5
-    pokeDuration: 0.15
+    pokeDistance: -5
+    pokeDuration: 0.3
     punchShakeAmplitude: 0.3
     punchShakeDuration: 0.5
-    punchShakeFrequency: 25
+    punchShakeFrequency: 10
     towerBlockTag: TowerBlock
     jugglingHoldOffsetY: 0.5
     jugglingHeight: 0.5
     jugglingFrequency: 8
     jugglingDuration: 2
     paintDuration: 2
-    flickForceX: 10
-    flickForceY: 10
-    flickTorque: 10
+    flickForceX: 3
+    flickForceY: 3
+    flickTorque: 3
     punchAnimTrigger: Punch
     punchAnimDuration: 0.5
     pokeAnimTrigger: Tuttuki
@@ -1090,28 +1100,18 @@ MonoBehaviour:
     harassActions:
     - type: 0
       weight: 1
-      damage: 0
-      cooldown: 0
-      range: 0
-    - type: 1
-      weight: 1
-      damage: 0
-      cooldown: 0
-      range: 0
-    - type: 2
-      weight: 1
-      damage: 0
-      cooldown: 0
-      range: 0
-    - type: 3
-      weight: 1
-      damage: 0
-      cooldown: 0
+      damage: 1
+      cooldown: 5
       range: 0
     - type: 4
       weight: 1
-      damage: 0
-      cooldown: 0
+      damage: 1
+      cooldown: 5
+      range: 0
+    - type: 3
+      weight: 1
+      damage: 1
+      cooldown: 5
       range: 0
     attackActions: []
   towerHP: {fileID: 0}
@@ -1155,8 +1155,8 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
-  m_Size: {x: 3.39, y: 1.88}
+  m_Offset: {x: 1.5156865, y: 0.49624896}
+  m_Size: {x: 2.5906909, y: 0.88751554}
   m_Direction: 1
 --- !u!50 &6970937748372119886
 Rigidbody2D:
@@ -1402,6 +1402,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 849382108394756767}
+  - {fileID: 481095210153034888}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &349996878208468420
@@ -1422,7 +1423,139 @@ MonoBehaviour:
   towerHP: {fileID: 0}
   victoryResultUI: {fileID: 0}
   defeatResultUI: {fileID: 0}
+  bgmSource: {fileID: 3715753184972121178}
+  victoryBGM: {fileID: 8300000, guid: 39f05c24851ab8d4b9ec07778e65995a, type: 3}
+  defeatBGM: {fileID: 8300000, guid: d06ebb13f2829d4478542bda73839801, type: 3}
   spawnDelay: 90
+--- !u!1 &7890959881995865404
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 481095210153034888}
+  - component: {fileID: 3715753184972121178}
+  m_Layer: 0
+  m_Name: Bgm Source
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &481095210153034888
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7890959881995865404}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1679228556971873766}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!82 &3715753184972121178
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7890959881995865404}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &8134844545146966353
 GameObject:
   m_ObjectHideFlags: 0
