@@ -291,6 +291,7 @@ GameObject:
   - component: {fileID: 9178950602915132830}
   - component: {fileID: 2007443109803056184}
   - component: {fileID: -2885742830559115625}
+  - component: {fileID: 5958466926545217728}
   m_Layer: 7
   m_Name: FatherAttackBlock
   m_TagString: TowerBlock
@@ -388,11 +389,11 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 1
+  m_Mass: 0.0001
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_GravityScale: 0
-  m_Material: {fileID: 6200000, guid: 05cb8a6ebe954344f83cb5c14e3598da, type: 2}
+  m_Material: {fileID: 6200000, guid: 1a8e6cdc8c458d549aff8fa4e8481b5f, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -416,16 +417,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BlockLanding
   rb: {fileID: 7447739058951441783}
+  stickyBlockJoint: {fileID: 0}
+  landingLayer:
+    serializedVersion: 2
+    m_Bits: 3008
+  requireSupportFromBelow: 0
+  minimumSupportNormalY: 0.5
   childBlocks:
   - {fileID: 2376453352697576447}
   - {fileID: 6891305551786201964}
   - {fileID: 557866971683816032}
   - {fileID: 485139397798059532}
-  blockSize: {x: 0.55, y: 0.5}
-  checkDistance: 0.02
-  landingLayer:
-    serializedVersion: 2
-    m_Bits: 3008
+  fixedBlockSettleFrames: 3
+  fixedBlockMaxSpeed: 0.05
+  materialChangeDelay: 0.2
+  fallingMaterial: {fileID: 6200000, guid: 1a8e6cdc8c458d549aff8fa4e8481b5f, type: 2}
+  landMaterial: {fileID: 6200000, guid: 05cb8a6ebe954344f83cb5c14e3598da, type: 2}
 --- !u!114 &9178950602915132830
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -459,10 +466,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AttackBlock
   canAttack: 0
+  inactiveSprite: {fileID: 0}
+  activeSprite: {fileID: 0}
+  gunVisual: {fileID: 0}
   verticalCheckSize: {x: 0.53, y: 0.08}
-  verticalCheckOffset: 0.23
-  horizontalCheckSize: {x: 0.08, y: 0.4}
-  horizontalCheckOffset: 0.23
+  verticalCheckOffset: 0.24
+  horizontalCheckSize: {x: 0.08, y: 0.55}
+  horizontalCheckOffset: 0.24
   poweredBlockLayer:
     serializedVersion: 2
     m_Bits: 256
@@ -485,6 +495,21 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   searchRadius: 20
+--- !u!114 &5958466926545217728
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4810722584337282222}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e4e8d8eed4d7a874bb46edb87f0e212e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BlockGroup
+  rb: {fileID: 7447739058951441783}
+  disableOtherMoveController: 1
+  preserveWorldPosition: 1
 --- !u!1 &6572432521294866725
 GameObject:
   m_ObjectHideFlags: 0

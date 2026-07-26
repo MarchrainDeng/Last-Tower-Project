@@ -246,11 +246,11 @@ public class AttackBlockState : MonoBehaviour
 
         if (canAttack)
         {
-            Debug.Log("Attack Block Ready / 攻撃ブロック起動");
+            //Debug.Log("Attack Block Ready / 攻撃ブロック起動");
         }
         else
         {
-            Debug.Log("Attack Block Disabled / 攻撃ブロック停止");
+            //Debug.Log("Attack Block Disabled / 攻撃ブロック停止");
         }
     }
 

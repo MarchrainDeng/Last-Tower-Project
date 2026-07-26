@@ -14,7 +14,8 @@ GameObject:
   - component: {fileID: 5500422783304295468}
   - component: {fileID: 1196579378171203833}
   - component: {fileID: -209563175386702930}
-  m_Layer: 8
+  - component: {fileID: -5877599857878925065}
+  m_Layer: 7
   m_Name: FatherPowerBlock
   m_TagString: TowerBlock
   m_Icon: {fileID: 0}
@@ -111,11 +112,11 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 1
+  m_Mass: 0.0001
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_GravityScale: 0
-  m_Material: {fileID: 6200000, guid: 05cb8a6ebe954344f83cb5c14e3598da, type: 2}
+  m_Material: {fileID: 6200000, guid: 1a8e6cdc8c458d549aff8fa4e8481b5f, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -139,16 +140,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BlockLanding
   rb: {fileID: 194337825806194061}
+  stickyBlockJoint: {fileID: 0}
+  landingLayer:
+    serializedVersion: 2
+    m_Bits: 3008
+  requireSupportFromBelow: 0
+  minimumSupportNormalY: 0.5
   childBlocks:
   - {fileID: 7518603948613206943}
   - {fileID: 1243060820637498598}
   - {fileID: 9215363840378616594}
   - {fileID: 5805145911192015095}
-  blockSize: {x: 0.5, y: 0.5}
-  checkDistance: 0.02
-  landingLayer:
-    serializedVersion: 2
-    m_Bits: 3008
+  fixedBlockSettleFrames: 3
+  fixedBlockMaxSpeed: 0.05
+  materialChangeDelay: 0.2
+  fallingMaterial: {fileID: 6200000, guid: 1a8e6cdc8c458d549aff8fa4e8481b5f, type: 2}
+  landMaterial: {fileID: 6200000, guid: 05cb8a6ebe954344f83cb5c14e3598da, type: 2}
 --- !u!114 &1196579378171203833
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -182,10 +189,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PowerBlock
   isPowered: 0
-  verticalCheckSize: {x: 0.52, y: 0.08}
-  verticalCheckOffset: 0.23
-  horizontalCheckSize: {x: 0.07, y: 0.4}
-  horizontalCheckOffset: 0.23
+  verticalCheckSize: {x: 0.55, y: 0.1}
+  verticalCheckOffset: 0.24
+  horizontalCheckSize: {x: 0.08, y: 0.55}
+  horizontalCheckOffset: 0.24
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
@@ -196,6 +203,21 @@ MonoBehaviour:
   unpoweredSprite: {fileID: 0}
   poweredSprite: {fileID: 0}
   alwaysPowered: 0
+--- !u!114 &-5877599857878925065
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 628772897732542642}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e4e8d8eed4d7a874bb46edb87f0e212e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BlockGroup
+  rb: {fileID: 194337825806194061}
+  disableOtherMoveController: 1
+  preserveWorldPosition: 1
 --- !u!1 &1651153064709822673
 GameObject:
   m_ObjectHideFlags: 0
@@ -207,7 +229,7 @@ GameObject:
   - component: {fileID: 5805145911192015095}
   - component: {fileID: 5175356830712890021}
   - component: {fileID: 6405144903495858265}
-  m_Layer: 8
+  m_Layer: 7
   m_Name: TestChildBlock (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -345,7 +367,7 @@ GameObject:
   - component: {fileID: 9215363840378616594}
   - component: {fileID: 1030851507586073742}
   - component: {fileID: 7366973784031985633}
-  m_Layer: 8
+  m_Layer: 7
   m_Name: TestChildBlock (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -483,7 +505,7 @@ GameObject:
   - component: {fileID: 7518603948613206943}
   - component: {fileID: 5023245009891648563}
   - component: {fileID: 3589209330183630595}
-  m_Layer: 8
+  m_Layer: 7
   m_Name: TestChildBlock
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -621,7 +643,7 @@ GameObject:
   - component: {fileID: 1243060820637498598}
   - component: {fileID: 6835478084584746540}
   - component: {fileID: 981056082273263254}
-  m_Layer: 8
+  m_Layer: 7
   m_Name: TestChildBlock (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}

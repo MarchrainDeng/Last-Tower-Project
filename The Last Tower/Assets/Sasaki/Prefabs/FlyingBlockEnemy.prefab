@@ -109,8 +109,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyStatsHolder
   stats:
     type: 1
-    HP: 20
-    moveSpeed: 3
+    HP: 50
+    moveSpeed: 1.8
     stopX: 3.3
     attackDamage: 1
     attackRate: 1.5
@@ -124,14 +124,17 @@ MonoBehaviour:
     blockCarrySettleDuration: 0.2
     blockCarryHoldDuration: 0.2
     blockCarrySwayAmount: 0.06
-    blockCarrySwaySpeed: 10
+    blockCarrySwaySpeed: 6
+    blockExitDuration: 10
     beamFlightYMin: 5
     beamFlightYMax: 9
     warpCount: 3
     warpTotalDuration: 3
     warpDeviation: 1
+    warpFadeDuration: 0.15
     hoverAmplitude: 0.3
     hoverFrequency: 2
+    beamSettleDuration: 0.15
     beamDuration: 0.4
     beamStartWidth: 0.12
     beamEndWidth: 0.05

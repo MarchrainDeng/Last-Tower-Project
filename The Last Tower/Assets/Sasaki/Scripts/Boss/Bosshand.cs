@@ -353,8 +353,8 @@ public class BossHand : MonoBehaviour
 
             // 上方向＋横方向（side逆向き）にインパルスを加える
             Vector2 flickDir = new Vector2(-side * handData.flickForceX, handData.flickForceY);
-            topBlock.AddForce(flickDir, ForceMode2D.Impulse);
-            topBlock.AddTorque(-side * handData.flickTorque, ForceMode2D.Impulse);
+            topBlock.linearVelocity = flickDir;   // 質量に依存しない一定速度
+            topBlock.angularVelocity = -side * handData.flickTorque;
         }
 
         yield return new WaitForSeconds(handData.flickAnimDuration);
