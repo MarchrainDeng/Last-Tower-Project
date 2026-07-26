@@ -59,6 +59,7 @@ public class FlyingBlockEnemy : EnemyBase
         // ④ ブロックを落とす → 持ってる感の演出終了
         DropBlock();
         towerHP.TakeDamage(stats.attackDamage);
+        PlayAttackSE();
 
         // ⑤ 通常の離脱移動（揺れなし）
         var exit = new Vector2(transform.position.x + 20f, flightY);

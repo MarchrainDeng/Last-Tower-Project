@@ -20,6 +20,7 @@ public class MeleeEnemy : EnemyBase
         while (!towerHP.IsDead)
         {
             towerHP.TakeDamage(stats.attackDamage);
+            PlayAttackSE();
             yield return new WaitForSeconds(stats.attackRate);
         }
     }

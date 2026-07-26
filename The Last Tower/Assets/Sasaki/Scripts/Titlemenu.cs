@@ -52,6 +52,11 @@ public class TitleMenu : MonoBehaviour
     [Range(0, 255)] public int normalAlpha = 120; // 非選択時の透明度（0-255）
     [Range(0, 255)] public int selectedAlpha = 255; // 選択中の透明度（0-255）
 
+    [Header("── SE ──────────────────────")]
+    public AudioSource audioSource;
+    public AudioClip moveSE;    // 選択を変えた時
+    public AudioClip confirmSE; // 選択確定時
+
     int selectedIndex = 0;
     float inputTimer = 0f;
 
@@ -108,6 +113,7 @@ public class TitleMenu : MonoBehaviour
     {
         selectedIndex = (selectedIndex + direction + menuItems.Length) % menuItems.Length;
         UpdateVisuals();
+        PlaySE(moveSE);
     }
 
     void UpdateVisuals()
@@ -131,6 +137,8 @@ public class TitleMenu : MonoBehaviour
 
     void ConfirmSelection()
     {
+        PlaySE(confirmSE);
+
         var item = menuItems[selectedIndex];
 
         switch (item.action)
@@ -158,5 +166,12 @@ public class TitleMenu : MonoBehaviour
 #endif
                 break;
         }
+    }
+
+    // ─── SE再生 ───────────────────────────────────────────────────
+    void PlaySE(AudioClip clip)
+    {
+        if (audioSource != null && clip != null)
+            audioSource.PlayOneShot(clip);
     }
 }

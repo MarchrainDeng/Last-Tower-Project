@@ -33,6 +33,9 @@ public class BossManager : MonoBehaviour
     [Header("── 出現タイミング ──────────────")]
     public float spawnDelay = 70f;
 
+    // ボスが出現済みかどうか（EnemySpawnerが参照する）
+    public bool HasBossSpawned { get; private set; } = false;
+
     // ─── 起動 ─────────────────────────────────────────────────────
     void Start()
     {
@@ -54,6 +57,8 @@ public class BossManager : MonoBehaviour
         yield return new WaitForSeconds(spawnDelay);
 
         Debug.Log("[BossManager] ボス出現！");
+
+        HasBossSpawned = true;
 
         if (bossRoot != null)
             bossRoot.SetActive(true);

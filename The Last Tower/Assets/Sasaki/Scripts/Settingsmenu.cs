@@ -51,6 +51,11 @@ public class SettingsMenu : MonoBehaviour
     public float sliderStep = 0.05f; // スライダーを一度に動かす量
     public float navInputCooldown = 0.2f;  // 連続入力を防ぐ間隔
 
+    [Header("── SE ──────────────────────")]
+    public AudioSource audioSource;
+    public AudioClip moveSE;    // 選択を変えた時
+    public AudioClip confirmSE; // 選択確定時
+
     // 選択可能な項目（上から順）
     enum SettingsFocus { Volume, Brightness, Language, HomeButton }
     SettingsFocus focusedItem = SettingsFocus.Volume;
@@ -164,6 +169,7 @@ public class SettingsMenu : MonoBehaviour
         int next = ((int)focusedItem + direction + itemCount) % itemCount;
         focusedItem = (SettingsFocus)next;
         UpdateHighlight();
+        PlaySE(moveSE);
     }
 
     // ─── 選択中の項目のテキスト色を変える ──────────────────────────
@@ -242,7 +248,15 @@ public class SettingsMenu : MonoBehaviour
 
     public void OnHomeButton()
     {
+        PlaySE(confirmSE);
         Time.timeScale = 1f;
         SceneManager.LoadScene(homeSceneName);
+    }
+
+    // ─── SE再生 ───────────────────────────────────────────────────
+    void PlaySE(AudioClip clip)
+    {
+        if (audioSource != null && clip != null)
+            audioSource.PlayOneShot(clip);
     }
 }
