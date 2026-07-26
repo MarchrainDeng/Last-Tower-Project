@@ -42,6 +42,9 @@ public class CannonShooter : MonoBehaviour
     // 発射タイマー
     private float shootTimer;
 
+    [SerializeField]
+    private AudioClip shootSound;
+
     private void Awake()
     {
         if (attackState == null)
@@ -89,6 +92,11 @@ public class CannonShooter : MonoBehaviour
             );
 
             return;
+        }
+
+        if (SFXManager.Instance != null)
+        {
+            SFXManager.Instance.PlayAttackSFX(shootSound);
         }
 
         Vector3 spawnPosition =

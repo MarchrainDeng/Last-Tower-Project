@@ -53,6 +53,9 @@ public class BulletShooter : MonoBehaviour
     // 発射タイマー
     private float shootTimer = 0f;
 
+    [SerializeField]
+    private AudioClip shootSound;
+
     private void Awake()
     {
         // 获取攻击状态脚本
@@ -121,6 +124,11 @@ public class BulletShooter : MonoBehaviour
             spawnPosition,
             spawnRotation
         );
+
+        if (SFXManager.Instance != null)
+        {
+            SFXManager.Instance.PlayAttackSFX(shootSound);
+        }
 
         Bullet bullet = bulletObject.GetComponent<Bullet>();
 
