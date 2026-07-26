@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 4108486845636120783}
   - component: {fileID: 6296377786133942452}
   - component: {fileID: -2745356613143426154}
+  - component: {fileID: 1529994277923749887}
   m_Layer: 7
   m_Name: FixedBlock
   m_TagString: TowerBlock
@@ -139,16 +140,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BlockLanding
   rb: {fileID: 3452516120412547308}
+  stickyBlockJoint: {fileID: 0}
+  landingLayer:
+    serializedVersion: 2
+    m_Bits: 3008
+  requireSupportFromBelow: 0
+  minimumSupportNormalY: 0.5
   childBlocks:
   - {fileID: 8946388087573804679}
   - {fileID: 1637920224962161802}
   - {fileID: 8601287537197328609}
   - {fileID: 3989598274366209833}
-  blockSize: {x: 0.65, y: 0.5}
-  checkDistance: 0.02
-  landingLayer:
-    serializedVersion: 2
-    m_Bits: 3008
   fixedBlockSettleFrames: 3
   fixedBlockMaxSpeed: 0.05
   materialChangeDelay: 0.2
@@ -186,6 +188,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82434f25b5c9a2d4782c44312a42d8f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FixedBlock
+--- !u!114 &1529994277923749887
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2776347681360423159}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e4e8d8eed4d7a874bb46edb87f0e212e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BlockGroup
+  rb: {fileID: 3452516120412547308}
+  disableOtherMoveController: 1
+  preserveWorldPosition: 1
 --- !u!1 &5977561235700122981
 GameObject:
   m_ObjectHideFlags: 0
