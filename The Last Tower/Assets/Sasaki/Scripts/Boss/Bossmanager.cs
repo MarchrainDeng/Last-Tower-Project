@@ -114,7 +114,6 @@ public class BossManager : MonoBehaviour
 
         bgmSource.Stop();
         bgmSource.clip = clip;
-        bgmSource.loop = true;
         bgmSource.Play();
     }
 

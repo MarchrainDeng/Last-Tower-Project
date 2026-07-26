@@ -1971,7 +1971,7 @@ GameObject:
   - component: {fileID: 1778932865}
   - component: {fileID: 1778932864}
   m_Layer: 0
-  m_Name: BGM4
+  m_Name: BGM
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
