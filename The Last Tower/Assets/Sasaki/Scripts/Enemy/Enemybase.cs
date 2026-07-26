@@ -10,6 +10,11 @@ public class EnemyBase : MonoBehaviour
     protected TowerHP towerHP;
     protected Transform towerTransform;
 
+    [Header("── SE（共通） ──────────────────")]
+    public AudioSource audioSource;
+    public AudioClip attackSE; // 攻撃時のSE（共通）
+    public AudioClip deathSE;  // 死亡時のSE（共通）
+
     public void Init(EnemyStats s, TowerHP hp, Transform tower)
     {
         stats = s;
@@ -29,6 +34,20 @@ public class EnemyBase : MonoBehaviour
     protected void MoveToward(Vector2 target, float speed)
         => transform.position = Vector2.MoveTowards(
                transform.position, target, speed * Time.deltaTime);
+
+    // ─── 攻撃SE再生 ───────────────────────────────────────────────
+    public void PlayAttackSE()
+    {
+        if (audioSource != null && attackSE != null)
+            audioSource.PlayOneShot(attackSE);
+    }
+
+    // ─── 死亡SE再生 ───────────────────────────────────────────────
+    public void PlayDeathSE()
+    {
+        if (audioSource != null && deathSE != null)
+            audioSource.PlayOneShot(deathSE);
+    }
 
     // ─── 画面の高さに対する割合(0〜1)をワールド座標Yに変換 ─────────
     // 例: GetWorldYFromViewportRatio(0.6f) → 画面下から60%の高さのワールドY

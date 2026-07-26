@@ -140,6 +140,7 @@ public class FlyingBeamEnemy : EnemyBase
         transform.position = freezePos;
 
         beamLine.enabled = true;
+        PlayAttackSE();
         float timer = 0f;
 
         while (timer < stats.beamDuration)

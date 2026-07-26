@@ -70,6 +70,11 @@ public class EnemyHealth : MonoBehaviour
         // TODO：以后播放死亡动画、掉落金币等
         // TODO：今後、死亡アニメーションやドロップ処理などを追加
 
+        // 追加：死亡SEを鳴らす
+        var enemyBase = GetComponent<EnemyBase>();
+        if (enemyBase != null)
+            enemyBase.PlayDeathSE();
+
         // 死亡演出を生成して親から切り離す
         if (deathEffectPrefab != null)
         {

@@ -26,6 +26,12 @@ public class BossHand : MonoBehaviour
     public BlockSelectionFlowManager flowManager; // Flickで操作中ブロックを飛ばした時に次の選択を進めるため
     public Animator animator; // アニメーション再生用
 
+    [Header("── SE ──────────────────────")]
+    public AudioSource audioSource;
+    public AudioClip pokeSE;   // 小突く
+    public AudioClip punchSE;  // パンチ
+    public AudioClip flickSE;  // デコピン
+
     // ─── 内部状態 ─────────────────────────────────────────────────
     float currentHP;
     int hitCount = 0;   // ノックバック用被弾回数
@@ -160,6 +166,8 @@ public class BossHand : MonoBehaviour
         if (animator != null)
             animator.SetBool(handData.punchAnimTrigger, true);
 
+        PlaySE(punchSE);
+
         towerHP.TakeDamage(action.damage);
 
         if (towerHP.pedestalRb != null)
@@ -276,6 +284,8 @@ public class BossHand : MonoBehaviour
         if (animator != null)
             animator.SetBool(handData.pokeAnimTrigger, true);
 
+        PlaySE(pokeSE);
+
         Vector3 startPos = transform.position;
         Vector3 pokeDest = startPos + new Vector3(-side * handData.pokeDistance, 0f, 0f);
 
@@ -326,6 +336,8 @@ public class BossHand : MonoBehaviour
 
         if (animator != null)
             animator.SetBool(handData.flickAnimTrigger, true);
+
+        PlaySE(flickSE);
 
         towerHP.TakeDamage(action.damage);
 
@@ -501,5 +513,12 @@ public class BossHand : MonoBehaviour
     {
         if (hpSlider == null) return;
         hpSlider.value = currentHP / handData.maxHP;
+    }
+
+    // ─── SE再生 ───────────────────────────────────────────────────
+    void PlaySE(AudioClip clip)
+    {
+        if (audioSource != null && clip != null)
+            audioSource.PlayOneShot(clip);
     }
 }
