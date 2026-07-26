@@ -80,7 +80,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 2
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 9ff099aa4a782474d9ef9c20009d45fc, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -198,6 +198,10 @@ PrefabInstance:
       propertyPath: landMaterial
       value: 
       objectReference: {fileID: 6200000, guid: 05cb8a6ebe954344f83cb5c14e3598da, type: 2}
+    - target: {fileID: 5500422783304295468, guid: a58276dae366ca141829e63ae1f114df, type: 3}
+      propertyPath: landingSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 3b5983c3f8d896e4f9addaf813c06fe9, type: 3}
     - target: {fileID: 5805145911192015095, guid: a58276dae366ca141829e63ae1f114df, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.5

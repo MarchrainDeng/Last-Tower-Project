@@ -101,6 +101,13 @@ public class BlockLanding : MonoBehaviour
 
     private Collider2D[] colliders;
 
+    [Header("Landing Sound")]
+
+    // 方块落地音效
+    // ブロック着地効果音
+    [SerializeField]
+    private AudioClip landingSound;
+
     private void Awake()
     {
         if (rb == null)
@@ -264,6 +271,13 @@ public class BlockLanding : MonoBehaviour
 
         isLanded = true;
 
+        // 播放方块落地音效
+        // ブロック着地効果音を再生する
+        if (SFXManager.Instance != null)
+        {
+            SFXManager.Instance.PlaySFX(landingSound);
+        }
+
         if (stickyBlockJoint != null)
         {
             // 通知黏着方块已经落地
@@ -278,7 +292,7 @@ public class BlockLanding : MonoBehaviour
             rb.linearVelocity = Vector2.zero;
             rb.angularVelocity = 0f;
 
-            rb.mass = 100f;
+            rb.mass = 10f;
 
             StartCoroutine(ChangeMaterialLater());
 

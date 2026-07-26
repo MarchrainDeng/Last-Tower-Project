@@ -133,7 +133,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 5
+  m_SortingOrder: 20
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 5908a413857f47147aedabcf100a614b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -188,6 +188,10 @@ PrefabInstance:
       propertyPath: firePoint
       value: 
       objectReference: {fileID: 2997184119749799846}
+    - target: {fileID: -2885742830559115625, guid: ac3555821dae7f644a9f09f4d0b1b80d, type: 3}
+      propertyPath: shootInterval
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: -2885742830559115625, guid: ac3555821dae7f644a9f09f4d0b1b80d, type: 3}
       propertyPath: enemyLayer.m_Bits
       value: 1024

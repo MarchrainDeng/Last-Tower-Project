@@ -432,6 +432,7 @@ MonoBehaviour:
   materialChangeDelay: 0.2
   fallingMaterial: {fileID: 6200000, guid: 1a8e6cdc8c458d549aff8fa4e8481b5f, type: 2}
   landMaterial: {fileID: 6200000, guid: 05cb8a6ebe954344f83cb5c14e3598da, type: 2}
+  landingSound: {fileID: 8300000, guid: 3b5983c3f8d896e4f9addaf813c06fe9, type: 3}
 --- !u!114 &9000584566436988441
 MonoBehaviour:
   m_ObjectHideFlags: 0

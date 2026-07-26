@@ -84,7 +84,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 11
   m_MaskInteraction: 0
   m_Sprite: {fileID: -855298285791758126, guid: 4d71573c6263d3f4ba03ff9162878154, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -110,14 +110,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyStatsHolder
   stats:
     type: 0
-    HP: 20
+    HP: 100
     moveSpeed: 3
     stopX: 3.3
     attackDamage: 1
     attackRate: 1.5
     flightY: 4
-    flightYMin: 4
-    flightYMax: 3
+    flightRatioMin: 0.8
+    flightRatioMax: 0.9
     exitSpeedMultiplier: 1.5
     blockCarryPeakHeight: 1.5
     blockCarryRiseDuration: 0.3
@@ -126,13 +126,17 @@ MonoBehaviour:
     blockCarryHoldDuration: 2
     blockCarrySwayAmount: 0.2
     blockCarrySwaySpeed: 1.5
-    beamFlightYMin: 5
-    beamFlightYMax: 9
+    blockExitDuration: 3
+    beamFlightRatioMin: 0.6
+    beamFlightRatioMax: 0.9
     warpCount: 3
     warpTotalDuration: 3
     warpDeviation: 1
+    warpFadeDuration: 0.15
     hoverAmplitude: 0.3
     hoverFrequency: 2
+    beamFreezeInDuration: 0.1
+    beamFreezeOutDuration: 0.1
     beamDuration: 0.4
     beamStartWidth: 0.12
     beamEndWidth: 0.05
