@@ -1,81 +1,81 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using System.Collections;
 
 /// <summary>
-/// ƒ{ƒX‘S‘Ì‚ÌŠÇ—
-/// - ˆê’èŠÔŒã‚Éƒ{ƒX‚ğoŒ»‚³‚¹‚é
-/// - —¼è‚ÌHPŠÄ‹¨—¼èŒ‚”j‚ÅŸ—˜
+/// ãƒœã‚¹å…¨ä½“ã®ç®¡ç†
+/// - ä¸€å®šæ™‚é–“å¾Œã«ãƒœã‚¹ã‚’å‡ºç¾ã•ã›ã‚‹
+/// - ä¸¡æ‰‹ã®HPç›£è¦–â†’ä¸¡æ‰‹æ’ƒç ´ã§å‹åˆ©
 ///
-/// yInspector‚ÅƒAƒTƒCƒ“‚·‚é‚à‚Ìz
-/// - leftHand        : ¶è‚ÌGameObjectiBossHandƒAƒ^ƒbƒ`Ï‚İj
-/// - rightHand       : ‰Eè‚ÌGameObjectiBossHandƒAƒ^ƒbƒ`Ï‚İj
-/// - bossRoot        : ƒ{ƒX‘S‘Ì‚Ìƒ‹[ƒgGameObjectioŒ»‘O‚Í”ñ•\¦j
-/// - towerHP         : ƒ^ƒ[‚ÌHPƒRƒ“ƒ|[ƒlƒ“ƒg
-/// - spawnDelay      : ƒ{ƒXoŒ»‚Ü‚Å‚Ì•b”
+/// ã€Inspectorã§ã‚¢ã‚µã‚¤ãƒ³ã™ã‚‹ã‚‚ã®ã€‘
+/// - leftHand        : å·¦æ‰‹ã®GameObjectï¼ˆBossHandã‚¢ã‚¿ãƒƒãƒæ¸ˆã¿ï¼‰
+/// - rightHand       : å³æ‰‹ã®GameObjectï¼ˆBossHandã‚¢ã‚¿ãƒƒãƒæ¸ˆã¿ï¼‰
+/// - bossRoot        : ãƒœã‚¹å…¨ä½“ã®ãƒ«ãƒ¼ãƒˆGameObjectï¼ˆå‡ºç¾å‰ã¯éè¡¨ç¤ºï¼‰
+/// - towerHP         : ã‚¿ãƒ¯ãƒ¼ã®HPã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆ
+/// - spawnDelay      : ãƒœã‚¹å‡ºç¾ã¾ã§ã®ç§’æ•°
 /// </summary>
 public class BossManager : MonoBehaviour
 {
-    [Header("„Ÿ„Ÿ QÆ „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ")]
+    [Header("â”€â”€ å‚ç…§ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€")]
     public BossHand leftHand;
     public BossHand rightHand;
     public GameObject bossRoot;
     public TowerHP towerHP;
 
-    [Header("„Ÿ„Ÿ ƒŠƒUƒ‹ƒgUI „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ")]
-    public GameObject victoryResultUI;  // Ÿ—˜‚É•\¦‚·‚éUI
-    public GameObject defeatResultUI;   // ”s–k‚É•\¦‚·‚éUI
+    [Header("â”€â”€ ãƒªã‚¶ãƒ«ãƒˆUI â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€")]
+    public GameObject victoryResultUI;  // å‹åˆ©æ™‚ã«è¡¨ç¤ºã™ã‚‹UI
+    public GameObject defeatResultUI;   // æ•—åŒ—æ™‚ã«è¡¨ç¤ºã™ã‚‹UI
 
-    [Header("„Ÿ„Ÿ ƒŠƒUƒ‹ƒgBGM „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ")]
-    public AudioSource bgmSource;   // BGMÄ¶—pAudioSource
-    public AudioClip victoryBGM;  // Ÿ—˜‚ÌBGM
-    public AudioClip defeatBGM;   // ”s–k‚ÌBGM
+    [Header("â”€â”€ ãƒªã‚¶ãƒ«ãƒˆBGM â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€")]
+    public AudioSource bgmSource;   // BGMå†ç”Ÿç”¨AudioSource
+    public AudioClip victoryBGM;  // å‹åˆ©æ™‚ã®BGM
+    public AudioClip defeatBGM;   // æ•—åŒ—æ™‚ã®BGM
 
-    [Header("„Ÿ„Ÿ oŒ»ƒ^ƒCƒ~ƒ“ƒO „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ")]
+    [Header("â”€â”€ å‡ºç¾ã‚¿ã‚¤ãƒŸãƒ³ã‚° â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€")]
     public float spawnDelay = 70f;
 
-    // ƒ{ƒX‚ªoŒ»Ï‚İ‚©‚Ç‚¤‚©iEnemySpawner‚ªQÆ‚·‚éj
+    // ãƒœã‚¹ãŒå‡ºç¾æ¸ˆã¿ã‹ã©ã†ã‹ï¼ˆEnemySpawnerãŒå‚ç…§ã™ã‚‹ï¼‰
     public bool HasBossSpawned { get; private set; } = false;
 
     [SerializeField]
     private CardSelector cardSelector;
 
-    // „Ÿ„Ÿ„Ÿ ‹N“® „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ
+    // â”€â”€â”€ èµ·å‹• â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     void Start()
     {
-        // ƒ{ƒX‚ÍÅ‰”ñ•\¦
+        // ãƒœã‚¹ã¯æœ€åˆéè¡¨ç¤º
         if (bossRoot != null)
             bossRoot.SetActive(false);
 
-        // ƒ^ƒ[HP0‚ÌŠÄ‹‚Íƒ{ƒXoŒ»‘O‚©‚çŠJn‚·‚é
-        // iƒ{ƒX‚ªo‚é‘O‚É—Ís‚«‚½ê‡‚àƒfƒX”»’è‚ğæ‚é‚½‚ßj
+        // ã‚¿ãƒ¯ãƒ¼HP0ã®ç›£è¦–ã¯ãƒœã‚¹å‡ºç¾å‰ã‹ã‚‰é–‹å§‹ã™ã‚‹
+        // ï¼ˆãƒœã‚¹ãŒå‡ºã‚‹å‰ã«åŠ›å°½ããŸå ´åˆã‚‚ãƒ‡ã‚¹åˆ¤å®šã‚’å–ã‚‹ãŸã‚ï¼‰
         if (towerHP != null)
             towerHP.OnDead += OnDefeat;
 
         StartCoroutine(SpawnBoss());
     }
 
-    // „Ÿ„Ÿ„Ÿ oŒ» „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ
+    // â”€â”€â”€ å‡ºç¾ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     IEnumerator SpawnBoss()
     {
         yield return new WaitForSeconds(spawnDelay);
 
-        Debug.Log("[BossManager] ƒ{ƒXoŒ»I");
+        Debug.Log("[BossManager] ãƒœã‚¹å‡ºç¾ï¼");
 
         HasBossSpawned = true;
 
         if (bossRoot != null)
             bossRoot.SetActive(true);
 
-        // —¼è‚Ìs“®‚ğŠJn
+        // ä¸¡æ‰‹ã®è¡Œå‹•ã‚’é–‹å§‹
         if (leftHand != null) leftHand.StartBehavior();
         if (rightHand != null) rightHand.StartBehavior();
 
-        // —¼è‚ÌŒ‚”jƒCƒxƒ“ƒg‚ğw“Ç
+        // ä¸¡æ‰‹ã®æ’ƒç ´ã‚¤ãƒ™ãƒ³ãƒˆã‚’è³¼èª­
         if (leftHand != null) leftHand.OnDefeated += CheckVictory;
         if (rightHand != null) rightHand.OnDefeated += CheckVictory;
     }
 
-    // „Ÿ„Ÿ„Ÿ Ÿ—˜”»’èi‚Ç‚¿‚ç‚©‚Ìè‚ª“|‚³‚ê‚½‚ÉŒÄ‚Î‚ê‚éj „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ
+    // â”€â”€â”€ å‹åˆ©åˆ¤å®šï¼ˆã©ã¡ã‚‰ã‹ã®æ‰‹ãŒå€’ã•ã‚ŒãŸæ™‚ã«å‘¼ã°ã‚Œã‚‹ï¼‰ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     void CheckVictory()
     {
         bool leftDead = leftHand == null || leftHand.IsDead;
@@ -83,16 +83,18 @@ public class BossManager : MonoBehaviour
 
         if (leftDead && rightDead)
         {
-            Debug.Log("[BossManager] —¼èŒ‚”jIŸ—˜I");
+            Debug.Log("[BossManager] ä¸¡æ‰‹æ’ƒç ´ï¼å‹åˆ©ï¼");
             OnVictory();
         }
     }
 
     void OnVictory()
     {
-        Debug.Log("[BossManager] ƒQ[ƒ€ƒNƒŠƒAI");
+        Debug.Log("[BossManager] ã‚²ãƒ¼ãƒ ã‚¯ãƒªã‚¢ï¼");
 
         SFXManager.Instance.StopAllSFX();
+
+        StopAllLasers();
 
         CameraShake shake = Camera.main.GetComponent<CameraShake>();
 
@@ -121,9 +123,11 @@ public class BossManager : MonoBehaviour
 
     void OnDefeat()
     {
-        Debug.Log("[BossManager] ƒ^ƒ[HP0 ƒQ[ƒ€ƒI[ƒo[I");
+        Debug.Log("[BossManager] ã‚¿ãƒ¯ãƒ¼HP0 ã‚²ãƒ¼ãƒ ã‚ªãƒ¼ãƒãƒ¼ï¼");
 
         SFXManager.Instance.StopAllSFX();
+
+        StopAllLasers();
 
         CameraShake shake = Camera.main.GetComponent<CameraShake>();
 
@@ -147,7 +151,7 @@ public class BossManager : MonoBehaviour
         GameStateManager.SetPaused(true);
     }
 
-    // „Ÿ„Ÿ„Ÿ ƒŠƒUƒ‹ƒgBGMÄ¶ „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ
+    // â”€â”€â”€ ãƒªã‚¶ãƒ«ãƒˆBGMå†ç”Ÿ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     void PlayBGM(AudioClip clip)
     {
         if (bgmSource == null || clip == null) return;
@@ -157,8 +161,8 @@ public class BossManager : MonoBehaviour
         bgmSource.Play();
     }
 
-    // „Ÿ„Ÿ„Ÿ ”jŠü‚ÉƒCƒxƒ“ƒgw“Ç‚ğ•K‚¸‰ğœ‚·‚é „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ
-    // i“G‚âƒ^ƒ[‚ª•ÊƒV[ƒ“‚Å‚à¶‚«c‚Á‚ÄƒCƒxƒ“ƒg‚ğ”­‰Î‚µ‘±‚¯‚é‚Ì‚ğ–h‚®j
+    // â”€â”€â”€ ç ´æ£„æ™‚ã«ã‚¤ãƒ™ãƒ³ãƒˆè³¼èª­ã‚’å¿…ãšè§£é™¤ã™ã‚‹ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ï¼ˆæ•µã‚„ã‚¿ãƒ¯ãƒ¼ãŒåˆ¥ã‚·ãƒ¼ãƒ³ã§ã‚‚ç”Ÿãæ®‹ã£ã¦ã‚¤ãƒ™ãƒ³ãƒˆã‚’ç™ºç«ã—ç¶šã‘ã‚‹ã®ã‚’é˜²ãï¼‰
     void OnDestroy()
     {
         if (towerHP != null)
@@ -169,5 +173,24 @@ public class BossManager : MonoBehaviour
 
         if (rightHand != null)
             rightHand.OnDefeated -= CheckVictory;
+    }
+
+    private void StopAllLasers()
+    {
+        // æŸ¥æ‰¾åœºæ™¯ä¸­çš„æ‰€æœ‰é•­å°„ç‚®
+        // ã‚·ãƒ¼ãƒ³å†…ã®ã™ã¹ã¦ã®ãƒ¬ãƒ¼ã‚¶ãƒ¼ç ²ã‚’å–å¾—ã™ã‚‹
+        LaserShooter[] laserShooters =
+            FindObjectsByType<LaserShooter>(
+                FindObjectsInactive.Include,
+                FindObjectsSortMode.None
+            );
+
+        foreach (LaserShooter laserShooter in laserShooters)
+        {
+            if (laserShooter != null)
+            {
+                laserShooter.StopLaserSound();
+            }
+        }
     }
 }

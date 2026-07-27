@@ -449,7 +449,7 @@ public class LaserShooter : MonoBehaviour
     /// 停止镭射循环音
     /// レーザーのループ音を停止する
     /// </summary>
-    private void StopLaserSound()
+    public void StopLaserSound()
     {
         if (laserAudioSource == null)
             return;
