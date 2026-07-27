@@ -315,7 +315,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SFXManager
   sfxSource: {fileID: 0}
-  dontDestroyOnLoad: 0
+  attackSoundInterval: 0.08
+  minimumAttackPitch: 1
+  maximumAttackPitch: 1
+  minimumAttackVolume: 0.9
+  maximumAttackVolume: 0.9
 --- !u!82 &102539725
 AudioSource:
   m_ObjectHideFlags: 0
@@ -655,6 +659,8 @@ MonoBehaviour:
   returnThreshold: 0.2
   chooseButton: 3
   cardEnterController: {fileID: 1612657619}
+  selectSound: {fileID: 8300000, guid: f6060e49b08f1a840a9060af851e00cb, type: 3}
+  confirmSound: {fileID: 8300000, guid: 06bd7c06c4e92c34abd85b4ec83a5dc8, type: 3}
 --- !u!1 &179032792
 GameObject:
   m_ObjectHideFlags: 0
@@ -6507,7 +6513,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: a101bf0306cc3864f8ab4c919f03c75d, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.3
   m_Pitch: 1
   Loop: 1
   Mute: 0

@@ -100,8 +100,32 @@ public class LaserShooter : MonoBehaviour
     // レーザーコルーチン
     private Coroutine laserCoroutine;
 
+    [Header("Laser Sound")]
+
+    // 镭射循环音播放器
+    // レーザーのループ音再生用AudioSource
+    [SerializeField]
+    private AudioSource laserAudioSource;
+
+    // 镭射持续攻击音效
+    // レーザー継続攻撃効果音
+    [SerializeField]
+    private AudioClip laserLoopSound;
+
     private void Awake()
     {
+        if (laserAudioSource == null)
+        {
+            laserAudioSource = GetComponent<AudioSource>();
+        }
+
+        if (laserAudioSource != null)
+        {
+            laserAudioSource.playOnAwake = false;
+            laserAudioSource.loop = true;
+            laserAudioSource.spatialBlend = 0f;
+        }
+
         // 未手动设置时自动获取攻击状态
         // 手動設定されていない場合は自動取得する
         if (attackState == null)
@@ -144,6 +168,8 @@ public class LaserShooter : MonoBehaviour
     {
         if (target == null)
             return;
+
+        StartLaserSound();
 
         if (laserCoroutine != null)
         {
@@ -197,6 +223,7 @@ public class LaserShooter : MonoBehaviour
             if (attackState == null ||
                 !attackState.canAttack)
             {
+                StopLaserSound();
                 break;
             }
 
@@ -205,6 +232,7 @@ public class LaserShooter : MonoBehaviour
             if (currentTarget == null ||
                 currentEnemyHealth == null)
             {
+                StopLaserSound();
                 break;
             }
 
@@ -358,6 +386,7 @@ public class LaserShooter : MonoBehaviour
     /// </summary>
     private void StopLaserVisual()
     {
+        StopLaserSound();
         SetLaserVisible(false);
     }
 
@@ -372,6 +401,8 @@ public class LaserShooter : MonoBehaviour
             StopCoroutine(laserCoroutine);
             laserCoroutine = null;
         }
+
+        StopLaserSound();
 
         StopLaserVisual();
 
@@ -390,6 +421,43 @@ public class LaserShooter : MonoBehaviour
     private void OnDestroy()
     {
         StopLaser();
+    }
+
+    /// <summary>
+    /// 开始播放镭射循环音
+    /// レーザーのループ音を再生する
+    /// </summary>
+    private void StartLaserSound()
+    {
+        if (laserAudioSource == null)
+            return;
+
+        if (laserLoopSound == null)
+            return;
+
+        // 已经播放时不重复开始
+        // 再生中の場合は重複して開始しない
+        if (laserAudioSource.isPlaying)
+            return;
+
+        laserAudioSource.clip = laserLoopSound;
+        laserAudioSource.loop = true;
+        laserAudioSource.Play();
+    }
+
+    /// <summary>
+    /// 停止镭射循环音
+    /// レーザーのループ音を停止する
+    /// </summary>
+    private void StopLaserSound()
+    {
+        if (laserAudioSource == null)
+            return;
+
+        if (!laserAudioSource.isPlaying)
+            return;
+
+        laserAudioSource.Stop();
     }
 
     private void OnDrawGizmosSelected()

@@ -321,6 +321,7 @@ MonoBehaviour:
   enemyLayer:
     serializedVersion: 2
     m_Bits: 1024
+  shootSound: {fileID: 8300000, guid: 0c685a302b6098049a21c290519f28af, type: 3}
 --- !u!4 &2330001888668667533 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7129141631402838181, guid: ac3555821dae7f644a9f09f4d0b1b80d, type: 3}

@@ -79,6 +79,12 @@ public class CardSelector : MonoBehaviour
 
     [SerializeField] private CardEnterController cardEnterController;
 
+    [SerializeField]
+    private AudioClip selectSound;
+
+    [SerializeField]
+    private AudioClip confirmSound;
+
     /// <summary>
     /// 可配置的手柄按键
     /// 設定可能なゲームパッドボタン
@@ -231,11 +237,21 @@ public class CardSelector : MonoBehaviour
         {
             if (stickInput > stickThreshold)
             {
+                if (SFXManager.Instance != null)
+                {
+                    SFXManager.Instance.PlayAttackSFX(selectSound);
+                }
+
                 SelectNextCard();
                 stickReturnedToCenter = false;
             }
             else if (stickInput < -stickThreshold)
             {
+                if (SFXManager.Instance != null)
+                {
+                    SFXManager.Instance.PlayAttackSFX(selectSound);
+                }
+
                 SelectPreviousCard();
                 stickReturnedToCenter = false;
             }
@@ -297,7 +313,12 @@ public class CardSelector : MonoBehaviour
         }
 
         if (!confirmPressed)
-            return;  
+            return;
+
+        if (SFXManager.Instance != null)
+        {
+            SFXManager.Instance.PlayAttackSFX(confirmSound);
+        }
 
         StartCoroutine(ConfirmCoroutine());
 
