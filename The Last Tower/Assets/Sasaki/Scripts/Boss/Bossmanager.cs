@@ -36,6 +36,9 @@ public class BossManager : MonoBehaviour
     // ボスが出現済みかどうか（EnemySpawnerが参照する）
     public bool HasBossSpawned { get; private set; } = false;
 
+    [SerializeField]
+    private CardSelector cardSelector;
+
     // ─── 起動 ─────────────────────────────────────────────────────
     void Start()
     {
@@ -89,8 +92,24 @@ public class BossManager : MonoBehaviour
     {
         Debug.Log("[BossManager] ゲームクリア！");
 
+        SFXManager.Instance.StopAllSFX();
+
+        CameraShake shake = Camera.main.GetComponent<CameraShake>();
+
+        if (shake != null)
+        {
+            shake.StopShake();
+        }
+
+        if (cardSelector != null)
+        {
+            cardSelector.SetInputEnabled(false);
+        }
+
         if (victoryResultUI != null)
             victoryResultUI.SetActive(true);
+
+        Time.timeScale = 0f;
 
         PlayBGM(victoryBGM);
 
@@ -104,8 +123,24 @@ public class BossManager : MonoBehaviour
     {
         Debug.Log("[BossManager] タワーHP0 ゲームオーバー！");
 
+        SFXManager.Instance.StopAllSFX();
+
+        CameraShake shake = Camera.main.GetComponent<CameraShake>();
+
+        if (shake != null)
+        {
+            shake.StopShake();
+        }
+
+        if (cardSelector != null)
+        {
+            cardSelector.SetInputEnabled(false);
+        }
+
         if (defeatResultUI != null)
             defeatResultUI.SetActive(true);
+
+        Time.timeScale = 0f;
 
         PlayBGM(defeatBGM);
 

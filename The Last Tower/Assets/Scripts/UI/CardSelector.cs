@@ -301,7 +301,7 @@ public class CardSelector : MonoBehaviour
             confirmPressed = true;
         }
         */
-        
+
 
         // 键盘Enter或小键盘Enter
         // EnterキーまたはテンキーEnter
@@ -342,8 +342,8 @@ public class CardSelector : MonoBehaviour
         yield return StartCoroutine(
             cardEnterController.PlayUnselectedCardsAnimation(currentIndex)
         );
-        
-        
+
+
     }
 
     /// <summary>
