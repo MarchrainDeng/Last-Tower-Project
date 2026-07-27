@@ -965,7 +965,7 @@ MonoBehaviour:
     knockbackDuration: 0.3
     returnDuration: 0.5
     knockbackArcHeight: 1
-    pokeDistance: -5
+    pokeDistance: -2
     pokeDuration: 0.3
     punchShakeAmplitude: 0.3
     punchShakeDuration: 0.5
@@ -1211,7 +1211,7 @@ MonoBehaviour:
     knockbackDuration: 0.3
     returnDuration: 0.5
     knockbackArcHeight: 1
-    pokeDistance: -5
+    pokeDistance: -2
     pokeDuration: 0.3
     punchShakeAmplitude: 0.3
     punchShakeDuration: 0.5
@@ -1695,6 +1695,7 @@ MonoBehaviour:
   victoryBGM: {fileID: 8300000, guid: 39f05c24851ab8d4b9ec07778e65995a, type: 3}
   defeatBGM: {fileID: 8300000, guid: d06ebb13f2829d4478542bda73839801, type: 3}
   spawnDelay: 90
+  cardSelector: {fileID: 0}
 --- !u!1 &7890959881995865404
 GameObject:
   m_ObjectHideFlags: 0
