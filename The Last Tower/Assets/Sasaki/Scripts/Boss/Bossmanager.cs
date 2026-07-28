@@ -36,9 +36,6 @@ public class BossManager : MonoBehaviour
     // ボスが出現済みかどうか（EnemySpawnerが参照する）
     public bool HasBossSpawned { get; private set; } = false;
 
-    [SerializeField]
-    private CardSelector cardSelector;
-
     // ─── 起動 ─────────────────────────────────────────────────────
     void Start()
     {
@@ -92,31 +89,18 @@ public class BossManager : MonoBehaviour
     {
         Debug.Log("[BossManager] ゲームクリア！");
 
-        SFXManager.Instance.StopAllSFX();
-
-        StopAllLasers();
-
-        CameraShake shake = Camera.main.GetComponent<CameraShake>();
-
-        if (shake != null)
-        {
-            shake.StopShake();
-        }
-
-        if (cardSelector != null)
-        {
-            cardSelector.SetInputEnabled(false);
-        }
-
         if (victoryResultUI != null)
             victoryResultUI.SetActive(true);
-
-        Time.timeScale = 0f;
 
         PlayBGM(victoryBGM);
 
         Time.timeScale = 0f;
         GameStateManager.SetPaused(true);
+
+        // bgmSourceがこのGameObjectの子だと再生中に消えてしまうため、
+        // Destroyする前に切り離しておく
+        if (bgmSource != null)
+            bgmSource.transform.SetParent(null);
 
         Destroy(gameObject);
     }
@@ -125,26 +109,8 @@ public class BossManager : MonoBehaviour
     {
         Debug.Log("[BossManager] タワーHP0 ゲームオーバー！");
 
-        SFXManager.Instance.StopAllSFX();
-
-        StopAllLasers();
-
-        CameraShake shake = Camera.main.GetComponent<CameraShake>();
-
-        if (shake != null)
-        {
-            shake.StopShake();
-        }
-
-        if (cardSelector != null)
-        {
-            cardSelector.SetInputEnabled(false);
-        }
-
         if (defeatResultUI != null)
             defeatResultUI.SetActive(true);
-
-        Time.timeScale = 0f;
 
         PlayBGM(defeatBGM);
 
@@ -173,24 +139,5 @@ public class BossManager : MonoBehaviour
 
         if (rightHand != null)
             rightHand.OnDefeated -= CheckVictory;
-    }
-
-    private void StopAllLasers()
-    {
-        // 查找场景中的所有镭射炮
-        // シーン内のすべてのレーザー砲を取得する
-        LaserShooter[] laserShooters =
-            FindObjectsByType<LaserShooter>(
-                FindObjectsInactive.Include,
-                FindObjectsSortMode.None
-            );
-
-        foreach (LaserShooter laserShooter in laserShooters)
-        {
-            if (laserShooter != null)
-            {
-                laserShooter.StopLaserSound();
-            }
-        }
     }
 }
