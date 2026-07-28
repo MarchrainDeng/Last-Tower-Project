@@ -900,9 +900,9 @@ MonoBehaviour:
     jugglingFrequency: 8
     jugglingDuration: 2
     paintDuration: 2
-    flickForceX: 3
-    flickForceY: 3
-    flickTorque: 3
+    flickForceX: 10
+    flickForceY: 10
+    flickTorque: 10
     punchAnimTrigger: Punch
     punchAnimDuration: 0.5
     pokeAnimTrigger: Tuttuki
@@ -1146,9 +1146,9 @@ MonoBehaviour:
     jugglingFrequency: 8
     jugglingDuration: 2
     paintDuration: 2
-    flickForceX: 3
-    flickForceY: 3
-    flickTorque: 3
+    flickForceX: 10
+    flickForceY: 10
+    flickTorque: 10
     punchAnimTrigger: Punch
     punchAnimDuration: 0.5
     pokeAnimTrigger: Tuttuki
@@ -1543,7 +1543,6 @@ MonoBehaviour:
   victoryBGM: {fileID: 8300000, guid: 39f05c24851ab8d4b9ec07778e65995a, type: 3}
   defeatBGM: {fileID: 8300000, guid: d06ebb13f2829d4478542bda73839801, type: 3}
   spawnDelay: 90
-  cardSelector: {fileID: 0}
 --- !u!1 &7890959881995865404
 GameObject:
   m_ObjectHideFlags: 0
