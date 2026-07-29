@@ -136,8 +136,8 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.87, y: 0.87}
-  m_EdgeRadius: 0.03
+  m_Size: {x: 0.58, y: 0.58}
+  m_EdgeRadius: 0.1
 --- !u!1 &2315007616662656397
 GameObject:
   m_ObjectHideFlags: 0
@@ -274,8 +274,8 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.87, y: 0.87}
-  m_EdgeRadius: 0.03
+  m_Size: {x: 0.58, y: 0.58}
+  m_EdgeRadius: 0.1
 --- !u!1 &4810722584337282222
 GameObject:
   m_ObjectHideFlags: 0
@@ -434,6 +434,10 @@ MonoBehaviour:
   fallingMaterial: {fileID: 6200000, guid: 1a8e6cdc8c458d549aff8fa4e8481b5f, type: 2}
   landMaterial: {fileID: 6200000, guid: 05cb8a6ebe954344f83cb5c14e3598da, type: 2}
   landingSound: {fileID: 8300000, guid: 3b5983c3f8d896e4f9addaf813c06fe9, type: 3}
+  landingVelocityRetention: 0.4
+  landingDeceleration: 8
+  stopVelocityThreshold: 0.05
+  rotationLockDuration: 0.5
 --- !u!114 &9178950602915132830
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -496,6 +500,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   searchRadius: 20
+  shootSound: {fileID: 0}
 --- !u!114 &5958466926545217728
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -647,8 +652,8 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.87, y: 0.87}
-  m_EdgeRadius: 0.03
+  m_Size: {x: 0.58, y: 0.58}
+  m_EdgeRadius: 0.1
 --- !u!1 &7529642115089077534
 GameObject:
   m_ObjectHideFlags: 0
@@ -785,5 +790,5 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.87, y: 0.87}
-  m_EdgeRadius: 0.03
+  m_Size: {x: 0.58, y: 0.58}
+  m_EdgeRadius: 0.1

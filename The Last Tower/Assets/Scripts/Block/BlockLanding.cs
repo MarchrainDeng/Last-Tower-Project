@@ -108,6 +108,24 @@ public class BlockLanding : MonoBehaviour
     [SerializeField]
     private AudioClip landingSound;
 
+    [Header("Landing Slide")]
+
+    [SerializeField]
+    private float landingVelocityRetention = 0.4f;
+
+    [SerializeField]
+    private float landingDeceleration = 8f;
+
+    [SerializeField]
+    private float stopVelocityThreshold = 0.05f;
+
+    private Coroutine landingSlideCoroutine;
+
+    [Header("Landing")]
+
+    [SerializeField]
+    private float rotationLockDuration = 0.2f;
+
     private void Awake()
     {
         if (rb == null)
@@ -178,6 +196,25 @@ public class BlockLanding : MonoBehaviour
 
         if (collision == null)
             return;
+
+        foreach (ContactPoint2D contact in collision.contacts)
+        {
+            Vector2 normal = contact.normal;
+
+            // 当前速度
+            Vector2 velocity = rb.linearVelocity;
+
+            // 去掉朝法线方向的速度
+            float dot = Vector2.Dot(velocity, -normal);
+
+            if (dot > 0f)
+            {
+                velocity += normal * dot;
+            }
+
+            rb.linearVelocity = velocity;
+        }
+
 
         GameObject otherObject =
             collision.gameObject;
@@ -289,8 +326,45 @@ public class BlockLanding : MonoBehaviour
         {
             // 清除当前速度
             // 現在の速度をリセットする
+
+            
             rb.linearVelocity = Vector2.zero;
             rb.angularVelocity = 0f;
+            
+
+            /*
+            Vector2 velocity = rb.linearVelocity;
+
+            // 停止垂直方向速度
+            // 垂直方向の速度を停止する
+            velocity.y = 0f;
+
+            // 保留一部分水平速度
+            // 水平方向の速度を一部残す
+            velocity.x *= landingVelocityRetention;
+
+            // 限制落地后的最大水平速度
+            // 着地後の最大水平速度を制限する
+            velocity.x = Mathf.Clamp(velocity.x, -1.5f, 1.5f);
+
+            rb.linearVelocity = velocity;
+            rb.angularVelocity = 0f;
+
+            rb.mass = 10f;
+
+            if (landingSlideCoroutine != null)
+            {
+                StopCoroutine(landingSlideCoroutine);
+            }
+
+            landingSlideCoroutine = StartCoroutine(SlowDownAfterLanding());
+            */
+
+            //------------------------------------------------
+
+            // 锁定旋转一小段时间
+            // 一定時間回転を固定する
+            //StartCoroutine(LockRotationTemporarily());
 
             rb.mass = 10f;
 
@@ -455,5 +529,53 @@ public class BlockLanding : MonoBehaviour
         {
             rb.sharedMaterial = landMaterial;
         }
+    }
+
+    private IEnumerator SlowDownAfterLanding()
+    {
+        while (Mathf.Abs(rb.linearVelocity.x) > stopVelocityThreshold)
+        {
+            Vector2 velocity = rb.linearVelocity;
+
+            // 让水平速度稳定地接近0
+            // 水平方向の速度を徐々に0へ近づける
+            velocity.x = Mathf.MoveTowards(
+                velocity.x,
+                0f,
+                landingDeceleration * Time.fixedDeltaTime
+            );
+
+            velocity.y = 0f;
+            rb.linearVelocity = velocity;
+
+            yield return new WaitForFixedUpdate();
+        }
+
+        // 最后彻底停止，避免极小速度残留
+        // 最後に完全停止して微小な速度を残さない
+        rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
+
+        landingSlideCoroutine = null;
+    }
+
+    /// <summary>
+    /// 落地后暂时锁定旋转，避免碰撞造成轻微弹动
+    /// 着地後しばらく回転を固定し、衝突による微小な揺れを防ぐ
+    /// </summary>
+    private IEnumerator LockRotationTemporarily()
+    {
+        // 清除角速度
+        // 角速度をリセットする
+        rb.angularVelocity = 0f;
+
+        // 锁定Z轴旋转
+        // Z軸回転を固定する
+        rb.constraints |= RigidbodyConstraints2D.FreezeRotation;
+
+        yield return new WaitForSeconds(rotationLockDuration);
+
+        // 恢复原来的旋转限制
+        // 元の回転制限を戻す
+        rb.constraints &= ~RigidbodyConstraints2D.FreezeRotation;
     }
 }
