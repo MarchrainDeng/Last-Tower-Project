@@ -192,11 +192,13 @@ public class SettingsMenu : MonoBehaviour
         {
             if (vertical > stickDeadZone)
             {
+                GamepadVibrationManager.Instance?.PlayVibration(0.3f, 0.8f, 0.15f);
                 MoveFocusUp();
                 navInputTimer = navInputCooldown;
             }
             else if (vertical < -stickDeadZone)
             {
+                GamepadVibrationManager.Instance?.PlayVibration(0.3f, 0.8f, 0.15f);
                 MoveFocusDown();
                 navInputTimer = navInputCooldown;
             }
@@ -215,6 +217,7 @@ public class SettingsMenu : MonoBehaviour
         // Aボタンで決定
         if (Gamepad.current.buttonSouth.wasPressedThisFrame)
         {
+            GamepadVibrationManager.Instance?.PlayVibration(0.3f, 0.8f, 0.15f);
             ConfirmFocusedItem();
         }
     }

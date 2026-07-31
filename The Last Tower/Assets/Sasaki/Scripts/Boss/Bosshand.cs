@@ -167,6 +167,8 @@ public class BossHand : MonoBehaviour
     {
         Debug.Log($"[BossHand] Punch! ダメージ:{action.damage}");
 
+        GamepadVibrationManager.Instance?.PlayVibration(0.5f, 0.9f, 0.15f);
+
         if (animator != null)
             animator.SetBool(handData.punchAnimTrigger, true);
 
@@ -224,6 +226,8 @@ public class BossHand : MonoBehaviour
     {
         Debug.Log("[BossHand] Paint!");
 
+        GamepadVibrationManager.Instance?.PlayVibration(0.5f, 0.9f, 0.15f);
+
         if (paintOverlay != null)
             paintOverlay.SetActive(true);
 
@@ -237,6 +241,8 @@ public class BossHand : MonoBehaviour
     IEnumerator ActionJuggling(BossActionData action)
     {
         Debug.Log("[BossHand] Juggling!");
+
+        GamepadVibrationManager.Instance?.PlayVibration(0.5f, 0.9f, 0.15f);
 
         var topBlock = GetTopBlock();
         if (topBlock == null)
@@ -296,6 +302,8 @@ public class BossHand : MonoBehaviour
     {
         Debug.Log($"[BossHand] Poke! ダメージ:{action.damage}");
 
+        GamepadVibrationManager.Instance?.PlayVibration(0.5f, 0.9f, 0.15f);
+
         if (animator != null)
             animator.SetBool(handData.pokeAnimTrigger, true);
 
@@ -348,6 +356,8 @@ public class BossHand : MonoBehaviour
     IEnumerator ActionFlick(BossActionData action)
     {
         Debug.Log($"[BossHand] Flick! ダメージ:{action.damage}");
+
+        GamepadVibrationManager.Instance?.PlayVibration(0.5f, 0.9f, 0.15f);
 
         if (animator != null)
             animator.SetBool(handData.flickAnimTrigger, true);

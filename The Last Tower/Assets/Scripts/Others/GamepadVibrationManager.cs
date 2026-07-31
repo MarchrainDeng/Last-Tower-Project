@@ -37,6 +37,8 @@ public class GamepadVibrationManager : MonoBehaviour
             StopCoroutine(vibrationCoroutine);
         }
 
+        Debug.Log("vibration start");
+
         vibrationCoroutine = StartCoroutine(VibrationCoroutine(lowFrequency, highFrequency, duration));
     }
 

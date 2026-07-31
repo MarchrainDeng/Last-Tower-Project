@@ -315,6 +315,8 @@ public class BlockLanding : MonoBehaviour
             SFXManager.Instance.PlaySFX(landingSound);
         }
 
+        GamepadVibrationManager.Instance?.PlayVibration(0.5f, 0.9f, 0.15f);
+
         if (stickyBlockJoint != null)
         {
             // 通知黏着方块已经落地
