@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
+using System.Collections;
 
 /// <summary>
 /// 設定メニュー
@@ -20,6 +21,13 @@ using UnityEngine.InputSystem.LowLevel;
 ///
 /// 【Dropdownのオプション順】
 ///   0: Japanese, 1: Chinese, 2: Korean, 3: English
+///
+/// 【配置（画像基準）】
+///   Brightness(左上)  ⇄  Language(右上)
+///          ↕
+///        Volume(左下)
+///          ↕
+///     Home(下部中央)
 /// </summary>
 public class SettingsMenu : MonoBehaviour
 {
@@ -56,10 +64,21 @@ public class SettingsMenu : MonoBehaviour
     public AudioClip moveSE;    // 選択を変えた時
     public AudioClip confirmSE; // 選択確定時
 
-    // 選択可能な項目（上から順）
-    enum SettingsFocus { Volume, Brightness, Language, HomeButton }
-    SettingsFocus focusedItem = SettingsFocus.Volume;
+    [Header("── アニメーション ────────────────")]
+    public Animator animator;
+    public string closeAnimTrigger = "Close"; // 閉じる時だけ再生
+    public float closeAnimDuration = 0.3f;   // 再生時間（この間はPanelを消さず待つ）
+
+    // 配置ベースの選択項目
+    enum SettingsFocus { Brightness, Language, Volume, HomeButton }
+    SettingsFocus focusedItem = SettingsFocus.Brightness;
     float navInputTimer = 0f;
+
+    // Dropdown編集モード（Languageにフォーカス中、Aボタンで入る）
+    bool isEditingLanguage = false;
+
+    // スライダー編集モード（Volume/Brightnessにフォーカス中、Aボタンで入る）
+    bool isEditingSlider = false;
 
     bool isOpen = false;
 
@@ -78,6 +97,25 @@ public class SettingsMenu : MonoBehaviour
         // DontDestroyOnLoadはルートオブジェクトにしか使えないため、
         // 自分自身ではなく一番上の親（Canvas）を対象にする
         DontDestroyOnLoad(transform.root.gameObject);
+
+        // シーン切り替え時に開いたままにならないよう強制的に閉じる
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // シーンが切り替わったら必ず閉じた状態にする
+        isOpen = false;
+        isEditingLanguage = false;
+        isEditingSlider = false;
+        if (settingsPanel != null)
+            settingsPanel.SetActive(false);
+        Time.timeScale = 1f;
     }
 
     void Start()
@@ -107,21 +145,40 @@ public class SettingsMenu : MonoBehaviour
         bool gamepadPressed = Gamepad.current != null && Gamepad.current[toggleGamepadButton].wasPressedThisFrame;
 
         if (keyboardPressed || gamepadPressed)
+        {
             Toggle();
+            return; // 開閉した同じフレームでは他の入力を処理しない
+        }
 
         if (!isOpen) return;
 
-        // 開いている間はBボタンでも閉じられる
+        // 開いている間はBボタンでも閉じられる（編集モード中はBで編集を抜けるだけ）
         if (Gamepad.current != null && Gamepad.current[closeGamepadButton].wasPressedThisFrame)
         {
+            if (isEditingLanguage)
+            {
+                isEditingLanguage = false;
+                return;
+            }
+            if (isEditingSlider)
+            {
+                isEditingSlider = false;
+                return;
+            }
+
             Toggle();
             return;
         }
 
-        HandleControllerNavigation();
+        if (isEditingLanguage)
+            HandleLanguageEditing();
+        else if (isEditingSlider)
+            HandleSliderEditing();
+        else
+            HandleControllerNavigation();
     }
 
-    // ─── コントローラーでのメニュー操作 ────────────────────────────
+    // ─── コントローラーでのメニュー操作（配置ベース） ───────────────
     void HandleControllerNavigation()
     {
         if (Gamepad.current == null) return;
@@ -131,53 +188,185 @@ public class SettingsMenu : MonoBehaviour
         float vertical = Gamepad.current.leftStick.y.ReadValue();
         float horizontal = Gamepad.current.leftStick.x.ReadValue();
 
-        // 上下で選択項目を移動
         if (navInputTimer <= 0f)
         {
             if (vertical > stickDeadZone)
             {
-                MoveFocus(-1);
+                MoveFocusUp();
                 navInputTimer = navInputCooldown;
             }
             else if (vertical < -stickDeadZone)
             {
-                MoveFocus(1);
+                MoveFocusDown();
                 navInputTimer = navInputCooldown;
             }
             else if (horizontal > stickDeadZone)
             {
-                AdjustFocusedItem(1);
+                MoveFocusRight();
                 navInputTimer = navInputCooldown;
             }
             else if (horizontal < -stickDeadZone)
             {
-                AdjustFocusedItem(-1);
+                MoveFocusLeft();
                 navInputTimer = navInputCooldown;
             }
         }
 
-        // Aボタンでホームボタンを押す
-        if (focusedItem == SettingsFocus.HomeButton && Gamepad.current.buttonSouth.wasPressedThisFrame)
+        // Aボタンで決定
+        if (Gamepad.current.buttonSouth.wasPressedThisFrame)
         {
-            OnHomeButton();
+            ConfirmFocusedItem();
         }
     }
 
-    void MoveFocus(int direction)
+    // ─── 配置ベースの移動 ───────────────────────────────────────────
+    // Brightness(左上) ⇄ Language(右上)
+    //        ↕
+    //      Volume(左下)
+    //        ↕
+    //   Home(下部中央)
+    void MoveFocusUp()
     {
-        int itemCount = System.Enum.GetValues(typeof(SettingsFocus)).Length;
-        int next = ((int)focusedItem + direction + itemCount) % itemCount;
-        focusedItem = (SettingsFocus)next;
+        switch (focusedItem)
+        {
+            case SettingsFocus.Volume: SetFocus(SettingsFocus.Brightness); break;
+            case SettingsFocus.HomeButton: SetFocus(SettingsFocus.Volume); break;
+        }
+    }
+
+    void MoveFocusDown()
+    {
+        switch (focusedItem)
+        {
+            case SettingsFocus.Brightness: SetFocus(SettingsFocus.Volume); break;
+            case SettingsFocus.Language: SetFocus(SettingsFocus.Volume); break;
+            case SettingsFocus.Volume: SetFocus(SettingsFocus.HomeButton); break;
+        }
+    }
+
+    void MoveFocusRight()
+    {
+        if (focusedItem == SettingsFocus.Brightness) SetFocus(SettingsFocus.Language);
+    }
+
+    void MoveFocusLeft()
+    {
+        if (focusedItem == SettingsFocus.Language) SetFocus(SettingsFocus.Brightness);
+    }
+
+    void SetFocus(SettingsFocus next)
+    {
+        focusedItem = next;
         UpdateHighlight();
+        PlaySE(moveSE);
+    }
+
+    // ─── スライダー調整（Brightness/Volume） ────────────────────────
+    void AdjustSlider(int direction)
+    {
+        if (focusedItem == SettingsFocus.Brightness)
+            brightnessSlider.value = Mathf.Clamp01(brightnessSlider.value + direction * sliderStep);
+        else if (focusedItem == SettingsFocus.Volume)
+            volumeSlider.value = Mathf.Clamp01(volumeSlider.value + direction * sliderStep);
+    }
+
+    // ─── Aボタンで決定 ──────────────────────────────────────────────
+    void ConfirmFocusedItem()
+    {
+        switch (focusedItem)
+        {
+            case SettingsFocus.Language:
+                // Dropdown編集モードに入る
+                isEditingLanguage = true;
+                PlaySE(confirmSE);
+                break;
+
+            case SettingsFocus.Brightness:
+            case SettingsFocus.Volume:
+                // スライダー編集モードに入る
+                isEditingSlider = true;
+                PlaySE(confirmSE);
+                break;
+
+            case SettingsFocus.HomeButton:
+                OnHomeButton();
+                break;
+
+            default:
+                // Brightness/Volumeは決定操作なし
+                break;
+        }
+    }
+
+    // ─── Dropdown編集モード中の操作 ─────────────────────────────────
+    void HandleLanguageEditing()
+    {
+        if (Gamepad.current == null) return;
+
+        navInputTimer -= Time.unscaledDeltaTime;
+
+        float vertical = Gamepad.current.leftStick.y.ReadValue();
+
+        if (navInputTimer <= 0f)
+        {
+            if (vertical > stickDeadZone)
+            {
+                ChangeLanguageValue(-1);
+                navInputTimer = navInputCooldown;
+            }
+            else if (vertical < -stickDeadZone)
+            {
+                ChangeLanguageValue(1);
+                navInputTimer = navInputCooldown;
+            }
+        }
+
+        // Aボタンで決定して編集モードを抜ける
+        if (Gamepad.current.buttonSouth.wasPressedThisFrame)
+        {
+            isEditingLanguage = false;
+            PlaySE(confirmSE);
+        }
+    }
+
+    // ─── スライダー編集モード中の操作（左右で調整、Bで抜ける） ─────
+    void HandleSliderEditing()
+    {
+        if (Gamepad.current == null) return;
+
+        navInputTimer -= Time.unscaledDeltaTime;
+
+        float horizontal = Gamepad.current.leftStick.x.ReadValue();
+
+        if (navInputTimer <= 0f)
+        {
+            if (horizontal > stickDeadZone)
+            {
+                AdjustSlider(1);
+                navInputTimer = navInputCooldown;
+            }
+            else if (horizontal < -stickDeadZone)
+            {
+                AdjustSlider(-1);
+                navInputTimer = navInputCooldown;
+            }
+        }
+    }
+
+    void ChangeLanguageValue(int direction)
+    {
+        int optionCount = languageDropdown.options.Count;
+        int nextValue = (languageDropdown.value + direction + optionCount) % optionCount;
+        languageDropdown.value = nextValue;
         PlaySE(moveSE);
     }
 
     // ─── 選択中の項目のテキスト色を変える ──────────────────────────
     void UpdateHighlight()
     {
-        SetLabelColor(volumeLabel, focusedItem == SettingsFocus.Volume);
         SetLabelColor(brightnessLabel, focusedItem == SettingsFocus.Brightness);
         SetLabelColor(languageLabel, focusedItem == SettingsFocus.Language);
+        SetLabelColor(volumeLabel, focusedItem == SettingsFocus.Volume);
         SetLabelColor(homeButtonLabel, focusedItem == SettingsFocus.HomeButton);
     }
 
@@ -187,42 +376,44 @@ public class SettingsMenu : MonoBehaviour
         label.color = isSelected ? selectedColor : normalColor;
     }
 
-    void AdjustFocusedItem(int direction)
+    // ─── 開閉 ─────────────────────────────────────────────────────
+    public void Toggle()
     {
-        switch (focusedItem)
+        if (isOpen)
         {
-            case SettingsFocus.Volume:
-                volumeSlider.value = Mathf.Clamp01(volumeSlider.value + direction * sliderStep);
-                break;
+            StartCoroutine(CloseWithAnimation());
+        }
+        else
+        {
+            isOpen = true;
+            settingsPanel.SetActive(true);
+            Time.timeScale = 0f;
+            GameStateManager.SetPaused(true);
 
-            case SettingsFocus.Brightness:
-                brightnessSlider.value = Mathf.Clamp01(brightnessSlider.value + direction * sliderStep);
-                break;
-
-            case SettingsFocus.Language:
-                int optionCount = languageDropdown.options.Count;
-                int nextValue = (languageDropdown.value + direction + optionCount) % optionCount;
-                languageDropdown.value = nextValue;
-                break;
-
-            case SettingsFocus.HomeButton:
-                // Aボタンで実行（AdjustFocusedItemでは何もしない）
-                break;
+            focusedItem = SettingsFocus.Brightness;
+            isEditingLanguage = false;
+            isEditingSlider = false;
+            navInputTimer = navInputCooldown; // 開いた直後の入力の暴発を防ぐ
+            UpdateHighlight();
         }
     }
 
-    public void Toggle()
+    // 閉じる時だけAnimationを再生してから非表示にする
+    IEnumerator CloseWithAnimation()
     {
-        isOpen = !isOpen;
-        settingsPanel.SetActive(isOpen);
-        Time.timeScale = isOpen ? 0f : 1f;
-        GameStateManager.SetPaused(isOpen);
+        isOpen = false;
+        isEditingLanguage = false;
+        isEditingSlider = false;
 
-        if (isOpen)
-        {
-            focusedItem = SettingsFocus.Volume;
-            UpdateHighlight();
-        }
+        if (animator != null)
+            animator.SetTrigger(closeAnimTrigger);
+
+        // アニメーション再生中は時間を止めないよう unscaled で待つ
+        yield return new WaitForSecondsRealtime(closeAnimDuration);
+
+        settingsPanel.SetActive(false);
+        Time.timeScale = 1f;
+        GameStateManager.SetPaused(false);
     }
 
     // ─── コールバック ─────────────────────────────────────────────

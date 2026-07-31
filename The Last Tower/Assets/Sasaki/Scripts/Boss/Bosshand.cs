@@ -32,6 +32,10 @@ public class BossHand : MonoBehaviour
     public AudioClip punchSE;  // パンチ
     public AudioClip flickSE;  // デコピン
 
+    [Header("── カメラシェイク ────────────────")]
+    public CameraShake cameraShake;       // パンチ時に揺らす
+    public float cameraShakeDelay = 0.2f; // 揺らすまでの遅延（秒）
+
     // ─── 内部状態 ─────────────────────────────────────────────────
     float currentHP;
     int hitCount = 0;   // ノックバック用被弾回数
@@ -168,6 +172,9 @@ public class BossHand : MonoBehaviour
 
         PlaySE(punchSE);
 
+        if (cameraShake != null)
+            StartCoroutine(DelayedShake());
+
         towerHP.TakeDamage(action.damage);
 
         if (towerHP.pedestalRb != null)
@@ -180,6 +187,14 @@ public class BossHand : MonoBehaviour
     }
 
     // ─── 台座揺れ（TowerHP.ShakePedestalと同じ仕組み） ────────────
+    // ─── カメラシェイクを遅延させて実行 ────────────────────────────
+    IEnumerator DelayedShake()
+    {
+        yield return new WaitForSeconds(cameraShakeDelay);
+        if (cameraShake != null)
+            cameraShake.Shake();
+    }
+
     IEnumerator ShakePedestal()
     {
         var pedestalRb = towerHP.pedestalRb;
