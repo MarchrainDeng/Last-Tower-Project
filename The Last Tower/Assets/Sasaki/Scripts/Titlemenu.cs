@@ -57,6 +57,16 @@ public class TitleMenu : MonoBehaviour
     public AudioClip moveSE;    // 選択を変えた時
     public AudioClip confirmSE; // 選択確定時
 
+    [Header("── 振動（選択変更） ────────────")]
+    public float moveVibrationLow = 0.2f;
+    public float moveVibrationHigh = 0.2f;
+    public float moveVibrationDuration = 0.1f;
+
+    [Header("── 振動（決定） ──────────────")]
+    public float confirmVibrationLow = 0.6f;
+    public float confirmVibrationHigh = 0.6f;
+    public float confirmVibrationDuration = 0.2f;
+
     int selectedIndex = 0;
     float inputTimer = 0f;
 
@@ -103,7 +113,7 @@ public class TitleMenu : MonoBehaviour
             }
         }
 
-        if (Gamepad.current.buttonSouth.wasPressedThisFrame)
+        if (Gamepad.current.buttonEast.wasPressedThisFrame)
         {
             ConfirmSelection();
         }
@@ -114,6 +124,9 @@ public class TitleMenu : MonoBehaviour
         selectedIndex = (selectedIndex + direction + menuItems.Length) % menuItems.Length;
         UpdateVisuals();
         PlaySE(moveSE);
+
+        if (GamepadVibrationManager.Instance != null)
+            GamepadVibrationManager.Instance.PlayVibration(moveVibrationLow, moveVibrationHigh, moveVibrationDuration);
     }
 
     void UpdateVisuals()
@@ -138,6 +151,9 @@ public class TitleMenu : MonoBehaviour
     void ConfirmSelection()
     {
         PlaySE(confirmSE);
+
+        if (GamepadVibrationManager.Instance != null)
+            GamepadVibrationManager.Instance.PlayVibration(confirmVibrationLow, confirmVibrationHigh, confirmVibrationDuration);
 
         var item = menuItems[selectedIndex];
 

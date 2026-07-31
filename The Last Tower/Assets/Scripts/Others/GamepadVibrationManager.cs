@@ -22,11 +22,11 @@ public class GamepadVibrationManager : MonoBehaviour
 
     /// <summary>
     /// 手柄震动
-    /// ゲームパッドを振動させる
+    /// ゲームパッドを振動させE
     /// </summary>
-    /// <param name="lowFrequency">低频马达(0~1)</param>
-    /// <param name="highFrequency">高频马达(0~1)</param>
-    /// <param name="duration">持续时间(秒)</param>
+    /// <param name="lowFrequency">低频满衼E0~1)</param>
+    /// <param name="highFrequency">高频满衼E0~1)</param>
+    /// <param name="duration">持续时紒E脕E</param>
     public void PlayVibration(float lowFrequency, float highFrequency, float duration)
     {
         if (Gamepad.current == null)
@@ -44,7 +44,7 @@ public class GamepadVibrationManager : MonoBehaviour
 
     /// <summary>
     /// 停止震动
-    /// 振動を停止する
+    /// 振動を停止すE
     /// </summary>
     public void StopVibration()
     {

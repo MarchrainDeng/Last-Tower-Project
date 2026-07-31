@@ -59,7 +59,7 @@ public class EnemySpawner : MonoBehaviour
     {
         yield return new WaitForSeconds(spawnStartDelay);
 
-        while (!towerHP.IsDead)
+        while (!towerHP.IsDead && !IsBossActive)
         {
             SpawnEnemy();
             yield return new WaitForSeconds(CurrentInterval);
