@@ -31,6 +31,10 @@ public class BlockCardUI : MonoBehaviour
     // このカードの特殊ブロックプール
     [SerializeField] private BlockOption[] specialCardPool;
 
+    [Header("Special Card Pool")]
+    // 这张卡牌的最终卡牌池
+    [SerializeField] private BlockOption[] finalCardPool;
+
     [Header("Select Effect")]
     // 在Inspector中设置的原始缩放
     // Inspectorで設定された元のスケール
@@ -128,6 +132,8 @@ public class BlockCardUI : MonoBehaviour
             case BlockSelectionType.Special:
                 return specialCardPool;
 
+            case BlockSelectionType.Final:
+                return finalCardPool;
             default:
                 return null;
         }

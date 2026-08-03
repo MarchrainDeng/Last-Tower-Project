@@ -14,5 +14,8 @@ public enum BlockSelectionType
 
     // 特殊方块选择
     // 特殊ブロック選択
-    Special
+    Special,
+
+    //最后阶段
+    Final
 }

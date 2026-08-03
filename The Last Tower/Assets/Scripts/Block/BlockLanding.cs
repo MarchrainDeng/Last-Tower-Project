@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using UnityEngine.InputSystem;
 using UnityEngine;
 
 /*
@@ -126,6 +127,34 @@ public class BlockLanding : MonoBehaviour
     [SerializeField]
     private float rotationLockDuration = 0.2f;
 
+    [Header("Landing Input Push")]
+
+    [SerializeField]
+    private float landingPushForce = 0.25f;
+
+    [SerializeField]
+    private float landingInputDeadZone = 0.2f;
+
+    [SerializeField]
+    private float maximumLandingPushSpeed = 1f;
+
+    [Header("Side Landing Check")]
+
+    // 左右检测距离
+    // 左右方向の判定距離
+    [SerializeField]
+    private float sideCheckDistance = 0.05f;
+
+    // 左右检测盒宽度
+    // 左右判定ボックスの幅
+    [SerializeField]
+    private float sideCheckWidth = 0.05f;
+
+    // 左右检测盒高度
+    // 左右判定ボックスの高さ
+    [SerializeField]
+    private float sideCheckHeight = 0.45f;
+
     private void Awake()
     {
         if (rb == null)
@@ -246,6 +275,14 @@ public class BlockLanding : MonoBehaviour
         if (HasSupportContact(collision))
         {
             Land();
+            return;
+        }
+
+        // 新增：左右方向检测
+        // 追加：左右方向の判定
+        if (HasSideSupport())
+        {
+            Land();
         }
     }
 
@@ -332,7 +369,10 @@ public class BlockLanding : MonoBehaviour
             
             rb.linearVelocity = Vector2.zero;
             rb.angularVelocity = 0f;
-            
+
+            // 根据落地瞬间的玩家输入给予轻微水平推力
+            // 着地した瞬間の入力方向へ軽い水平力を加える
+            //ApplyLandingInputPush();
 
             /*
             Vector2 velocity = rb.linearVelocity;
@@ -579,5 +619,159 @@ public class BlockLanding : MonoBehaviour
         // 恢复原来的旋转限制
         // 元の回転制限を戻す
         rb.constraints &= ~RigidbodyConstraints2D.FreezeRotation;
+    }
+
+    /// <summary>
+    /// 根据落地瞬间的输入方向给予轻微水平推力
+    /// 着地した瞬間の入力方向へ軽い水平力を加える
+    /// </summary>
+    private void ApplyLandingInputPush()
+    {
+        if (rb == null)
+            return;
+
+        float input = 0f;
+
+        // 手柄左摇杆输入
+        // ゲームパッドの左スティック入力
+        if (Gamepad.current != null)
+        {
+            input = Gamepad.current.leftStick.x.ReadValue();
+        }
+
+        // 键盘输入优先
+        // キーボード入力を優先する
+        if (Keyboard.current != null)
+        {
+            if (Keyboard.current.aKey.isPressed)
+            {
+                input = -1f;
+            }
+            else if (Keyboard.current.dKey.isPressed)
+            {
+                input = 1f;
+            }
+        }
+
+        // 死区处理
+        // デッドゾーン処理
+        if (Mathf.Abs(input) < landingInputDeadZone)
+        {
+            input = 0f;
+        }
+
+        if (input == 0f)
+            return;
+
+        // 添加轻微水平冲量
+        // 軽い水平方向のインパルスを加える
+        rb.AddForce(
+            Vector2.right * input * landingPushForce,
+            ForceMode2D.Impulse
+        );
+
+        // 限制落地后的最大水平速度
+        // 着地後の最大水平速度を制限する
+        Vector2 velocity = rb.linearVelocity;
+
+        velocity.x = Mathf.Clamp(
+            velocity.x,
+            -maximumLandingPushSpeed,
+            maximumLandingPushSpeed
+        );
+
+        velocity.y = 0f;
+
+        rb.linearVelocity = velocity;
+    }
+
+    /// <summary>
+    /// 检测左右方向一定距离内是否存在方块
+    /// 左右方向の一定距離内にブロックがあるか確認する
+    /// </summary>
+    private bool HasSideSupport()
+    {
+        foreach (Transform child in childBlocks)
+        {
+            if (child == null)
+                continue;
+
+            Vector2 leftCenter =
+                (Vector2)child.position +
+                Vector2.left * (0.25f + sideCheckDistance);
+
+            Vector2 rightCenter =
+                (Vector2)child.position +
+                Vector2.right * (0.25f + sideCheckDistance);
+
+            Vector2 boxSize = new Vector2(
+                sideCheckWidth,
+                sideCheckHeight
+            );
+
+            // 左侧检测
+            Collider2D leftHit =
+                Physics2D.OverlapBox(
+                    leftCenter,
+                    boxSize,
+                    0f,
+                    landingLayer
+                );
+
+            if (leftHit != null &&
+                leftHit.transform != transform &&
+                !leftHit.transform.IsChildOf(transform))
+            {
+                return true;
+            }
+
+            // 右侧检测
+            Collider2D rightHit =
+                Physics2D.OverlapBox(
+                    rightCenter,
+                    boxSize,
+                    0f,
+                    landingLayer
+                );
+
+            if (rightHit != null &&
+                rightHit.transform != transform &&
+                !rightHit.transform.IsChildOf(transform))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        if (childBlocks == null)
+            return;
+
+        Gizmos.color = Color.cyan;
+
+        foreach (Transform child in childBlocks)
+        {
+            if (child == null)
+                continue;
+
+            Vector2 leftCenter =
+                (Vector2)child.position +
+                Vector2.left * (0.25f + sideCheckDistance);
+
+            Vector2 rightCenter =
+                (Vector2)child.position +
+                Vector2.right * (0.25f + sideCheckDistance);
+
+            Vector2 size = new Vector2(
+                sideCheckWidth,
+                sideCheckHeight
+            );
+
+            Gizmos.DrawWireCube(leftCenter, size);
+            Gizmos.DrawWireCube(rightCenter, size);
+        }
     }
 }

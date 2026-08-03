@@ -438,6 +438,12 @@ MonoBehaviour:
   landingDeceleration: 8
   stopVelocityThreshold: 0.05
   rotationLockDuration: 0.5
+  landingPushForce: 0.25
+  landingInputDeadZone: 0.2
+  maximumLandingPushSpeed: 1
+  sideCheckDistance: 0.05
+  sideCheckWidth: 0.05
+  sideCheckHeight: 0.45
 --- !u!114 &9178950602915132830
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -55,11 +55,24 @@ public class BlockSelectionFlowManager : MonoBehaviour
     public bool IsSelectingBlock =>
         CurrentSelectionType != BlockSelectionType.None;
 
+    [Header("Next Selection")]
+
+    // 下一次方块落地后开启的选择类型
+    // 次回の着地後に開始する選択タイプ
+    [SerializeField]
+    private BlockSelectionType nextSelectionType =
+    BlockSelectionType.Normal;
+
     private void Start()
     {
         // 进入场景后开启第一次普通选择
         // シーン開始後、最初の通常選択を開始する
         RequestNormalSelection();
+    }
+
+    private void Update()
+    {
+        //Debug.Log(nextSelectionType.ToString());
     }
 
     /// <summary>
@@ -78,6 +91,11 @@ public class BlockSelectionFlowManager : MonoBehaviour
     public void RequestSpecialSelection()
     {
         RequestSelection(BlockSelectionType.Special);
+    }
+
+    public void RequestFinalSelection()
+    {
+        RequestSelection(BlockSelectionType.Final);
     }
 
     /// <summary>
@@ -204,7 +222,14 @@ public class BlockSelectionFlowManager : MonoBehaviour
     /// </summary>
     public void OnCurrentBlockLanded()
     {
-        RequestNormalSelection();
+        if (nextSelectionType == BlockSelectionType.Normal)
+        {
+            RequestNormalSelection();
+        }
+        else if (nextSelectionType == BlockSelectionType.Final)
+        {
+            RequestFinalSelection();
+        }
     }
 
     /// <summary>
@@ -213,7 +238,25 @@ public class BlockSelectionFlowManager : MonoBehaviour
     /// </summary>
     public void OnCurrentBlockDestroyed()
     {
-        RequestNormalSelection();
+        if (nextSelectionType == BlockSelectionType.Normal)
+        {
+            RequestNormalSelection();
+        }
+        else if (nextSelectionType == BlockSelectionType.Final)
+        {
+            RequestFinalSelection();
+        }
+        
+    }
+
+    /// <summary>
+    /// 设置下一次落地后开启的卡牌选择类型
+    /// 次回の着地後に開始するカード選択タイプを設定する
+    /// </summary>
+    public void SetNextSelectionType(
+        BlockSelectionType selectionType)
+    {
+        nextSelectionType = selectionType;
     }
 
     private void OnDisable()

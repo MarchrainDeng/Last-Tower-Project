@@ -190,8 +190,6 @@ public class BlockMoveController : MonoBehaviour
         // 左スティックの水平入力を取得する
         float input = Gamepad.current.leftStick.x.ReadValue();
 
-        //Debug.Log(input);
-
         // 键盘输入（A/D）
         // キーボード入力（A/D）
         if (Keyboard.current != null)
@@ -209,18 +207,17 @@ public class BlockMoveController : MonoBehaviour
         // 死区处理
         // デッドゾーン処理
         if (Mathf.Abs(input) < deadZone)
+        {
             input = 0f;
+        }
 
         // 平滑移动
         // スムーズに移動する
-        Vector2 targetPosition =
-            rb.position +
-            Vector2.right *
+        transform.position +=
+            Vector3.right *
             input *
             moveSpeed *
             Time.fixedDeltaTime;
-
-        rb.MovePosition(targetPosition);
     }
 
     private void HandleRotate()
@@ -332,15 +329,12 @@ public class BlockMoveController : MonoBehaviour
             }
         }
 
-        //transform.position += Vector3.down * currentSpeed * Time.deltaTime;
-
-        Vector2 targetPosition =
-            rb.position +
-            Vector2.down *
+        // 使用Transform移动
+        // Transformで移動する
+        transform.position +=
+            Vector3.down *
             currentSpeed *
             Time.fixedDeltaTime;
-
-        rb.MovePosition(targetPosition);
     }
 
     /// <summary>
