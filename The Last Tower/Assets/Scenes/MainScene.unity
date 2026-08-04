@@ -7074,7 +7074,7 @@ PrefabInstance:
       objectReference: {fileID: 1677760618}
     - target: {fileID: 349996878208468420, guid: bc9fea9ed9c1b0446bdc867306a6666d, type: 3}
       propertyPath: spawnDelay
-      value: 1
+      value: 90
       objectReference: {fileID: 0}
     - target: {fileID: 349996878208468420, guid: bc9fea9ed9c1b0446bdc867306a6666d, type: 3}
       propertyPath: cardSelector
