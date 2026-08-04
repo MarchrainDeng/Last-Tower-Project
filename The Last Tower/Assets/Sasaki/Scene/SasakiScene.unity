@@ -2325,6 +2325,7 @@ MonoBehaviour:
     blockPrefab: {fileID: 2474595735599288801, guid: a5c2937fde1a56e4e96cbbf32a601245, type: 3}
     cardUI: {fileID: 21300000, guid: e6b9bd317d8bcd345b689379ea903efc, type: 3}
     cardBackground: {fileID: 21300000, guid: dd6cec7f0d0310d4da7f6acc053388b5, type: 3}
+  finalCardPool: []
   selectedScaleMultiplier: 1.15
 --- !u!1 &619394800
 GameObject:
@@ -3841,6 +3842,7 @@ MonoBehaviour:
     blockPrefab: {fileID: 512358414728350629, guid: 0e9d283cef31bd54caeeb593d7784399, type: 3}
     cardUI: {fileID: 21300000, guid: 19d45309e41c5b84eb7b60c1e8c8756d, type: 3}
     cardBackground: {fileID: 21300000, guid: dd6cec7f0d0310d4da7f6acc053388b5, type: 3}
+  finalCardPool: []
   selectedScaleMultiplier: 1.15
 --- !u!1 &1104107170
 GameObject:
@@ -5286,6 +5288,7 @@ MonoBehaviour:
   cardSelector: {fileID: 177946819}
   pauseGameDuringSelection: 0
   cardEnterController: {fileID: 1612657619}
+  nextSelectionType: 1
 --- !u!4 &1612657618
 Transform:
   m_ObjectHideFlags: 0
@@ -6124,6 +6127,7 @@ MonoBehaviour:
     blockPrefab: {fileID: 2776347681360423159, guid: f56adb4f6b253ef48b55ed4d2b1fba43, type: 3}
     cardUI: {fileID: 21300000, guid: 99bf720aa19a43f44931d2d53942a59c, type: 3}
     cardBackground: {fileID: 21300000, guid: dd6cec7f0d0310d4da7f6acc053388b5, type: 3}
+  finalCardPool: []
   selectedScaleMultiplier: 1.15
 --- !u!1 &1909094392
 GameObject:
@@ -6797,7 +6801,7 @@ PrefabInstance:
       objectReference: {fileID: 1677760618}
     - target: {fileID: 349996878208468420, guid: bc9fea9ed9c1b0446bdc867306a6666d, type: 3}
       propertyPath: spawnDelay
-      value: 90
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 349996878208468420, guid: bc9fea9ed9c1b0446bdc867306a6666d, type: 3}
       propertyPath: cardSelector
