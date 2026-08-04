@@ -21,12 +21,11 @@ public class GamepadVibrationManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ﾊﾖｱ晥ｯ
-    /// ･ｲｩ`･爭ﾑ･ﾃ･ﾉ､ﾓ､ｵ､ｻ､・
+    /// 振動を再生する
     /// </summary>
-    /// <param name="lowFrequency">ｵﾍﾆｵﾂ昻・0~1)</param>
-    /// <param name="highFrequency">ｸﾟﾆｵﾂ昻・0~1)</param>
-    /// <param name="duration">ｳﾖﾐｱｼ・ﾃ・</param>
+    /// <param name="lowFrequency">低周波モーターの強さ (0~1)</param>
+    /// <param name="highFrequency">高周波モーターの強さ (0~1)</param>
+    /// <param name="duration">再生時間（秒）</param>
     public void PlayVibration(float lowFrequency, float highFrequency, float duration)
     {
         if (Gamepad.current == null)
@@ -37,14 +36,11 @@ public class GamepadVibrationManager : MonoBehaviour
             StopCoroutine(vibrationCoroutine);
         }
 
-        Debug.Log("vibration start");
-
         vibrationCoroutine = StartCoroutine(VibrationCoroutine(lowFrequency, highFrequency, duration));
     }
 
     /// <summary>
-    /// ﾍ｣ﾖｹﾕｯ
-    /// ﾕﾓ､｣ﾖｹ､ｹ､・
+    /// 振動を即座に停止する
     /// </summary>
     public void StopVibration()
     {
@@ -64,10 +60,11 @@ public class GamepadVibrationManager : MonoBehaviour
     {
         Gamepad.current.SetMotorSpeeds(lowFrequency, highFrequency);
 
-        yield return new WaitForSeconds(duration);
+        // Time.timeScale = 0（設定画面などポーズ中）でも正しく時間経過させるため
+        // WaitForSeconds ではなく WaitForSecondsRealtime を使う
+        yield return new WaitForSecondsRealtime(duration);
 
         Gamepad.current.SetMotorSpeeds(0f, 0f);
-
         vibrationCoroutine = null;
     }
 

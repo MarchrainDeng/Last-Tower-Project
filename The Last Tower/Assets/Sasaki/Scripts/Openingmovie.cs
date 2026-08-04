@@ -1,7 +1,7 @@
 using UnityEngine;
+using UnityEngine.Video;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
-using UnityEngine.Video;
 
 /// <summary>
 /// タイトルシーン起動時に再生するオープニング動画
@@ -25,10 +25,20 @@ public class OpeningMovie : MonoBehaviour
     public GamepadButton skipGamepadButton = GamepadButton.South;
     public Key skipKey = Key.Space;
 
+    // アプリ起動中だけ有効なフラグ（再起動すると消える）
+    static bool hasPlayedThisSession = false;
+
     bool isPlaying = false;
 
     void Start()
     {
+        // 同じ起動中の2周目以降は再生しない
+        if (hasPlayedThisSession)
+        {
+            EndMovie();
+            return;
+        }
+
         if (videoPlayer == null || movieRoot == null)
         {
             EndMovie();
@@ -41,8 +51,13 @@ public class OpeningMovie : MonoBehaviour
         if (titleMenu != null)
             titleMenu.enabled = false;
 
+        // 動画（Direct出力）以外の音を止める
+        AudioListener.pause = true;
+
         videoPlayer.loopPointReached += OnMovieFinished;
         videoPlayer.Play();
+
+        hasPlayedThisSession = true;
     }
 
     void Update()
@@ -80,5 +95,8 @@ public class OpeningMovie : MonoBehaviour
 
         if (titleMenu != null)
             titleMenu.enabled = true;
+
+        // 音を元に戻す
+        AudioListener.pause = false;
     }
 }
