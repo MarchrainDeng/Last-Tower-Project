@@ -1,0 +1,949 @@
+fileFormatVersion: 2
+guid: 0907e0c44dc68eb48bef53744801fbd6
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -3011536200331094784
+    second: DotLine_0
+  - first:
+      213: 2706203739411937831
+    second: DotLine_1
+  - first:
+      213: 4568220423801333032
+    second: DotLine_2
+  - first:
+      213: 7239296961929817759
+    second: DotLine_3
+  - first:
+      213: 6285718378276331862
+    second: DotLine_4
+  - first:
+      213: -8663429188462436692
+    second: DotLine_5
+  - first:
+      213: -9036976063431439917
+    second: DotLine_6
+  - first:
+      213: 1651080156532505311
+    second: DotLine_7
+  - first:
+      213: -483969619901474741
+    second: DotLine_8
+  - first:
+      213: -3892682491467645177
+    second: DotLine_9
+  - first:
+      213: 6356602839150049716
+    second: DotLine_10
+  - first:
+      213: -8440559341031706901
+    second: DotLine_11
+  - first:
+      213: 2517360804854092142
+    second: DotLine_12
+  - first:
+      213: -1469124487975832026
+    second: DotLine_13
+  - first:
+      213: 4365015745875813419
+    second: DotLine_14
+  - first:
+      213: -1198129645636926567
+    second: DotLine_15
+  - first:
+      213: -7459820270643338555
+    second: DotLine_16
+  - first:
+      213: 1233170816883886976
+    second: DotLine_17
+  - first:
+      213: 810576816533695816
+    second: DotLine_18
+  - first:
+      213: 2091543834770779674
+    second: DotLine_19
+  - first:
+      213: -3666788259841955853
+    second: DotLine_20
+  - first:
+      213: 1742017667565052319
+    second: DotLine_21
+  - first:
+      213: 3463572354477588555
+    second: DotLine_22
+  - first:
+      213: -675963253332282785
+    second: DotLine_23
+  - first:
+      213: -2814449859566870113
+    second: DotLine_24
+  - first:
+      213: 5640070971987535057
+    second: DotLine_25
+  - first:
+      213: -8541955247507356879
+    second: DotLine_26
+  - first:
+      213: -5552095307570146931
+    second: DotLine_27
+  - first:
+      213: -3483706610113204068
+    second: DotLine_28
+  - first:
+      213: 6916088007396364663
+    second: DotLine_29
+  - first:
+      213: 3141702628117327479
+    second: DotLine_30
+  - first:
+      213: 3842438674617323634
+    second: DotLine_31
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: DotLine_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 2
+        width: 22
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 005190718cfd436d0800000000000000
+      internalID: -3011536200331094784
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DotLine_1
+      rect:
+        serializedVersion: 2
+        x: 59
+        y: 1
+        width: 43
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 72a7b7186fd5e8520800000000000000
+      internalID: 2706203739411937831
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DotLine_2
+      rect:
+        serializedVersion: 2
+        x: 140
+        y: 1
+        width: 43
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 825ec50a544956f30800000000000000
+      internalID: 4568220423801333032
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DotLine_3
+      rect:
+        serializedVersion: 2
+        x: 220
+        y: 1
+        width: 44
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f9e246f3b36277460800000000000000
+      internalID: 7239296961929817759
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DotLine_4
+      rect:
+        serializedVersion: 2
+        x: 301
+        y: 1
+        width: 43
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6512e47df8b5b3750800000000000000
+      internalID: 6285718378276331862
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DotLine_5
+      rect:
+        serializedVersion: 2
+        x: 382
+        y: 1
+        width: 43
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cae12fccd0155c780800000000000000
+      internalID: -8663429188462436692
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DotLine_6
+      rect:
+        serializedVersion: 2
+        x: 462
+        y: 1
+        width: 43
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3d906777626369280800000000000000
+      internalID: -9036976063431439917
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DotLine_7
+      rect:
+        serializedVersion: 2
+        x: 543
+        y: 1
+        width: 43
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fdaf0d197a0d9e610800000000000000
+      internalID: 1651080156532505311
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DotLine_8
+      rect:
+        serializedVersion: 2
+        x: 624
+        y: 1
+        width: 43
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b4811b3e1389849f0800000000000000
+      internalID: -483969619901474741
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DotLine_9
+      rect:
+        serializedVersion: 2
+        x: 704
+        y: 1
+        width: 43
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 70f30b8f5e96af9c0800000000000000
+      internalID: -3892682491467645177
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DotLine_10
+      rect:
+        serializedVersion: 2
+        x: 785
+        y: 1
+        width: 43
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4b937cd7a90373850800000000000000
+      internalID: 6356602839150049716
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DotLine_11
+      rect:
+        serializedVersion: 2
+        x: 865
+        y: 1
+        width: 44
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bee2334dffb1dda80800000000000000
+      internalID: -8440559341031706901
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DotLine_12
+      rect:
+        serializedVersion: 2
+        x: 946
+        y: 1
+        width: 43
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e61d1d080567fe220800000000000000
+      internalID: 2517360804854092142
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DotLine_13
+      rect:
+        serializedVersion: 2
+        x: 1027
+        y: 1
+        width: 43
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6267f5bdf0f9c9be0800000000000000
+      internalID: -1469124487975832026
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DotLine_14
+      rect:
+        serializedVersion: 2
+        x: 1107
+        y: 1
+        width: 44
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b242aeba1b6a39c30800000000000000
+      internalID: 4365015745875813419
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DotLine_15
+      rect:
+        serializedVersion: 2
+        x: 1188
+        y: 1
+        width: 43
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 99342fc6f636f5fe0800000000000000
+      internalID: -1198129645636926567
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DotLine_16
+      rect:
+        serializedVersion: 2
+        x: 1269
+        y: 0
+        width: 43
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5c2ab08dcf4697890800000000000000
+      internalID: -7459820270643338555
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DotLine_17
+      rect:
+        serializedVersion: 2
+        x: 1349
+        y: 0
+        width: 44
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 08b0eb7035a1d1110800000000000000
+      internalID: 1233170816883886976
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DotLine_18
+      rect:
+        serializedVersion: 2
+        x: 1430
+        y: 0
+        width: 43
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 84d68ace15fbf3b00800000000000000
+      internalID: 810576816533695816
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DotLine_19
+      rect:
+        serializedVersion: 2
+        x: 1511
+        y: 0
+        width: 43
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a1eaba74908a60d10800000000000000
+      internalID: 2091543834770779674
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DotLine_20
+      rect:
+        serializedVersion: 2
+        x: 1591
+        y: 0
+        width: 44
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3f72c815183fc1dc0800000000000000
+      internalID: -3666788259841955853
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DotLine_21
+      rect:
+        serializedVersion: 2
+        x: 1672
+        y: 0
+        width: 43
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f916babc6d3ec2810800000000000000
+      internalID: 1742017667565052319
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DotLine_22
+      rect:
+        serializedVersion: 2
+        x: 1753
+        y: 0
+        width: 43
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b400082a4b4111030800000000000000
+      internalID: 3463572354477588555
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DotLine_23
+      rect:
+        serializedVersion: 2
+        x: 1833
+        y: 0
+        width: 43
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f5279e3a00f7e96f0800000000000000
+      internalID: -675963253332282785
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DotLine_24
+      rect:
+        serializedVersion: 2
+        x: 1914
+        y: 0
+        width: 43
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f916e5aa3c011f8d0800000000000000
+      internalID: -2814449859566870113
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DotLine_25
+      rect:
+        serializedVersion: 2
+        x: 1995
+        y: 0
+        width: 43
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1d42f49aaae854e40800000000000000
+      internalID: 5640070971987535057
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DotLine_26
+      rect:
+        serializedVersion: 2
+        x: 2075
+        y: 0
+        width: 43
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1334a09a5f0e47980800000000000000
+      internalID: -8541955247507356879
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DotLine_27
+      rect:
+        serializedVersion: 2
+        x: 2156
+        y: 0
+        width: 43
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d811b29ebbef2f2b0800000000000000
+      internalID: -5552095307570146931
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DotLine_28
+      rect:
+        serializedVersion: 2
+        x: 2236
+        y: 0
+        width: 44
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c90b58aab4367afc0800000000000000
+      internalID: -3483706610113204068
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DotLine_29
+      rect:
+        serializedVersion: 2
+        x: 2317
+        y: 0
+        width: 43
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 77113345661eaff50800000000000000
+      internalID: 6916088007396364663
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DotLine_30
+      rect:
+        serializedVersion: 2
+        x: 2398
+        y: 0
+        width: 43
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 77e28d215e1999b20800000000000000
+      internalID: 3141702628117327479
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DotLine_31
+      rect:
+        serializedVersion: 2
+        x: 2478
+        y: 0
+        width: 22
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 270d9cfcd95135530800000000000000
+      internalID: 3842438674617323634
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      DotLine_0: -3011536200331094784
+      DotLine_1: 2706203739411937831
+      DotLine_10: 6356602839150049716
+      DotLine_11: -8440559341031706901
+      DotLine_12: 2517360804854092142
+      DotLine_13: -1469124487975832026
+      DotLine_14: 4365015745875813419
+      DotLine_15: -1198129645636926567
+      DotLine_16: -7459820270643338555
+      DotLine_17: 1233170816883886976
+      DotLine_18: 810576816533695816
+      DotLine_19: 2091543834770779674
+      DotLine_2: 4568220423801333032
+      DotLine_20: -3666788259841955853
+      DotLine_21: 1742017667565052319
+      DotLine_22: 3463572354477588555
+      DotLine_23: -675963253332282785
+      DotLine_24: -2814449859566870113
+      DotLine_25: 5640070971987535057
+      DotLine_26: -8541955247507356879
+      DotLine_27: -5552095307570146931
+      DotLine_28: -3483706610113204068
+      DotLine_29: 6916088007396364663
+      DotLine_3: 7239296961929817759
+      DotLine_30: 3141702628117327479
+      DotLine_31: 3842438674617323634
+      DotLine_4: 6285718378276331862
+      DotLine_5: -8663429188462436692
+      DotLine_6: -9036976063431439917
+      DotLine_7: 1651080156532505311
+      DotLine_8: -483969619901474741
+      DotLine_9: -3892682491467645177
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

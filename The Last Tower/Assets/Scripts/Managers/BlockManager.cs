@@ -1,5 +1,7 @@
-﻿using UnityEngine;
+﻿using TMPro;
+using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Collections;
 
 /*
 ----------------------------------------
@@ -27,6 +29,26 @@ public class BlockManager : MonoBehaviour
     // ブロック選択フローマネージャー
     [SerializeField] private BlockSelectionFlowManager flowManager;
 
+    [Header("Moving Objects")]
+    [SerializeField] private GameObject blockSpawner;
+    [SerializeField] private float moveDistance = 3f;
+
+    [SerializeField] private GameObject finalCannon;
+
+    [SerializeField]
+    private ObjectSpawner objectSpawner;
+
+    [SerializeField] private GameObject heightLine_1;
+    [SerializeField] private GameObject heightLine_2;
+
+    [SerializeField]
+    private TMP_Text countdownText;
+
+    [SerializeField] float countDown = 30f;
+
+    [SerializeField]
+    private RectTransform targetUI;
+
     private void Awake()
     {
         if (Instance == null)
@@ -47,9 +69,8 @@ public class BlockManager : MonoBehaviour
             Gamepad.current.dpad.down.wasPressedThisFrame)
         {
             DestroyAllBlocks();
-            flowManager.SetNextSelectionType(BlockSelectionType.Final);
-
-            flowManager.RequestFinalSelection();
+            OtherFunction();
+            StartCoroutine(CountdownCoroutine(countDown));
         }
     }
 
@@ -66,5 +87,86 @@ public class BlockManager : MonoBehaviour
         {
             Destroy(block);
         }
+    }
+
+    /// <summary>
+    /// 执行其他功能
+    /// </summary>
+    public void OtherFunction()
+    {
+        //将方块选择变为动力方块
+        flowManager.SetNextSelectionType(BlockSelectionType.Final);
+        flowManager.RequestFinalSelection();
+
+        //移动相机
+        Camera.main.GetComponent<CameraController>().MoveToTarget();
+
+        //移动方块生成点
+        if (blockSpawner != null)
+        {
+            blockSpawner.transform.position += Vector3.right * moveDistance;
+            blockSpawner.transform.position = new Vector3(0, 6.9f, 0);
+        }
+
+        objectSpawner.SpawnAndMove(finalCannon, new Vector3(0, 8.5f, 0), new Vector3(0, 3.5f, 0));
+
+        heightLine_1.SetActive(false);
+        heightLine_2.SetActive(false);
+
+        StartCoroutine(MoveUIDown(targetUI,300f,800f));
+    }
+
+    private IEnumerator CountdownCoroutine(float seconds)
+    {
+        countdownText.gameObject.SetActive(true);
+
+        float timer = seconds;
+
+        while (timer > 0f)
+        {
+            int minutes = Mathf.FloorToInt(timer / 60f);
+            int secs = Mathf.FloorToInt(timer % 60f);
+            int centiseconds = Mathf.FloorToInt((timer * 100f) % 100f);
+
+            countdownText.text =
+                $"{minutes:00}:{secs:00}:{centiseconds:00}";
+
+            timer -= Time.deltaTime;
+
+            yield return null;
+        }
+
+        countdownText.text = "00:00:00";
+
+        countdownText.gameObject.SetActive(false);
+    }
+
+    /// <summary>
+    /// UI向下平滑移动固定距离
+    /// UIを一定距離だけ下へスムーズに移動する
+    /// </summary>
+    private IEnumerator MoveUIDown(
+        RectTransform rect,
+        float distance,
+        float speed)
+    {
+        Vector2 startPosition = rect.anchoredPosition;
+        Vector2 targetPosition =
+            startPosition + Vector2.down * distance;
+
+        while (Vector2.Distance(
+            rect.anchoredPosition,
+            targetPosition) > 1f)
+        {
+            rect.anchoredPosition =
+                Vector2.MoveTowards(
+                    rect.anchoredPosition,
+                    targetPosition,
+                    speed * Time.deltaTime);
+
+            yield return null;
+        }
+
+        rect.anchoredPosition = targetPosition;
     }
 }

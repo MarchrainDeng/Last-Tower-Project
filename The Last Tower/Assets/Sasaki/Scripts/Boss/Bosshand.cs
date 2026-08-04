@@ -59,12 +59,23 @@ public class BossHand : MonoBehaviour
     // 劅劅劅 婲摦 劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅
     void Start()
     {
+        /*
+        currentHP = handData.maxHP;
+        originPos = transform.position;
+        side = transform.position.x < towerTransform.position.x ? 1f : -1f;
+        */
+
+        //UpdateHPBar();
+        // 峴摦奐巒偼BossManager偐傜StartBehavior()傪屇傫偱峴偆
+    }
+
+    private void Awake()
+    {
         currentHP = handData.maxHP;
         originPos = transform.position;
         side = transform.position.x < towerTransform.position.x ? 1f : -1f;
 
         UpdateHPBar();
-        // 峴摦奐巒偼BossManager偐傜StartBehavior()傪屇傫偱峴偆
     }
 
     /// <summary>
@@ -109,6 +120,7 @@ public class BossHand : MonoBehaviour
     }
 
     // 劅劅劅 愙嬤 劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅
+    /*
     IEnumerator Approach()
     {
         float targetX = towerTransform.position.x + side * handData.approachStopX;
@@ -121,6 +133,50 @@ public class BossHand : MonoBehaviour
                 transform.position, dest, handData.moveSpeed * Time.deltaTime);
             yield return null;
         }
+    }
+    */
+    IEnumerator Approach()
+    {
+        if (towerTransform == null || handData == null)
+            yield break;
+
+        isApproaching = true;
+
+        float targetX =
+            towerTransform.position.x +
+            side * handData.approachStopX;
+
+        Vector3 destination = new Vector3(
+            targetX,
+            transform.position.y,
+            transform.position.z
+        );
+
+        while (Mathf.Abs(transform.position.x - targetX) > 0.01f)
+        {
+            if (isKnockbacking || isDead)
+            {
+                isApproaching = false;
+                yield break;
+            }
+
+            Vector3 currentPosition = transform.position;
+
+            currentPosition.x = Mathf.MoveTowards(
+                currentPosition.x,
+                targetX,
+                handData.moveSpeed * Time.deltaTime
+            );
+
+            transform.position = currentPosition;
+
+            yield return null;
+        }
+
+        // 最后强制对齐目标位置，避免留下误差
+        transform.position = destination;
+
+        isApproaching = false;
     }
 
     // 劅劅劅 傾僋僔儑儞慖戰丒幚峴 劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅劅
