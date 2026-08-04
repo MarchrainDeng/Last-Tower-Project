@@ -30,7 +30,7 @@ public class OpeningMovie : MonoBehaviour
 
     bool isPlaying = false;
 
-    void Start()
+    void Awake()
     {
         // “¯‚¶‹N“®’†‚Ì2ü–ÚˆÈ~‚ÍÄ¶‚µ‚È‚¢
         if (hasPlayedThisSession)
