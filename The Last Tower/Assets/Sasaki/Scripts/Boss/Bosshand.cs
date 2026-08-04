@@ -173,7 +173,7 @@ public class BossHand : MonoBehaviour
             yield return null;
         }
 
-        // 最后强制对齐目标位置，避免留下误差
+        // 煮强制对苼E勘丒恢茫苊饬粝挛蟛丒
         transform.position = destination;
 
         isApproaching = false;
