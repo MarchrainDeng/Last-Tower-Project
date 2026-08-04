@@ -7136,6 +7136,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1713626840928320841, guid: bc9fea9ed9c1b0446bdc867306a6666d, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5050778770137684607, guid: bc9fea9ed9c1b0446bdc867306a6666d, type: 3}
       propertyPath: m_AdditionalShaderChannelsFlag
       value: 25
@@ -7255,6 +7259,10 @@ PrefabInstance:
     - target: {fileID: 7698245134607646937, guid: bc9fea9ed9c1b0446bdc867306a6666d, type: 3}
       propertyPath: m_Name
       value: Bossmanager
+      objectReference: {fileID: 0}
+    - target: {fileID: 8134844545146966353, guid: bc9fea9ed9c1b0446bdc867306a6666d, type: 3}
+      propertyPath: m_Layer
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8438946813975524277, guid: bc9fea9ed9c1b0446bdc867306a6666d, type: 3}
       propertyPath: m_Size.x

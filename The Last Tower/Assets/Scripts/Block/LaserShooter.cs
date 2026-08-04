@@ -1,114 +1,66 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-/*
-----------------------------------------
-【功能 / 機能】
-镭射炮每隔一定时间搜索最近的敌人，
-向目标持续发射镭射并造成持续伤害。
-
-如果镭射持续期间敌人死亡，
-立即停止镭射特效并进入冷却时间。
-
-レーザー砲は一定時間ごとに最も近い敵を探し、
-対象へレーザーを照射して継続ダメージを与える。
-
-レーザー照射中に敵が死亡した場合、
-直ちにエフェクトを停止してクールダウンへ移行する。
-
-【负责人 / 担当】
-Deng Guangpeng
-トウ　コウホウ
-
-----------------------------------------
-*/
-
 public class LaserShooter : MonoBehaviour
 {
     [Header("References")]
 
-    // 镭射发射位置
-    // レーザーの発射位置
     [SerializeField]
     private Transform firePoint;
 
-    // 镭射视觉特效
-    // レーザーの視覚エフェクト
     [SerializeField]
     private LineRenderer laserLine;
 
-    // 攻击方块状态
-    // 攻撃ブロックの状態
     [SerializeField]
     private AttackBlockState attackState;
 
     [Header("Target Settings")]
 
-    // 敌人图层
-    // 敵のレイヤー
     [SerializeField]
     private LayerMask enemyLayer;
 
-    // 搜索敌人的范围
-    // 敵を検索する範囲
     [SerializeField]
     private float searchRadius = 10f;
 
     [Header("Laser Settings")]
 
-    // 镭射持续时间
-    // レーザーの照射時間
     [SerializeField]
     private float laserDuration = 2f;
 
-    // 每秒伤害
-    // 1秒あたりのダメージ
     [SerializeField]
     private float damagePerSecond = 20f;
 
-    // 发射结束后的冷却时间
-    // 照射終了後のクールダウン時間
     [SerializeField]
     private float cooldown = 3f;
 
-    // 镭射目标位置的偏移
-    // レーザー目標位置のオフセット
     [SerializeField]
     private Vector3 targetOffset = Vector3.zero;
 
     [Header("Debug")]
 
-    // 当前是否正在发射
-    // 現在レーザーを照射中か
     [SerializeField]
     private bool isFiring;
 
-    // 当前是否处于冷却
-    // 現在クールダウン中か
     [SerializeField]
     private bool isCoolingDown;
 
     // 当前目标
-    // 現在の対象
     private Transform currentTarget;
 
-    // 当前目标的生命脚本
-    // 現在の対象のHPスクリプト
+    // 普通敌人的生命脚本
     private EnemyHealth currentEnemyHealth;
 
+    // Boss手的生命脚本
+    private BossHand currentBossHand;
+
     // 镭射协程
-    // レーザーコルーチン
     private Coroutine laserCoroutine;
 
     [Header("Laser Sound")]
 
-    // 镭射循环音播放器
-    // レーザーのループ音再生用AudioSource
     [SerializeField]
     private AudioSource laserAudioSource;
 
-    // 镭射持续攻击音效
-    // レーザー継続攻撃効果音
     [SerializeField]
     private AudioClip laserLoopSound;
 
@@ -116,7 +68,8 @@ public class LaserShooter : MonoBehaviour
     {
         if (laserAudioSource == null)
         {
-            laserAudioSource = GetComponent<AudioSource>();
+            laserAudioSource =
+                GetComponent<AudioSource>();
         }
 
         if (laserAudioSource != null)
@@ -126,34 +79,31 @@ public class LaserShooter : MonoBehaviour
             laserAudioSource.spatialBlend = 0f;
         }
 
-        // 未手动设置时自动获取攻击状态
-        // 手動設定されていない場合は自動取得する
         if (attackState == null)
         {
-            attackState = GetComponent<AttackBlockState>();
+            attackState =
+                GetComponent<AttackBlockState>();
         }
 
-        // 游戏开始时隐藏镭射
-        // ゲーム開始時にレーザーを非表示にする
         SetLaserVisible(false);
     }
 
     private void Update()
     {
-        // 正在发射或处于冷却时，不再次搜索
-        // 照射中またはクールダウン中は再検索しない
+        // 发射中或冷却中时不重新搜索
         if (isFiring || isCoolingDown)
             return;
 
-        // 方块未通电时不能攻击
-        // ブロックが通電していない場合は攻撃できない
-        if (attackState == null || !attackState.canAttack)
+        // 当前攻击方块无法攻击
+        if (attackState == null ||
+            !attackState.canAttack)
+        {
             return;
+        }
 
-        Transform nearestEnemy = FindNearestEnemy();
+        Transform nearestEnemy =
+            FindNearestEnemy();
 
-        // 没有敌人时继续等待
-        // 敵がいない場合は待機を続ける
         if (nearestEnemy == null)
             return;
 
@@ -161,49 +111,58 @@ public class LaserShooter : MonoBehaviour
     }
 
     /// <summary>
-    /// 开始向指定敌人发射镭射
-    /// 指定した敵へのレーザー照射を開始する
+    /// 开始向指定目标发射镭射
     /// </summary>
     private void StartLaser(Transform target)
     {
         if (target == null)
             return;
 
-        StartLaserSound();
-
         if (laserCoroutine != null)
         {
             StopCoroutine(laserCoroutine);
+            laserCoroutine = null;
         }
 
-        laserCoroutine = StartCoroutine(
-            LaserRoutine(target)
-        );
+        laserCoroutine =
+            StartCoroutine(LaserRoutine(target));
     }
 
     /// <summary>
     /// 镭射发射流程
-    /// レーザー照射処理
     /// </summary>
-    private IEnumerator LaserRoutine(Transform target)
+    private IEnumerator LaserRoutine(
+        Transform target)
     {
         isFiring = true;
-
         currentTarget = target;
 
-        // 优先从敌人的父物体获取生命脚本
-        // 敵の親オブジェクトからHPスクリプトを優先取得する
+        // 尝试取得普通敌人组件
         currentEnemyHealth =
             target.GetComponentInParent<EnemyHealth>();
 
-        // 如果没有找到生命脚本，停止攻击并进入CD
-        // HPスクリプトが見つからない場合は照射を停止してCDへ移行する
-        if (currentEnemyHealth == null)
-        {
-            StopLaserVisual();
+        // 尝试取得Boss手组件
+        currentBossHand =
+            target.GetComponentInParent<BossHand>();
 
-            isFiring = false;
-            laserCoroutine = null;
+        // 两种生命组件都不存在时，不是有效目标
+        if (currentEnemyHealth == null &&
+            currentBossHand == null)
+        {
+            FinishLaser();
+
+            yield return StartCoroutine(
+                CooldownRoutine()
+            );
+
+            yield break;
+        }
+
+        // Boss已经死亡时不攻击
+        if (currentBossHand != null &&
+            currentBossHand.IsDead)
+        {
+            FinishLaser();
 
             yield return StartCoroutine(
                 CooldownRoutine()
@@ -213,37 +172,37 @@ public class LaserShooter : MonoBehaviour
         }
 
         SetLaserVisible(true);
+        StartLaserSound();
 
         float elapsedTime = 0f;
 
         while (elapsedTime < laserDuration)
         {
-            // 方块失去攻击资格时停止
-            // ブロックが攻撃不能になった場合は停止する
+            // 攻击方块断电或失去攻击资格
             if (attackState == null ||
                 !attackState.canAttack)
             {
-                StopLaserSound();
                 break;
             }
 
-            // 敌人被销毁时停止
-            // 敵が破棄された場合は停止する
-            if (currentTarget == null ||
-                currentEnemyHealth == null)
+            // 目标对象被销毁
+            if (currentTarget == null)
             {
-                StopLaserSound();
+                break;
+            }
+
+            // 检查当前目标是否仍然有效
+            if (!IsCurrentTargetAlive())
+            {
                 break;
             }
 
             UpdateLaserPositions();
 
-            // 根据时间持续造成伤害
-            // 時間に応じて継続ダメージを与える
             float damageThisFrame =
                 damagePerSecond * Time.deltaTime;
 
-            currentEnemyHealth.TakeDamage(
+            DamageCurrentTarget(
                 damageThisFrame
             );
 
@@ -252,37 +211,95 @@ public class LaserShooter : MonoBehaviour
             yield return null;
         }
 
-        StopLaserVisual();
+        FinishLaser();
 
-        currentTarget = null;
-        currentEnemyHealth = null;
-
-        isFiring = false;
-        laserCoroutine = null;
-
-        // 无论正常结束还是敌人提前死亡，都进入CD
-        // 正常終了でも敵が途中で死亡してもCDへ移行する
+        // 正常结束或目标死亡后都进入冷却
         yield return StartCoroutine(
             CooldownRoutine()
         );
     }
 
     /// <summary>
+    /// 判断当前目标是否存活
+    /// </summary>
+    private bool IsCurrentTargetAlive()
+    {
+        // 普通敌人
+        if (currentEnemyHealth != null)
+        {
+            /*
+             * 如果EnemyHealth在死亡时会销毁对象，
+             * Unity会自动让这个引用变为null。
+             * 如果EnemyHealth有公开死亡状态，
+             * 也可以在这里追加判断。
+             */
+            return true;
+        }
+
+        // Boss手
+        if (currentBossHand != null)
+        {
+            return !currentBossHand.IsDead;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// 对当前目标造成伤害
+    /// </summary>
+    private void DamageCurrentTarget(
+        float damage)
+    {
+        if (currentEnemyHealth != null)
+        {
+            currentEnemyHealth.TakeDamage(
+                damage
+            );
+
+            return;
+        }
+
+        if (currentBossHand != null &&
+            !currentBossHand.IsDead)
+        {
+            currentBossHand.TakeDamage(
+                damage
+            );
+        }
+    }
+
+    /// <summary>
+    /// 结束当前镭射
+    /// </summary>
+    private void FinishLaser()
+    {
+        StopLaserVisual();
+
+        currentTarget = null;
+        currentEnemyHealth = null;
+        currentBossHand = null;
+
+        isFiring = false;
+        laserCoroutine = null;
+    }
+
+    /// <summary>
     /// 冷却流程
-    /// クールダウン処理
     /// </summary>
     private IEnumerator CooldownRoutine()
     {
         isCoolingDown = true;
 
-        yield return new WaitForSeconds(cooldown);
+        yield return new WaitForSeconds(
+            cooldown
+        );
 
         isCoolingDown = false;
     }
 
     /// <summary>
-    /// 搜索范围内距离最近的敌人
-    /// 範囲内で最も近い敵を検索する
+    /// 搜索范围内距离最近的有效目标
     /// </summary>
     private Transform FindNearestEnemy()
     {
@@ -299,32 +316,54 @@ public class LaserShooter : MonoBehaviour
             );
 
         Transform nearestEnemy = null;
-        float nearestDistanceSqr = Mathf.Infinity;
+        float nearestDistanceSqr =
+            Mathf.Infinity;
 
-        foreach (Collider2D enemyCollider in enemyColliders)
+        foreach (Collider2D enemyCollider
+                 in enemyColliders)
         {
             if (enemyCollider == null)
                 continue;
 
             EnemyHealth enemyHealth =
-                enemyCollider.GetComponentInParent<EnemyHealth>();
+                enemyCollider
+                    .GetComponentInParent<EnemyHealth>();
 
-            // 没有生命脚本的物体不视为有效敌人
-            // HPスクリプトがない物体は有効な敵として扱わない
-            if (enemyHealth == null)
+            BossHand bossHand =
+                enemyCollider
+                    .GetComponentInParent<BossHand>();
+
+            Transform targetTransform = null;
+
+            // 普通敌人
+            if (enemyHealth != null)
+            {
+                targetTransform =
+                    enemyHealth.transform;
+            }
+            // Boss手
+            else if (bossHand != null &&
+                     !bossHand.IsDead)
+            {
+                targetTransform =
+                    bossHand.transform;
+            }
+
+            if (targetTransform == null)
                 continue;
 
-            Transform enemyTransform =
-                enemyHealth.transform;
-
             float distanceSqr =
-                ((Vector2)enemyTransform.position -
+                ((Vector2)targetTransform.position -
                  searchCenter).sqrMagnitude;
 
-            if (distanceSqr < nearestDistanceSqr)
+            if (distanceSqr <
+                nearestDistanceSqr)
             {
-                nearestDistanceSqr = distanceSqr;
-                nearestEnemy = enemyTransform;
+                nearestDistanceSqr =
+                    distanceSqr;
+
+                nearestEnemy =
+                    targetTransform;
             }
         }
 
@@ -332,8 +371,7 @@ public class LaserShooter : MonoBehaviour
     }
 
     /// <summary>
-    /// 更新镭射起点与终点
-    /// レーザーの始点と終点を更新する
+    /// 更新镭射的起点与终点
     /// </summary>
     private void UpdateLaserPositions()
     {
@@ -365,9 +403,9 @@ public class LaserShooter : MonoBehaviour
 
     /// <summary>
     /// 设置镭射显示状态
-    /// レーザーの表示状態を設定する
     /// </summary>
-    private void SetLaserVisible(bool visible)
+    private void SetLaserVisible(
+        bool visible)
     {
         if (laserLine == null)
             return;
@@ -382,7 +420,6 @@ public class LaserShooter : MonoBehaviour
 
     /// <summary>
     /// 停止镭射视觉效果
-    /// レーザーの視覚エフェクトを停止する
     /// </summary>
     private void StopLaserVisual()
     {
@@ -391,8 +428,7 @@ public class LaserShooter : MonoBehaviour
     }
 
     /// <summary>
-    /// 外部强制停止镭射
-    /// 外部からレーザーを強制停止する
+    /// 从外部强制停止镭射
     /// </summary>
     public void StopLaser()
     {
@@ -402,12 +438,11 @@ public class LaserShooter : MonoBehaviour
             laserCoroutine = null;
         }
 
-        StopLaserSound();
-
         StopLaserVisual();
 
         currentTarget = null;
         currentEnemyHealth = null;
+        currentBossHand = null;
 
         isFiring = false;
         isCoolingDown = false;
@@ -424,46 +459,42 @@ public class LaserShooter : MonoBehaviour
     }
 
     /// <summary>
-    /// 开始播放镭射循环音
-    /// レーザーのループ音を再生する
+    /// 开始播放镭射循环音效
     /// </summary>
     private void StartLaserSound()
     {
-        if (laserAudioSource == null)
+        if (laserAudioSource == null ||
+            laserLoopSound == null)
+        {
             return;
+        }
 
-        if (laserLoopSound == null)
-            return;
-
-        // 已经播放时不重复开始
-        // 再生中の場合は重複して開始しない
         if (laserAudioSource.isPlaying)
             return;
 
-        laserAudioSource.clip = laserLoopSound;
+        laserAudioSource.clip =
+            laserLoopSound;
+
         laserAudioSource.loop = true;
         laserAudioSource.Play();
     }
 
     /// <summary>
-    /// 停止镭射循环音
-    /// レーザーのループ音を停止する
+    /// 停止镭射循环音效
     /// </summary>
     public void StopLaserSound()
     {
         if (laserAudioSource == null)
             return;
 
-        if (!laserAudioSource.isPlaying)
-            return;
-
-        laserAudioSource.Stop();
+        if (laserAudioSource.isPlaying)
+        {
+            laserAudioSource.Stop();
+        }
     }
 
     private void OnDrawGizmosSelected()
     {
-        // 显示搜敌范围
-        // 敵の検索範囲を表示する
         Gizmos.color = Color.red;
 
         Vector3 center =

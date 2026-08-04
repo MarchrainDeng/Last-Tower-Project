@@ -155,6 +155,22 @@ public class BlockLanding : MonoBehaviour
     [SerializeField]
     private float sideCheckHeight = 0.45f;
 
+    [Header("Normal Block Landing Delay")]
+
+    // 普通方块落地后，延迟多久启用重力并关闭操作
+    // 通常ブロック着地後、重力を有効化して操作を停止するまでの時間
+    [SerializeField]
+    private float normalBlockLandingDelay = 0.2f;
+
+    private Coroutine normalBlockLandingCoroutine;
+
+    [Header("Rotation Lock")]
+
+    // 落地后锁定旋转时间
+    // 着地後の回転固定時間
+    [SerializeField]
+    private float rotationLockTime = 0.2f;
+
     private void Awake()
     {
         if (rb == null)
@@ -352,7 +368,11 @@ public class BlockLanding : MonoBehaviour
             SFXManager.Instance.PlaySFX(landingSound);
         }
 
-        GamepadVibrationManager.Instance?.PlayVibration(0.5f, 0.9f, 0.15f);
+        GamepadVibrationManager.Instance?.PlayVibration(
+            0.5f,
+            0.9f,
+            0.15f
+        );
 
         if (stickyBlockJoint != null)
         {
@@ -361,72 +381,37 @@ public class BlockLanding : MonoBehaviour
             stickyBlockJoint.SetLanded(true);
         }
 
+        FixedBlock fixedBlock =
+            GetComponent<FixedBlock>();
+
+        BlockMoveController moveController =
+            GetComponent<BlockMoveController>();
+
         if (rb != null)
         {
-            // 清除当前速度
-            // 現在の速度をリセットする
-
-            
+            // 清除当前物理速度
+            // 現在の物理速度をリセットする
             rb.linearVelocity = Vector2.zero;
             rb.angularVelocity = 0f;
 
-            // 根据落地瞬间的玩家输入给予轻微水平推力
-            // 着地した瞬間の入力方向へ軽い水平力を加える
-            //ApplyLandingInputPush();
-
-            /*
-            Vector2 velocity = rb.linearVelocity;
-
-            // 停止垂直方向速度
-            // 垂直方向の速度を停止する
-            velocity.y = 0f;
-
-            // 保留一部分水平速度
-            // 水平方向の速度を一部残す
-            velocity.x *= landingVelocityRetention;
-
-            // 限制落地后的最大水平速度
-            // 着地後の最大水平速度を制限する
-            velocity.x = Mathf.Clamp(velocity.x, -1.5f, 1.5f);
-
-            rb.linearVelocity = velocity;
-            rb.angularVelocity = 0f;
-
-            rb.mass = 10f;
-
-            if (landingSlideCoroutine != null)
-            {
-                StopCoroutine(landingSlideCoroutine);
-            }
-
-            landingSlideCoroutine = StartCoroutine(SlowDownAfterLanding());
-            */
-
-            //------------------------------------------------
-
-            // 锁定旋转一小段时间
-            // 一定時間回転を固定する
-            //StartCoroutine(LockRotationTemporarily());
-
-            rb.mass = 10f;
+            //rb.mass = 10f;
 
             StartCoroutine(ChangeMaterialLater());
 
             PlayCameraShake();
 
-            // 判断是否为落地后固定的特殊方块
-            // 着地後に固定される特殊ブロックか確認する
-            FixedBlock fixedBlock =
-                GetComponent<FixedBlock>();
-
             if (fixedBlock != null)
             {
-                // 先保持Dynamic，让物理引擎解除轻微重叠
-                // 一時的にDynamicを維持し、
-                // わずかな重なりを解消させる
-                rb.bodyType =
-                    RigidbodyType2D.Dynamic;
+                // Fixed方块立即停止操作
+                // Fixedブロックは直ちに操作を停止する
+                if (moveController != null)
+                {
+                    moveController.enabled = false;
+                }
 
+                // Fixed方块暂时保持Dynamic
+                // Fixedブロックは一時的にDynamicを維持する
+                rb.bodyType = RigidbodyType2D.Dynamic;
                 rb.gravityScale = 0f;
                 rb.freezeRotation = true;
                 rb.useFullKinematicContacts = true;
@@ -437,39 +422,36 @@ public class BlockLanding : MonoBehaviour
                         FixBlockAfterSettled()
                     );
                 }
+
+                // Fixed方块立即开启下一次卡牌选择
+                // Fixedブロックは直ちに次のカード選択を開始する
+                RequestNextSelection();
             }
             else
             {
-                // 普通方块落地后受到重力影响
-                // 通常ブロックは着地後に重力の影響を受ける
-                rb.bodyType =
-                    RigidbodyType2D.Dynamic;
+                // 普通方块延迟期间暂时不受重力影响，
+                // 并继续保留玩家操作
+                // 通常ブロックは遅延中、一時的に重力を無効化し、
+                // プレイヤー操作を維持する
+                rb.bodyType = RigidbodyType2D.Dynamic;
+                rb.gravityScale = 0f;
 
-                rb.gravityScale = 1f;
+                if (normalBlockLandingCoroutine != null)
+                {
+                    StopCoroutine(
+                        normalBlockLandingCoroutine
+                    );
+                }
+
+                StartCoroutine(LockRotationTemporarily());
+
+                normalBlockLandingCoroutine =
+                    StartCoroutine(
+                        HandleNormalBlockLandingDelay(
+                            moveController
+                        )
+                    );
             }
-        }
-
-        BlockMoveController moveController =
-            GetComponent<BlockMoveController>();
-
-        if (moveController != null)
-        {
-            moveController.enabled = false;
-        }
-
-        // 通知流程管理器重新开启卡牌选择
-        // フローマネージャーへカード選択再開を通知する
-        if (flowManager != null)
-        {
-            flowManager.OnCurrentBlockLanded();
-        }
-        else
-        {
-            Debug.LogWarning(
-                "Flow Manager is missing. / " +
-                "フローマネージャーが設定されていません。",
-                this
-            );
         }
     }
 
@@ -570,6 +552,7 @@ public class BlockLanding : MonoBehaviour
         if (rb != null)
         {
             rb.sharedMaterial = landMaterial;
+            rb.mass = 10f;
         }
     }
 
@@ -743,6 +726,60 @@ public class BlockLanding : MonoBehaviour
         }
 
         return false;
+    }
+
+    /// <summary>
+    /// 延迟启用普通方块重力、关闭操作并开启下一次卡牌选择
+    /// 通常ブロックの重力有効化、操作停止、
+    /// 次回カード選択の開始を遅延する
+    /// </summary>
+    private IEnumerator HandleNormalBlockLandingDelay(
+        BlockMoveController moveController)
+    {
+        yield return new WaitForSeconds(
+            normalBlockLandingDelay
+        );
+
+        if (rb != null)
+        {
+            // 延迟结束后启用重力
+            // 遅延終了後に重力を有効化する
+            rb.bodyType = RigidbodyType2D.Dynamic;
+            rb.gravityScale = 1f;
+        }
+
+        if (moveController != null)
+        {
+            // 延迟结束后关闭玩家操作
+            // 遅延終了後にプレイヤー操作を停止する
+            moveController.enabled = false;
+        }
+
+        // 延迟结束后开启下一次卡牌选择
+        // 遅延終了後に次のカード選択を開始する
+        RequestNextSelection();
+
+        normalBlockLandingCoroutine = null;
+    }
+
+    /// <summary>
+    /// 通知流程管理器开启下一次卡牌选择
+    /// フローマネージャーへ次のカード選択開始を通知する
+    /// </summary>
+    private void RequestNextSelection()
+    {
+        if (flowManager != null)
+        {
+            flowManager.OnCurrentBlockLanded();
+        }
+        else
+        {
+            Debug.LogWarning(
+                "Flow Manager is missing. / " +
+                "フローマネージャーが設定されていません。",
+                this
+            );
+        }
     }
 
     private void OnDrawGizmosSelected()
