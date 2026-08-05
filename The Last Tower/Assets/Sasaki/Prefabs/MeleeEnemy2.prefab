@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: -7394126050171419177}
   - component: {fileID: -729343594897891515}
   m_Layer: 10
-  m_Name: MeleeEnemy
+  m_Name: MeleeEnemy2
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -87,12 +87,12 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 11
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 4d71573c6263d3f4ba03ff9162878154, type: 3}
+  m_Sprite: {fileID: -2966200626249415253, guid: 456169c39abff1d40b35bc9769d1aad7, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 16.67, y: 16.67}
+  m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -181,8 +181,8 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 16.67, y: 16.67}
-    newSize: {x: 16.67, y: 16.67}
+    oldSize: {x: 10.77, y: 13.51}
+    newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
@@ -230,7 +230,7 @@ Animator:
   m_GameObject: {fileID: 3382112785025284562}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: d559bf5201c3b5443b150ee3c2f3dddc, type: 2}
+  m_Controller: {fileID: 9100000, guid: 86971a0d037d6084d81d7f4682524562, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

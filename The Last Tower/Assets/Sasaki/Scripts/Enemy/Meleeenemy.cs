@@ -6,6 +6,10 @@ using System.Collections;
 // ═══════════════════════════════════════════════════════════════════
 public class MeleeEnemy : EnemyBase
 {
+    [Header("── アニメーション ────────────────")]
+    public Animator animator;
+    public string attackAnimBool = "Attack";
+
     protected override IEnumerator BehaviorLoop()
     {
         // スポーン側に応じて台座から stopX の距離で停止
@@ -19,9 +23,16 @@ public class MeleeEnemy : EnemyBase
 
         while (!towerHP.IsDead)
         {
+            if (animator != null)
+                animator.SetBool(attackAnimBool, true);
+
             towerHP.TakeDamage(stats.attackDamage);
             PlayAttackSE();
+
             yield return new WaitForSeconds(stats.attackRate);
+
+            if (animator != null)
+                animator.SetBool(attackAnimBool, false);
         }
     }
 }
