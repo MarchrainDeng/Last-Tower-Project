@@ -3570,6 +3570,37 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 902685051}
   m_CullTransparentMesh: 1
+--- !u!1 &905830005
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 905830006}
+  m_Layer: 0
+  m_Name: Test
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &905830006
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 905830005}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -15.42, y: -1.1668, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &913501573
 GameObject:
   m_ObjectHideFlags: 0
@@ -5416,9 +5447,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BlockSelectionFlowManager
   cardSelectionUI: {fileID: 177946817}
   cardSelector: {fileID: 177946819}
-  pauseGameDuringSelection: 0
   cardEnterController: {fileID: 1612657619}
+  pauseGameDuringSelection: 0
   nextSelectionType: 1
+  isFinalPhase: 0
 --- !u!4 &1612657618
 Transform:
   m_ObjectHideFlags: 0
@@ -7365,3 +7397,4 @@ SceneRoots:
   - {fileID: 913501574}
   - {fileID: 406464030436235049}
   - {fileID: 293305498}
+  - {fileID: 905830006}
