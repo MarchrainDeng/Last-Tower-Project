@@ -207,6 +207,13 @@ public class HeightLineManager : MonoBehaviour
                 continue;
             }
 
+            // 高度线未激活时不进行判定
+            // 高さラインが非アクティブの場合は判定しない
+            if (!line.lineObject.activeInHierarchy)
+            {
+                continue;
+            }
+
             float lineY = line.lineObject.transform.position.y;
 
             // 已落地方块到达高度线

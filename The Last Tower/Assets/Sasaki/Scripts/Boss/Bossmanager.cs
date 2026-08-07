@@ -36,6 +36,9 @@ public class BossManager : MonoBehaviour
     // ボスが出現済みかどうか（EnemySpawnerが参照する）
     public bool HasBossSpawned { get; private set; } = false;
 
+    [SerializeField] private GameObject heightLine_1;
+    [SerializeField] private GameObject heightLine_2;
+
     // ─── 起動 ─────────────────────────────────────────────────────
     void Start()
     {
@@ -59,6 +62,12 @@ public class BossManager : MonoBehaviour
         Debug.Log("[BossManager] ボス出現！");
 
         HasBossSpawned = true;
+
+        //ボスが現れたときにカメラが最終位置にあるようにする
+        Camera.main.GetComponent<CameraController>().MoveToTarget();
+
+        heightLine_1.SetActive(false);
+        heightLine_2.SetActive(false);
 
         if (bossRoot != null)
             bossRoot.SetActive(true);
