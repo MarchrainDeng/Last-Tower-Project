@@ -1,75 +1,79 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
 /// <summary>
-/// ƒ{ƒX‚Ìè1–{•ª
-/// BossManager‚©‚ç¶‰E‚»‚ê‚¼‚ê‚ÉƒAƒ^ƒbƒ`‚µ‚Äg‚¤
+/// ãƒœã‚¹ã®æ‰‹1æœ¬åˆ†
+/// BossManagerã‹ã‚‰å·¦å³ãã‚Œãã‚Œã«ã‚¢ã‚¿ãƒƒãƒã—ã¦ä½¿ã†
 ///
-/// yInspector‚ÅƒAƒTƒCƒ“‚·‚é‚à‚Ìz
-/// - handData   : è‚ÌƒXƒe[ƒ^ƒXİ’è
-/// - towerHP    : ƒ^ƒ[‚ÌHPƒRƒ“ƒ|[ƒlƒ“ƒg
-/// - towerTransform : ‘äÀ‚ÌTransform
-/// - hpSlider   : ‚±‚Ìè‚ÌHPƒXƒ‰ƒCƒ_[iUIj
+/// ã€Inspectorã§ã‚¢ã‚µã‚¤ãƒ³ã™ã‚‹ã‚‚ã®ã€‘
+/// - handData   : æ‰‹ã®ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹è¨­å®š
+/// - towerHP    : ã‚¿ãƒ¯ãƒ¼ã®HPã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆ
+/// - towerTransform : å°åº§ã®Transform
+/// - hpSlider   : ã“ã®æ‰‹ã®HPã‚¹ãƒ©ã‚¤ãƒ€ãƒ¼ï¼ˆUIï¼‰
 /// </summary>
 public class BossHand : MonoBehaviour
 {
-    [Header("„Ÿ„Ÿ İ’è „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ")]
+    [Header("â”€â”€ è¨­å®š â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€")]
     public BossHandData handData;
 
-    [Header("„Ÿ„Ÿ QÆ „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ")]
+    [Header("â”€â”€ å‚ç…§ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€")]
     public TowerHP towerHP;
     public Transform towerTransform;
     public UnityEngine.UI.Slider hpSlider;
-    public GameObject paintOverlay;  // ƒyƒCƒ“ƒg‰‰o—pUIiInspector‚ÅƒAƒTƒCƒ“j
-    public Collider2D handCollider;  // è‚Ì“–‚½‚è”»’èiPoke‚Ì‚İIsTrigger‚ğƒIƒt‚É‚·‚éj
-    public BlockSelectionFlowManager flowManager; // Flick‚Å‘€ì’†ƒuƒƒbƒN‚ğ”ò‚Î‚µ‚½‚ÉŸ‚Ì‘I‘ğ‚ği‚ß‚é‚½‚ß
-    public Animator animator; // ƒAƒjƒ[ƒVƒ‡ƒ“Ä¶—p
+    public GameObject paintOverlay;  // ãƒšã‚¤ãƒ³ãƒˆæ¼”å‡ºç”¨UIï¼ˆInspectorã§ã‚¢ã‚µã‚¤ãƒ³ï¼‰
+    public Collider2D handCollider;  // æ‰‹ã®å½“ãŸã‚Šåˆ¤å®šï¼ˆPokeæ™‚ã®ã¿IsTriggerã‚’ã‚ªãƒ•ã«ã™ã‚‹ï¼‰
+    public BlockSelectionFlowManager flowManager; // Flickã§æ“ä½œä¸­ãƒ–ãƒ­ãƒƒã‚¯ã‚’é£›ã°ã—ãŸæ™‚ã«æ¬¡ã®é¸æŠã‚’é€²ã‚ã‚‹ãŸã‚
+    public Animator animator; // ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³å†ç”Ÿç”¨
 
-    [Header("„Ÿ„Ÿ SE „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ")]
+    [Header("â”€â”€ SE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€")]
     public AudioSource audioSource;
-    public AudioClip pokeSE;   // ¬“Ë‚­
-    public AudioClip punchSE;  // ƒpƒ“ƒ`
-    public AudioClip flickSE;  // ƒfƒRƒsƒ“
+    public AudioClip pokeSE;   // å°çªã
+    public AudioClip punchSE;  // ãƒ‘ãƒ³ãƒ
+    public AudioClip flickSE;  // ãƒ‡ã‚³ãƒ”ãƒ³
 
-    [Header("„Ÿ„Ÿ ƒJƒƒ‰ƒVƒFƒCƒN „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ")]
-    public CameraShake cameraShake;       // ƒpƒ“ƒ`‚É—h‚ç‚·
-    public float cameraShakeDelay = 0.2f; // —h‚ç‚·‚Ü‚Å‚Ì’x‰„i•bj
+    [Header("â”€â”€ ã‚«ãƒ¡ãƒ©ã‚·ã‚§ã‚¤ã‚¯ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€")]
+    public CameraShake cameraShake;       // ãƒ‘ãƒ³ãƒæ™‚ã«æºã‚‰ã™
+    public float cameraShakeDelay = 0.2f; // æºã‚‰ã™ã¾ã§ã®é…å»¶ï¼ˆç§’ï¼‰
 
-    // „Ÿ„Ÿ„Ÿ “à•”ó‘Ô „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ
+    [Header("â”€â”€ RandomTriggerã«ã‚ˆã‚‹æ”»æ’ƒã‚­ãƒ£ãƒ³ã‚»ãƒ« â”€â”€")]
+    public float cancelKnockbackDelay = 0.3f; // ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã€œãƒãƒƒã‚¯ãƒãƒƒã‚¯ã¾ã§ã®ãƒ‡ã‚£ãƒ¬ã‚¤
+
+    [Header("â”€â”€ æ”»æ’ƒå®Ÿè¡Œãƒ‡ã‚£ãƒ¬ã‚¤ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€")]
+    public float attackDelay = 0.3f; // Animationé–‹å§‹ã€œå®Ÿéš›ã®æ”»æ’ƒå‡¦ç†ã¾ã§ã®ãƒ‡ã‚£ãƒ¬ã‚¤ï¼ˆå…±é€šï¼‰
+
+    [Header("â”€â”€ ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ â”€â”€â”€â”€â”€â”€â”€â”€")]
+    public string damageAnimBool = "Damage"; // ãƒãƒƒã‚¯ãƒãƒƒã‚¯æ™‚ã«å†ç”Ÿ
+
+    // â”€â”€â”€ å†…éƒ¨çŠ¶æ…‹ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     float currentHP;
-    int hitCount = 0;   // ƒmƒbƒNƒoƒbƒN—p”í’e‰ñ”
+    int hitCount = 0;   // ãƒãƒƒã‚¯ãƒãƒƒã‚¯ç”¨è¢«å¼¾å›æ•°
 
     bool isKnockbacking = false;
     bool isApproaching = false;
     bool isDead = false;
 
-    Vector3 originPos;              // ƒXƒ|[ƒ“ˆÊ’uiƒmƒbƒNƒoƒbƒN–ß‚èæj
-    float side;                   // ¶=-1 ‰E=1
+    Vector3 originPos;              // ã‚¹ãƒãƒ¼ãƒ³ä½ç½®ï¼ˆãƒãƒƒã‚¯ãƒãƒƒã‚¯æˆ»ã‚Šå…ˆï¼‰
+    float side;                   // å·¦=-1 å³=1
 
-    // UŒ‚ƒtƒF[ƒYŠÇ—
-    bool isHarassPhase = true;      // true=–WŠQƒtƒF[ƒY, false=UŒ‚ƒtƒF[ƒY
-    int actionCount = 0;         // Œ»ƒtƒF[ƒY‚ÅÀs‚µ‚½ƒAƒNƒVƒ‡ƒ“”
+    // æ”»æ’ƒãƒ•ã‚§ãƒ¼ã‚ºç®¡ç†
+    bool isHarassPhase = true;      // true=å¦¨å®³ãƒ•ã‚§ãƒ¼ã‚º, false=æ”»æ’ƒãƒ•ã‚§ãƒ¼ã‚º
+    int actionCount = 0;         // ç¾ãƒ•ã‚§ãƒ¼ã‚ºã§å®Ÿè¡Œã—ãŸã‚¢ã‚¯ã‚·ãƒ§ãƒ³æ•°
+
+    // ç¾åœ¨å®Ÿè¡Œä¸­ã®ã‚¢ã‚¯ã‚·ãƒ§ãƒ³ã‚³ãƒ«ãƒ¼ãƒãƒ³ï¼ˆã‚­ãƒ£ãƒ³ã‚»ãƒ«ç”¨ï¼‰
+    Coroutine currentActionCoroutine;
+
+    // â”€â”€â”€ ãƒãƒ£ãƒ¼ã‚¸çŠ¶æ…‹ï¼ˆRandomTriggerã§ã®å„ªå…ˆåˆ¤å®šç”¨ï¼‰ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    public bool IsCharging { get; private set; } = false;
+    public float ChargeStartTime { get; private set; } = -1f;
 
     public bool IsDead => isDead;
 
-    // ŠO•”ƒCƒxƒ“ƒg
+    // å¤–éƒ¨ã‚¤ãƒ™ãƒ³ãƒˆ
     public System.Action OnDefeated;
 
-    // „Ÿ„Ÿ„Ÿ ‹N“® „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ
-    void Start()
-    {
-        /*
-        currentHP = handData.maxHP;
-        originPos = transform.position;
-        side = transform.position.x < towerTransform.position.x ? 1f : -1f;
-        */
-
-        //UpdateHPBar();
-        // s“®ŠJn‚ÍBossManager‚©‚çStartBehavior()‚ğŒÄ‚ñ‚Ås‚¤
-    }
-
-    private void Awake()
+    // â”€â”€â”€ èµ·å‹• â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    void Awake()
     {
         currentHP = handData.maxHP;
         originPos = transform.position;
@@ -79,62 +83,49 @@ public class BossHand : MonoBehaviour
     }
 
     /// <summary>
-    /// BossManager‚©‚çŒÄ‚ÔBƒ{ƒXoŒ»‚És“®‚ğŠJn‚·‚é
+    /// BossManagerã‹ã‚‰å‘¼ã¶ã€‚ãƒœã‚¹å‡ºç¾æ™‚ã«è¡Œå‹•ã‚’é–‹å§‹ã™ã‚‹
     /// </summary>
     public void StartBehavior()
     {
         StartCoroutine(BehaviorLoop());
     }
 
-    // „Ÿ„Ÿ„Ÿ ƒƒCƒ“ƒ‹[ƒv „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ
+    // â”€â”€â”€ ãƒ¡ã‚¤ãƒ³ãƒ«ãƒ¼ãƒ— â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     IEnumerator BehaviorLoop()
     {
         while (!isDead)
         {
-            // ƒQ[ƒ€ˆê’â~’†‚Í‘Ò‹@
+            // ã‚²ãƒ¼ãƒ ä¸€æ™‚åœæ­¢ä¸­ã¯å¾…æ©Ÿ
             while (GameStateManager.IsPaused) yield return null;
 
-            // ƒmƒbƒNƒoƒbƒN’†‚ÍŠ®‘S‚É‘Ò‹@
+            // ãƒãƒƒã‚¯ãƒãƒƒã‚¯ä¸­ã¯å®Œå…¨ã«å¾…æ©Ÿ
             while (isKnockbacking) yield return null;
             if (isDead) yield break;
 
-            // ƒ^ƒ[‚ÉŒü‚©‚Á‚ÄÚ‹ß
+            // ã‚¿ãƒ¯ãƒ¼ã«å‘ã‹ã£ã¦æ¥è¿‘
             yield return StartCoroutine(Approach());
             if (isDead) yield break;
 
-            // ƒmƒbƒNƒoƒbƒN‚ª—ˆ‚½‚çÚ‹ß‚ğ‚â‚è’¼‚·
+            // ãƒãƒƒã‚¯ãƒãƒƒã‚¯ãŒæ¥ãŸã‚‰æ¥è¿‘ã‚’ã‚„ã‚Šç›´ã™
             while (isKnockbacking) yield return null;
             if (isDead) yield break;
 
-            // UŒ‚Às
-            yield return StartCoroutine(ExecuteAction());
+            // æ”»æ’ƒå®Ÿè¡Œ
+            currentActionCoroutine = StartCoroutine(ExecuteAction());
+            yield return currentActionCoroutine;
+            currentActionCoroutine = null;
             if (isDead) yield break;
 
-            // ƒmƒbƒNƒoƒbƒN‚ª—ˆ‚½‚çUŒ‚Œã‚à‘Ò‹@
+            // ãƒãƒƒã‚¯ãƒãƒƒã‚¯ãŒæ¥ãŸã‚‰æ”»æ’ƒå¾Œã‚‚å¾…æ©Ÿ
             while (isKnockbacking) yield return null;
             if (isDead) yield break;
 
-            // ƒtƒF[ƒYØ‚è‘Ö‚¦”»’è
+            // ãƒ•ã‚§ãƒ¼ã‚ºåˆ‡ã‚Šæ›¿ãˆåˆ¤å®š
             SwitchPhaseIfNeeded();
         }
     }
 
-    // „Ÿ„Ÿ„Ÿ Ú‹ß „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ
-    /*
-    IEnumerator Approach()
-    {
-        float targetX = towerTransform.position.x + side * handData.approachStopX;
-        var dest = new Vector3(targetX, transform.position.y, 0f);
-
-        while (Vector3.Distance(transform.position, dest) > 0.1f)
-        {
-            if (isKnockbacking || isDead) yield break;
-            transform.position = Vector3.MoveTowards(
-                transform.position, dest, handData.moveSpeed * Time.deltaTime);
-            yield return null;
-        }
-    }
-    */
+    // â”€â”€â”€ æ¥è¿‘ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     IEnumerator Approach()
     {
         if (towerTransform == null || handData == null)
@@ -142,15 +133,8 @@ public class BossHand : MonoBehaviour
 
         isApproaching = true;
 
-        float targetX =
-            towerTransform.position.x +
-            side * handData.approachStopX;
-
-        Vector3 destination = new Vector3(
-            targetX,
-            transform.position.y,
-            transform.position.z
-        );
+        float targetX = towerTransform.position.x + side * handData.approachStopX;
+        Vector3 destination = new Vector3(targetX, transform.position.y, transform.position.z);
 
         while (Mathf.Abs(transform.position.x - targetX) > 0.01f)
         {
@@ -161,25 +145,18 @@ public class BossHand : MonoBehaviour
             }
 
             Vector3 currentPosition = transform.position;
-
             currentPosition.x = Mathf.MoveTowards(
-                currentPosition.x,
-                targetX,
-                handData.moveSpeed * Time.deltaTime
-            );
-
+                currentPosition.x, targetX, handData.moveSpeed * Time.deltaTime);
             transform.position = currentPosition;
 
             yield return null;
         }
 
-        // ×ûÖóÇ¿ÖÆ¶ÔÆE¿±E»ÖÃ£¬±ÜÃâÁôÏÂÎó²E
         transform.position = destination;
-
         isApproaching = false;
     }
 
-    // „Ÿ„Ÿ„Ÿ ƒAƒNƒVƒ‡ƒ“‘I‘ğEÀs „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ
+    // â”€â”€â”€ ã‚¢ã‚¯ã‚·ãƒ§ãƒ³é¸æŠãƒ»å®Ÿè¡Œ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     IEnumerator ExecuteAction()
     {
         var pool = isHarassPhase ? handData.harassActions : handData.attackActions;
@@ -216,19 +193,25 @@ public class BossHand : MonoBehaviour
         }
     }
 
-    // „Ÿ„Ÿ„Ÿ ŠeƒAƒNƒVƒ‡ƒ“À‘• „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ
+    // â”€â”€â”€ å„ã‚¢ã‚¯ã‚·ãƒ§ãƒ³å®Ÿè£… â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-    // ƒpƒ“ƒ`Fƒ^ƒ[ü•Ó‚Ì’n–Ê‚ğ—h‚ç‚·
+    // ãƒ‘ãƒ³ãƒï¼šã‚¿ãƒ¯ãƒ¼å‘¨è¾ºã®åœ°é¢ã‚’æºã‚‰ã™
     IEnumerator ActionPunch(BossActionData action)
     {
-        Debug.Log($"[BossHand] Punch! ƒ_ƒ[ƒW:{action.damage}");
-
-        GamepadVibrationManager.Instance?.PlayVibration(0.5f, 0.9f, 0.15f);
+        Debug.Log($"[BossHand] Punch! ãƒ€ãƒ¡ãƒ¼ã‚¸:{action.damage}");
 
         if (animator != null)
             animator.SetBool(handData.punchAnimTrigger, true);
 
+        BeginCharging();
+
+        // Animationé–‹å§‹å¾Œã€å®Ÿéš›ã®æ”»æ’ƒå‡¦ç†ã¾ã§å¾…ã¤
+        yield return new WaitForSeconds(attackDelay);
+
+        EndCharging();
+
         PlaySE(punchSE);
+        GamepadVibrationManager.Instance?.PlayVibration(0.5f, 0.9f, 0.15f);
 
         if (cameraShake != null)
             StartCoroutine(DelayedShake());
@@ -244,8 +227,7 @@ public class BossHand : MonoBehaviour
             animator.SetBool(handData.punchAnimTrigger, false);
     }
 
-    // „Ÿ„Ÿ„Ÿ ‘äÀ—h‚êiTowerHP.ShakePedestal‚Æ“¯‚¶d‘g‚İj „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ
-    // „Ÿ„Ÿ„Ÿ ƒJƒƒ‰ƒVƒFƒCƒN‚ğ’x‰„‚³‚¹‚ÄÀs „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ
+    // â”€â”€â”€ ã‚«ãƒ¡ãƒ©ã‚·ã‚§ã‚¤ã‚¯ã‚’é…å»¶ã•ã›ã¦å®Ÿè¡Œ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     IEnumerator DelayedShake()
     {
         yield return new WaitForSeconds(cameraShakeDelay);
@@ -253,13 +235,14 @@ public class BossHand : MonoBehaviour
             cameraShake.Shake();
     }
 
+    // â”€â”€â”€ å°åº§æºã‚Œï¼ˆTowerHP.ShakePedestalã¨åŒã˜ä»•çµ„ã¿ï¼‰ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     IEnumerator ShakePedestal()
     {
         var pedestalRb = towerHP.pedestalRb;
         Vector2 origin = pedestalRb.position;
         float timer = 0f;
 
-        // —h‚ê’†‚¾‚¯ˆÚ“®‚ğ‹–‰Â
+        // æºã‚Œä¸­ã ã‘ç§»å‹•ã‚’è¨±å¯
         pedestalRb.constraints = RigidbodyConstraints2D.FreezeRotation;
 
         while (timer < handData.punchShakeDuration)
@@ -273,11 +256,11 @@ public class BossHand : MonoBehaviour
 
         pedestalRb.MovePosition(origin);
 
-        // —h‚êI‚í‚Á‚½‚çÄ‚ÑŒÅ’è
+        // æºã‚Œçµ‚ã‚ã£ãŸã‚‰å†ã³å›ºå®š
         pedestalRb.constraints = RigidbodyConstraints2D.FreezeAll;
     }
 
-    // ƒyƒCƒ“ƒgF‰æ–Ê‚É‹ŠE–WŠQUI‚ğ•\¦
+    // ãƒšã‚¤ãƒ³ãƒˆï¼šç”»é¢ã«è¦–ç•Œå¦¨å®³UIã‚’è¡¨ç¤º
     IEnumerator ActionPaint(BossActionData action)
     {
         Debug.Log("[BossHand] Paint!");
@@ -293,7 +276,7 @@ public class BossHand : MonoBehaviour
             paintOverlay.SetActive(false);
     }
 
-    // ƒWƒƒƒOƒŠƒ“ƒOFˆê”Ôã‚ÌƒuƒƒbƒN‚ğ’Í‚ñ‚Å‚¨è‹Ê‚Ì‚æ‚¤‚É—h‚ç‚·
+    // ã‚¸ãƒ£ã‚°ãƒªãƒ³ã‚°ï¼šä¸€ç•ªä¸Šã®ãƒ–ãƒ­ãƒƒã‚¯ã‚’æ´ã‚“ã§ãŠæ‰‹ç‰ã®ã‚ˆã†ã«æºã‚‰ã™
     IEnumerator ActionJuggling(BossActionData action)
     {
         Debug.Log("[BossHand] Juggling!");
@@ -307,14 +290,14 @@ public class BossHand : MonoBehaviour
             yield break;
         }
 
-        // ’Í‚ŞF•¨—‚ğ–³Œø‰»‚µ‚Äè‚É’Ç]‚³‚¹‚é
+        // æ´ã‚€ï¼šç‰©ç†ã‚’ç„¡åŠ¹åŒ–ã—ã¦æ‰‹ã«è¿½å¾“ã•ã›ã‚‹
         var originalBodyType = topBlock.bodyType;
         topBlock.bodyType = RigidbodyType2D.Kinematic;
         topBlock.linearVelocity = Vector2.zero;
 
         Vector3 grabOffset = new Vector3(0f, -handData.jugglingHoldOffsetY, 0f);
 
-        // ‚¨è‹Ê‚Ì‚æ‚¤‚Éã‰º‚É—h‚ç‚·
+        // ãŠæ‰‹ç‰ã®ã‚ˆã†ã«ä¸Šä¸‹ã«æºã‚‰ã™
         float timer = 0f;
         while (timer < handData.jugglingDuration)
         {
@@ -325,13 +308,13 @@ public class BossHand : MonoBehaviour
             yield return null;
         }
 
-        // •ú‚·F•¨—‚ğŒ³‚É–ß‚·
+        // æ”¾ã™ï¼šç‰©ç†ã‚’å…ƒã«æˆ»ã™
         topBlock.bodyType = originalBodyType;
 
         yield return new WaitForSeconds(0.3f);
     }
 
-    // ƒ^ƒ[‚Ìˆê”Ôã‚ÌƒuƒƒbƒN‚ğæ“¾iƒ^ƒO‚ÅŒŸõj
+    // ã‚¿ãƒ¯ãƒ¼ã®ä¸€ç•ªä¸Šã®ãƒ–ãƒ­ãƒƒã‚¯ã‚’å–å¾—ï¼ˆã‚¿ã‚°ã§æ¤œç´¢ï¼‰
     Rigidbody2D GetTopBlock()
     {
         var blocks = GameObject.FindGameObjectsWithTag(handData.towerBlockTag);
@@ -353,22 +336,28 @@ public class BossHand : MonoBehaviour
         return top;
     }
 
-    // ¬“Ë‚­F¬ƒ_ƒ[ƒW{•¨—“I‚É“Ë‚«o‚µ‚ÄÕ“Ë‚³‚¹‚é
+    // å°çªãï¼šå°ãƒ€ãƒ¡ãƒ¼ã‚¸ï¼‹ç‰©ç†çš„ã«çªãå‡ºã—ã¦è¡çªã•ã›ã‚‹
     IEnumerator ActionPoke(BossActionData action)
     {
-        Debug.Log($"[BossHand] Poke! ƒ_ƒ[ƒW:{action.damage}");
-
-        GamepadVibrationManager.Instance?.PlayVibration(0.5f, 0.9f, 0.15f);
+        Debug.Log($"[BossHand] Poke! ãƒ€ãƒ¡ãƒ¼ã‚¸:{action.damage}");
 
         if (animator != null)
             animator.SetBool(handData.pokeAnimTrigger, true);
 
+        BeginCharging();
+
+        // Animationé–‹å§‹å¾Œã€å®Ÿéš›ã®æ”»æ’ƒå‹•ä½œã¾ã§å¾…ã¤
+        yield return new WaitForSeconds(attackDelay);
+
+        EndCharging();
+
         PlaySE(pokeSE);
+        GamepadVibrationManager.Instance?.PlayVibration(0.5f, 0.9f, 0.15f);
 
         Vector3 startPos = transform.position;
         Vector3 pokeDest = startPos + new Vector3(-side * handData.pokeDistance, 0f, 0f);
 
-        // Poke’†‚¾‚¯IsTrigger‚ğƒIƒt‚É‚µ‚Ä•¨—Õ“Ë‚³‚¹‚é
+        // Pokeä¸­ã ã‘IsTriggerã‚’ã‚ªãƒ•ã«ã—ã¦ç‰©ç†è¡çªã•ã›ã‚‹
         bool originalIsTrigger = false;
         if (handCollider != null)
         {
@@ -376,7 +365,7 @@ public class BossHand : MonoBehaviour
             handCollider.isTrigger = false;
         }
 
-        // “Ë‚«o‚·
+        // çªãå‡ºã™
         float timer = 0f;
         while (timer < handData.pokeDuration)
         {
@@ -389,7 +378,7 @@ public class BossHand : MonoBehaviour
 
         towerHP.TakeDamage(action.damage);
 
-        // ˆø‚­
+        // å¼•ã
         timer = 0f;
         while (timer < handData.pokeDuration)
         {
@@ -400,7 +389,7 @@ public class BossHand : MonoBehaviour
         }
         transform.position = startPos;
 
-        // IsTrigger‚ğŒ³‚É–ß‚·
+        // IsTriggerã‚’å…ƒã«æˆ»ã™
         if (handCollider != null)
             handCollider.isTrigger = originalIsTrigger;
 
@@ -408,45 +397,51 @@ public class BossHand : MonoBehaviour
             animator.SetBool(handData.pokeAnimTrigger, false);
     }
 
-    // ƒfƒRƒsƒ“F‚ƒ_ƒ[ƒW{ˆê”Ôã‚ÌƒuƒƒbƒN‚ğ•¨—“I‚É‚«”ò‚Î‚·
+    // ãƒ‡ã‚³ãƒ”ãƒ³ï¼šé«˜ãƒ€ãƒ¡ãƒ¼ã‚¸ï¼‹ä¸€ç•ªä¸Šã®ãƒ–ãƒ­ãƒƒã‚¯ã‚’ç‰©ç†çš„ã«å¹ãé£›ã°ã™
     IEnumerator ActionFlick(BossActionData action)
     {
-        Debug.Log($"[BossHand] Flick! ƒ_ƒ[ƒW:{action.damage}");
-
-        GamepadVibrationManager.Instance?.PlayVibration(0.5f, 0.9f, 0.15f);
+        Debug.Log($"[BossHand] Flick! ãƒ€ãƒ¡ãƒ¼ã‚¸:{action.damage}");
 
         if (animator != null)
             animator.SetBool(handData.flickAnimTrigger, true);
 
+        BeginCharging();
+
+        // Animationé–‹å§‹å¾Œã€å®Ÿéš›ã®æ”»æ’ƒå‡¦ç†ã¾ã§å¾…ã¤
+        yield return new WaitForSeconds(attackDelay);
+
+        EndCharging();
+
         PlaySE(flickSE);
+        GamepadVibrationManager.Instance?.PlayVibration(0.5f, 0.9f, 0.15f);
 
         towerHP.TakeDamage(action.damage);
 
         var topBlock = GetTopBlock();
         if (topBlock != null)
         {
-            // ‘€ì’†‚ÌƒuƒƒbƒN‚©‚Ç‚¤‚©‚ğ”»’è
+            // æ“ä½œä¸­ã®ãƒ–ãƒ­ãƒƒã‚¯ã‹ã©ã†ã‹ã‚’åˆ¤å®š
             var moveController = topBlock.GetComponent<BlockMoveController>();
             if (moveController != null)
             {
-                // ‘€ìŒ ‚ğ’D‚¤
+                // æ“ä½œæ¨©ã‚’å¥ªã†
                 moveController.enabled = false;
 
-                // BlockLanding‚ª“ñd‚ÉOnCurrentBlockLanded()‚ğŒÄ‚Î‚È‚¢‚æ‚¤–³Œø‰»
+                // BlockLandingãŒäºŒé‡ã«OnCurrentBlockLanded()ã‚’å‘¼ã°ãªã„ã‚ˆã†ç„¡åŠ¹åŒ–
                 var landing = topBlock.GetComponent<BlockLanding>();
                 if (landing != null)
                     landing.enabled = false;
 
-                // Ÿ‚ÌƒuƒƒbƒN‘I‘ğ‚Éi‚ß‚é
+                // æ¬¡ã®ãƒ–ãƒ­ãƒƒã‚¯é¸æŠã«é€²ã‚ã‚‹
                 if (flowManager != null)
                     flowManager.OnCurrentBlockLanded();
                 else
-                    Debug.LogWarning("[BossHand] flowManager ‚ª–¢ƒAƒTƒCƒ“‚Å‚·");
+                    Debug.LogWarning("[BossHand] flowManager ãŒæœªã‚¢ã‚µã‚¤ãƒ³ã§ã™");
             }
 
-            // ã•ûŒü{‰¡•ûŒüiside‹tŒü‚«j‚ÉƒCƒ“ƒpƒ‹ƒX‚ğ‰Á‚¦‚é
+            // ä¸Šæ–¹å‘ï¼‹æ¨ªæ–¹å‘ï¼ˆsideé€†å‘ãï¼‰ã«ã‚¤ãƒ³ãƒ‘ãƒ«ã‚¹ã‚’åŠ ãˆã‚‹
             Vector2 flickDir = new Vector2(-side * handData.flickForceX, handData.flickForceY);
-            topBlock.linearVelocity = flickDir;   // ¿—Ê‚ÉˆË‘¶‚µ‚È‚¢ˆê’è‘¬“x
+            topBlock.linearVelocity = flickDir;   // è³ªé‡ã«ä¾å­˜ã—ãªã„ä¸€å®šé€Ÿåº¦
             topBlock.angularVelocity = -side * handData.flickTorque;
         }
 
@@ -456,13 +451,13 @@ public class BossHand : MonoBehaviour
             animator.SetBool(handData.flickAnimTrigger, false);
     }
 
-    // „Ÿ„Ÿ„Ÿ ƒtƒF[ƒYØ‚è‘Ö‚¦ „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ
+    // â”€â”€â”€ ãƒ•ã‚§ãƒ¼ã‚ºåˆ‡ã‚Šæ›¿ãˆ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     void SwitchPhaseIfNeeded()
     {
         switch (handData.phaseOrder)
         {
             case BossPhaseOrder.HarassFirst:
-                // –WŠQ¨UŒ‚‚Ì‡‚Å1‰ñ‚¸‚Â
+                // å¦¨å®³â†’æ”»æ’ƒã®é †ã§1å›ãšã¤
                 if (isHarassPhase && actionCount >= 1) { isHarassPhase = false; actionCount = 0; }
                 else if (!isHarassPhase && actionCount >= 1) { isHarassPhase = true; actionCount = 0; }
                 break;
@@ -484,7 +479,7 @@ public class BossHand : MonoBehaviour
         }
     }
 
-    // „Ÿ„Ÿ„Ÿ ƒAƒNƒVƒ‡ƒ“d‚İ‘I‘ğ „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ
+    // â”€â”€â”€ ã‚¢ã‚¯ã‚·ãƒ§ãƒ³é‡ã¿é¸æŠ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     BossActionData SelectAction(List<BossActionData> pool)
     {
         float total = 0f;
@@ -499,7 +494,7 @@ public class BossHand : MonoBehaviour
         return pool[^1];
     }
 
-    // „Ÿ„Ÿ„Ÿ ƒ_ƒ[ƒWó•t „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ
+    // â”€â”€â”€ ãƒ€ãƒ¡ãƒ¼ã‚¸å—ä»˜ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     public void TakeDamage(int amount) => TakeDamage((float)amount);
 
     public void TakeDamage(float amount)
@@ -512,37 +507,91 @@ public class BossHand : MonoBehaviour
         Debug.Log($"[BossHand] {gameObject.name} HP : {currentHP}");
         UpdateHPBar();
 
-        // ƒmƒbƒNƒoƒbƒN’†‚ÍƒJƒEƒ“ƒg‚µ‚È‚¢
-        Debug.Log($"[BossHand] isKnockbacking={isKnockbacking} hitCount={hitCount} threshold={handData.knockbackHitThreshold}");
+        // ãƒãƒƒã‚¯ãƒãƒƒã‚¯ä¸­ã¯ã‚«ã‚¦ãƒ³ãƒˆã—ãªã„
         if (!isKnockbacking)
         {
             hitCount++;
-            Debug.Log($"[BossHand] ”í’e‰ñ” hitCount={hitCount}");
             if (hitCount >= handData.knockbackHitThreshold)
             {
-                Debug.Log("[BossHand] ƒmƒbƒNƒoƒbƒN”­“®I");
                 hitCount = 0;
-                isKnockbacking = true;  // ƒRƒ‹[ƒ`ƒ“ŠJn‘O‚É—§‚Ä‚é
+                isKnockbacking = true;  // ã‚³ãƒ«ãƒ¼ãƒãƒ³é–‹å§‹å‰ã«ç«‹ã¦ã‚‹
                 StartCoroutine(Knockback());
             }
-        }
-        else
-        {
-            Debug.Log("[BossHand] ƒmƒbƒNƒoƒbƒN’†‚Ì‚½‚ßƒXƒLƒbƒv");
         }
 
         if (currentHP <= 0f)
             Die();
     }
 
-    // „Ÿ„Ÿ„Ÿ ƒmƒbƒNƒoƒbƒNiR‚È‚èŒÊj „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ
+    // â”€â”€â”€ ãƒãƒ£ãƒ¼ã‚¸çŠ¶æ…‹ç®¡ç† â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    void BeginCharging()
+    {
+        IsCharging = true;
+        ChargeStartTime = Time.time;
+    }
+
+    void EndCharging()
+    {
+        IsCharging = false;
+        ChargeStartTime = -1f;
+    }
+
+    // â”€â”€â”€ RandomTriggerã«ã‚ˆã‚‹æ”»æ’ƒã‚­ãƒ£ãƒ³ã‚»ãƒ«ï¼‹ãƒãƒƒã‚¯ãƒãƒƒã‚¯ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    /// <summary>
+    /// RandomTriggerSpawnerãªã©ã‹ã‚‰å‘¼ã¶ã€‚
+    /// ä¸€å®šãƒ‡ã‚£ãƒ¬ã‚¤å¾Œã€ç¾åœ¨å®Ÿè¡Œä¸­ã®ã‚¢ã‚¯ã‚·ãƒ§ãƒ³ã‚’ä¸­æ–­ã—ã¦ãƒãƒƒã‚¯ãƒãƒƒã‚¯ã•ã›ã‚‹
+    /// </summary>
+    public void CancelAndKnockback()
+    {
+        if (isDead) return;
+        StartCoroutine(CancelAndKnockbackRoutine());
+    }
+
+    IEnumerator CancelAndKnockbackRoutine()
+    {
+        yield return new WaitForSeconds(cancelKnockbackDelay);
+
+        if (isDead) yield break;
+
+        // å®Ÿè¡Œä¸­ã®ã‚¢ã‚¯ã‚·ãƒ§ãƒ³æ¼”å‡ºã‚’å¼·åˆ¶çµ‚äº†ã™ã‚‹
+        if (currentActionCoroutine != null)
+        {
+            StopCoroutine(currentActionCoroutine);
+            currentActionCoroutine = null;
+        }
+        EndCharging();
+
+        // æ¼”å‡ºç³»ã®å¾Œå§‹æœ«ï¼ˆTrigger/UI/ç‰©ç†ãªã©ã‚’å…ƒã«æˆ»ã™ï¼‰
+        if (animator != null)
+        {
+            animator.SetBool(handData.punchAnimTrigger, false);
+            animator.SetBool(handData.pokeAnimTrigger, false);
+            animator.SetBool(handData.flickAnimTrigger, false);
+        }
+        if (paintOverlay != null)
+            paintOverlay.SetActive(false);
+        if (handCollider != null)
+            handCollider.isTrigger = true;
+
+        // è¢«å¼¾å›æ•°ã‚’ãƒªã‚»ãƒƒãƒˆã—ã¦ãƒãƒƒã‚¯ãƒãƒƒã‚¯é–‹å§‹
+        hitCount = 0;
+        if (!isKnockbacking)
+        {
+            isKnockbacking = true;
+            StartCoroutine(Knockback());
+        }
+    }
+
+    // â”€â”€â”€ ãƒãƒƒã‚¯ãƒãƒƒã‚¯ï¼ˆå±±ãªã‚Šå¼§ï¼‰ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     IEnumerator Knockback()
     {
-        Debug.Log($"[BossHand] Knockback() ŠJn isKnockbacking={isKnockbacking}");
+        if (animator != null)
+            animator.SetBool(damageAnimBool, true);
+
         Vector3 startPos = transform.position;
         Vector3 knockDest = startPos + new Vector3(-side * handData.knockbackDistance, 0f, 0f);
 
-        // Œã‘ŞiR‚È‚èEŒÅ’èŠÔj
+        // å¾Œé€€ï¼ˆå±±ãªã‚Šãƒ»å›ºå®šæ™‚é–“ï¼‰
         float timer = 0f;
         float duration = handData.knockbackDuration;
         while (timer < duration)
@@ -557,11 +606,11 @@ public class BossHand : MonoBehaviour
         }
         transform.position = knockDest;
 
-        // ­‚µ‘Ò‚Á‚Ä‚©‚ç–ß‚é
+        // å°‘ã—å¾…ã£ã¦ã‹ã‚‰æˆ»ã‚‹
         yield return new WaitForSeconds(0.5f);
 
-        // –ß‚éi’¼üEŒÅ’èŠÔj
-        // –ß‚èæ‚Í approachStopX ‚ÌˆÊ’uiUŒ‚‚Ì’èˆÊ’uj
+        // æˆ»ã‚‹ï¼ˆç›´ç·šãƒ»å›ºå®šæ™‚é–“ï¼‰
+        // æˆ»ã‚Šå…ˆã¯ approachStopX ã®ä½ç½®ï¼ˆæ”»æ’ƒæ™‚ã®å®šä½ç½®ï¼‰
         float returnX = towerTransform.position.x + side * handData.approachStopX;
         Vector3 returnDest = new Vector3(returnX, originPos.y, originPos.z);
         Vector3 returnStart = transform.position;
@@ -576,27 +625,31 @@ public class BossHand : MonoBehaviour
         }
         transform.position = returnDest;
 
-        hitCount = 0;  // I—¹‚ÉƒŠƒZƒbƒg
+        if (animator != null)
+            animator.SetBool(damageAnimBool, false);
+
+        hitCount = 0;  // çµ‚äº†æ™‚ã«ãƒªã‚»ãƒƒãƒˆ
         isKnockbacking = false;
     }
 
-    // „Ÿ„Ÿ„Ÿ €–S „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ
+    // â”€â”€â”€ æ­»äº¡ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     void Die()
     {
         isDead = true;
+        EndCharging();
         OnDefeated?.Invoke();
-        Debug.Log($"[BossHand] {gameObject.name} Œ‚”jI");
+        Debug.Log($"[BossHand] {gameObject.name} æ’ƒç ´ï¼");
         gameObject.SetActive(false);
     }
 
-    // „Ÿ„Ÿ„Ÿ HPƒo[XV „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ
+    // â”€â”€â”€ HPãƒãƒ¼æ›´æ–° â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     void UpdateHPBar()
     {
         if (hpSlider == null) return;
         hpSlider.value = currentHP / handData.maxHP;
     }
 
-    // „Ÿ„Ÿ„Ÿ SEÄ¶ „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ
+    // â”€â”€â”€ SEå†ç”Ÿ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     void PlaySE(AudioClip clip)
     {
         if (audioSource != null && clip != null)

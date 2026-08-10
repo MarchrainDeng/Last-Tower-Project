@@ -428,7 +428,7 @@ AudioSource:
   m_GameObject: {fileID: 2686258157495640834}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 993995506215122336, guid: 6d4f17c6a99f1554aa779c49b9de3000, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 0
@@ -938,6 +938,11 @@ MonoBehaviour:
   pokeSE: {fileID: 8300000, guid: 15d14adab2019924fbf4efbfde068cdb, type: 3}
   punchSE: {fileID: 8300000, guid: 40abdd4319bc0c8469dd2aa80ce07a08, type: 3}
   flickSE: {fileID: 8300000, guid: 15d14adab2019924fbf4efbfde068cdb, type: 3}
+  cameraShake: {fileID: 0}
+  cameraShakeDelay: 0.2
+  cancelKnockbackDelay: 0.3
+  attackDelay: 0.3
+  damageAnimBool: Damage
 --- !u!70 &6599211641908703017
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -1184,6 +1189,11 @@ MonoBehaviour:
   pokeSE: {fileID: 8300000, guid: 15d14adab2019924fbf4efbfde068cdb, type: 3}
   punchSE: {fileID: 8300000, guid: 40abdd4319bc0c8469dd2aa80ce07a08, type: 3}
   flickSE: {fileID: 8300000, guid: 15d14adab2019924fbf4efbfde068cdb, type: 3}
+  cameraShake: {fileID: 0}
+  cameraShakeDelay: 0.2
+  cancelKnockbackDelay: 0.3
+  attackDelay: 0.3
+  damageAnimBool: Damage
 --- !u!70 &8644217213234775630
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -1324,7 +1334,7 @@ AudioSource:
   m_GameObject: {fileID: 7170252264142185163}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 993995506215122336, guid: 6d4f17c6a99f1554aa779c49b9de3000, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 0
@@ -1543,6 +1553,10 @@ MonoBehaviour:
   victoryBGM: {fileID: 8300000, guid: 39f05c24851ab8d4b9ec07778e65995a, type: 3}
   defeatBGM: {fileID: 8300000, guid: d06ebb13f2829d4478542bda73839801, type: 3}
   spawnDelay: 90
+  heightLine_1: {fileID: 0}
+  heightLine_2: {fileID: 0}
+  blockSpawner: {fileID: 0}
+  randomTriggerSpawner: {fileID: 0}
 --- !u!1 &7890959881995865404
 GameObject:
   m_ObjectHideFlags: 0
@@ -1584,7 +1598,7 @@ AudioSource:
   m_GameObject: {fileID: 7890959881995865404}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 164121509157626410, guid: 6d4f17c6a99f1554aa779c49b9de3000, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 0

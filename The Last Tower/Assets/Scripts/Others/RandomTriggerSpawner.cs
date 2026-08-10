@@ -12,6 +12,10 @@ Trigger被触发后，等待指定时间再次生成。
 生成位置およびその周囲の指定マス数以内に、
 着地済みブロックが存在しない場所のみ使用する。
 Trigger発動後、指定時間経過後に再生成する。
+
+【追加 / 追加】
+Trigger発動時、両手（BossHand）に
+攻撃キャンセル＋ノックバックを発動させる。
 ----------------------------------------
 */
 
@@ -107,6 +111,15 @@ public class RandomTriggerSpawner : MonoBehaviour
     // 地面和方块所在Layer
     [SerializeField]
     private LayerMask surfaceLayer;
+
+    [Header("Boss Hands")]
+
+    // Trigger発動時に攻撃キャンセル＋ノックバックさせる両手
+    [SerializeField]
+    private BossHand leftHand;
+
+    [SerializeField]
+    private BossHand rightHand;
 
     /// <summary>
     /// 开始生成Trigger
@@ -386,6 +399,11 @@ public class RandomTriggerSpawner : MonoBehaviour
             currentTrigger = null;
         }
 
+        // どちらの手をキャンセル＋ノックバックさせるか判定する
+        BossHand targetHand = DetermineTargetHand(trigger.transform.position);
+        if (targetHand != null)
+            targetHand.CancelAndKnockback();
+
         if (!isSpawningEnabled)
             return;
 
@@ -398,6 +416,47 @@ public class RandomTriggerSpawner : MonoBehaviour
             StartCoroutine(
                 RespawnRoutine()
             );
+    }
+
+    /// <summary>
+    /// キャンセル対象の手を1つ決定する
+    /// - どちらかがチャージ中ならそちらを優先
+    /// - 両方チャージ中なら先にチャージを始めた方
+    /// - どちらもチャージ中でなければ、トリガー位置に近い方
+    /// </summary>
+    private BossHand DetermineTargetHand(Vector3 triggerPosition)
+    {
+        bool leftAlive = leftHand != null && !leftHand.IsDead;
+        bool rightAlive = rightHand != null && !rightHand.IsDead;
+
+        if (!leftAlive && !rightAlive)
+            return null;
+        if (leftAlive && !rightAlive)
+            return leftHand;
+        if (!leftAlive && rightAlive)
+            return rightHand;
+
+        bool leftCharging = leftHand.IsCharging;
+        bool rightCharging = rightHand.IsCharging;
+
+        // 片方だけチャージ中 → そちらを優先
+        if (leftCharging && !rightCharging)
+            return leftHand;
+        if (!leftCharging && rightCharging)
+            return rightHand;
+
+        // 両方チャージ中 → 先に始めた方を優先
+        if (leftCharging && rightCharging)
+        {
+            return leftHand.ChargeStartTime <= rightHand.ChargeStartTime
+                ? leftHand
+                : rightHand;
+        }
+
+        // どちらもチャージ中でない → トリガー位置に近い方
+        float leftDist = Vector3.Distance(leftHand.transform.position, triggerPosition);
+        float rightDist = Vector3.Distance(rightHand.transform.position, triggerPosition);
+        return leftDist <= rightDist ? leftHand : rightHand;
     }
 
     /// <summary>

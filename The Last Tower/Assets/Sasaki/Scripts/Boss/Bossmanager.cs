@@ -110,6 +110,9 @@ public class BossManager : MonoBehaviour
     {
         Debug.Log("[BossManager] ゲームクリア！");
 
+        if (randomTriggerSpawner != null)
+            randomTriggerSpawner.StopSpawning();
+
         if (victoryResultUI != null)
             victoryResultUI.SetActive(true);
 
@@ -129,6 +132,9 @@ public class BossManager : MonoBehaviour
     void OnDefeat()
     {
         Debug.Log("[BossManager] タワーHP0 ゲームオーバー！");
+
+        if (randomTriggerSpawner != null)
+            randomTriggerSpawner.StopSpawning();
 
         if (defeatResultUI != null)
             defeatResultUI.SetActive(true);
