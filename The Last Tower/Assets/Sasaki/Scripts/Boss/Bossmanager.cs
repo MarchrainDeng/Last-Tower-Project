@@ -38,6 +38,10 @@ public class BossManager : MonoBehaviour
 
     [SerializeField] private GameObject heightLine_1;
     [SerializeField] private GameObject heightLine_2;
+    [SerializeField] private GameObject blockSpawner;
+
+    [SerializeField]
+    private RandomTriggerSpawner randomTriggerSpawner;
 
     // ─── 起動 ─────────────────────────────────────────────────────
     void Start()
@@ -68,6 +72,14 @@ public class BossManager : MonoBehaviour
 
         heightLine_1.SetActive(false);
         heightLine_2.SetActive(false);
+
+        //移动方块生成点
+        if (blockSpawner != null)
+        {
+            blockSpawner.transform.position = new Vector3(0, 6.9f, 0);
+        }
+
+        randomTriggerSpawner.StartSpawning();
 
         if (bossRoot != null)
             bossRoot.SetActive(true);

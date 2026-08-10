@@ -3570,37 +3570,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 902685051}
   m_CullTransparentMesh: 1
---- !u!1 &905830005
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 905830006}
-  m_Layer: 0
-  m_Name: Test
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &905830006
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 905830005}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -15.42, y: -1.1668, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &913501573
 GameObject:
   m_ObjectHideFlags: 0
@@ -3821,6 +3790,7 @@ Transform:
   - {fileID: 1690775204}
   - {fileID: 836122591}
   - {fileID: 1243205867}
+  - {fileID: 1779351619}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1087879849
@@ -6251,6 +6221,70 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!1 &1779351617
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1779351619}
+  - component: {fileID: 1779351618}
+  m_Layer: 0
+  m_Name: SpeicalTriggerSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1779351618
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1779351617}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3719416b7d4170c43930b5556bd800c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RandomTriggerSpawner
+  triggerPrefab: {fileID: 9132305869531888294, guid: d5091fbb417205a4485b251ef743a160, type: 3}
+  minX: -3
+  maxX: 3
+  spawnY: 0
+  gridSize: 0.5
+  emptyGridRadius: 2
+  triggerSize: {x: 1, y: 1}
+  blockLayer:
+    serializedVersion: 2
+    m_Bits: 960
+  maxSpawnAttempts: 50
+  respawnDelay: 3
+  isSpawningEnabled: 0
+  minHeightAboveSurface: 1
+  maxHeightAboveSurface: 3
+  raycastStartY: 20
+  raycastDistance: 40
+  surfaceLayer:
+    serializedVersion: 2
+    m_Bits: 960
+--- !u!4 &1779351619
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1779351617}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1087879848}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1872117405
 GameObject:
   m_ObjectHideFlags: 0
@@ -7106,8 +7140,12 @@ PrefabInstance:
       objectReference: {fileID: 1677760618}
     - target: {fileID: 349996878208468420, guid: bc9fea9ed9c1b0446bdc867306a6666d, type: 3}
       propertyPath: spawnDelay
-      value: 1
+      value: 10
       objectReference: {fileID: 0}
+    - target: {fileID: 349996878208468420, guid: bc9fea9ed9c1b0446bdc867306a6666d, type: 3}
+      propertyPath: blockSpawner
+      value: 
+      objectReference: {fileID: 1199447508}
     - target: {fileID: 349996878208468420, guid: bc9fea9ed9c1b0446bdc867306a6666d, type: 3}
       propertyPath: cardSelector
       value: 
@@ -7132,6 +7170,10 @@ PrefabInstance:
       propertyPath: victoryResultUI
       value: 
       objectReference: {fileID: 2011475613}
+    - target: {fileID: 349996878208468420, guid: bc9fea9ed9c1b0446bdc867306a6666d, type: 3}
+      propertyPath: randomTriggerSpawner
+      value: 
+      objectReference: {fileID: 1779351618}
     - target: {fileID: 1399014594036997941, guid: bc9fea9ed9c1b0446bdc867306a6666d, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -7409,4 +7451,3 @@ SceneRoots:
   - {fileID: 913501574}
   - {fileID: 406464030436235049}
   - {fileID: 293305498}
-  - {fileID: 905830006}

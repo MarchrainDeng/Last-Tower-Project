@@ -264,7 +264,32 @@ public class BlockMoveController : MonoBehaviour
 
     private void RotateClockwise()
     {
-        transform.Rotate(0, 0, -rotateAngle);
+        // 获取当前Z轴角度
+        // 現在のZ軸角度を取得する
+        float currentAngle =
+            transform.eulerAngles.z;
+
+        // 防止浮点数误差
+        // 浮動小数点誤差を防ぐ
+        currentAngle =
+            Mathf.Round(currentAngle * 100f) / 100f;
+
+        // 计算上一个90度目标角度
+        // 前の90度単位の目標角度を計算する
+        float targetAngle =
+            Mathf.Ceil(currentAngle / 90f) * 90f - 90f;
+
+        // 将角度限制在0～360之间
+        // 角度を0～360の範囲に収める
+        targetAngle =
+            Mathf.Repeat(targetAngle, 360f);
+
+        transform.rotation =
+            Quaternion.Euler(
+                0f,
+                0f,
+                targetAngle
+            );
     }
 
     private void RotateCounterClockwise()
