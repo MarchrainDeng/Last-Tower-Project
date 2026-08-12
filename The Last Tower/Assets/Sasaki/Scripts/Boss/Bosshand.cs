@@ -44,6 +44,7 @@ public class BossHand : MonoBehaviour
 
     [Header("── ダメージアニメーション ────────")]
     public string damageAnimBool = "Damage"; // ノックバック時に再生
+    public float damageAnimDuration = 0.5f;  // アニメーション再生時間経過後にfalseへ戻す
 
     // ─── 内部状態 ─────────────────────────────────────────────────
     float currentHP;
@@ -62,6 +63,7 @@ public class BossHand : MonoBehaviour
 
     // 現在実行中のアクションコルーチン（キャンセル用）
     Coroutine currentActionCoroutine;
+    Coroutine behaviorLoopCoroutine; // BehaviorLoop自体の参照（強制再起動用）
 
     // ─── チャージ状態（RandomTriggerでの優先判定用） ─────────────
     public bool IsCharging { get; private set; } = false;
@@ -87,7 +89,7 @@ public class BossHand : MonoBehaviour
     /// </summary>
     public void StartBehavior()
     {
-        StartCoroutine(BehaviorLoop());
+        behaviorLoopCoroutine = StartCoroutine(BehaviorLoop());
     }
 
     // ─── メインループ ─────────────────────────────────────────────
@@ -508,7 +510,7 @@ public class BossHand : MonoBehaviour
         UpdateHPBar();
 
         // ノックバック中はカウントしない
-        if (!isKnockbacking)
+        if (!isKnockbacking && !isBeingContinuouslyDamaged)
         {
             hitCount++;
             if (hitCount >= handData.knockbackHitThreshold)
@@ -521,6 +523,37 @@ public class BossHand : MonoBehaviour
 
         if (currentHP <= 0f)
             Die();
+    }
+
+    // ─── 継続ダメージ（レーザーなど）を「1回の被弾」として扱う ──────
+    bool isBeingContinuouslyDamaged = false;
+
+    /// <summary>
+    /// LaserShooterなど、一定時間ダメージを与え続ける攻撃から呼ぶ。
+    /// 照射開始時にfalse→true、照射終了時にtrue→falseにすることで、
+    /// その照射全体を被弾1回分としてカウントする
+    /// </summary>
+    public void SetContinuousDamageState(bool isActive)
+    {
+        if (isActive && !isBeingContinuouslyDamaged)
+        {
+            // 照射開始の瞬間に1回だけカウントする
+            isBeingContinuouslyDamaged = true;
+            if (!isKnockbacking)
+            {
+                hitCount++;
+                if (hitCount >= handData.knockbackHitThreshold)
+                {
+                    hitCount = 0;
+                    isKnockbacking = true;
+                    StartCoroutine(Knockback());
+                }
+            }
+        }
+        else if (!isActive)
+        {
+            isBeingContinuouslyDamaged = false;
+        }
     }
 
     // ─── チャージ状態管理 ───────────────────────────────────────────
@@ -554,6 +587,14 @@ public class BossHand : MonoBehaviour
         if (isDead) yield break;
 
         // 実行中のアクション演出を強制終了する
+        // ※ StopCoroutineで子コルーチンだけ止めると、それを
+        //   yield return で待っている BehaviorLoop が復帰しなくなるため、
+        //   BehaviorLoop自体も一旦止めてから後で再起動する
+        if (behaviorLoopCoroutine != null)
+        {
+            StopCoroutine(behaviorLoopCoroutine);
+            behaviorLoopCoroutine = null;
+        }
         if (currentActionCoroutine != null)
         {
             StopCoroutine(currentActionCoroutine);
@@ -575,18 +616,22 @@ public class BossHand : MonoBehaviour
 
         // 被弾回数をリセットしてノックバック開始
         hitCount = 0;
-        if (!isKnockbacking)
-        {
-            isKnockbacking = true;
-            StartCoroutine(Knockback());
-        }
+        isKnockbacking = true;
+        yield return StartCoroutine(Knockback());
+
+        // ノックバックが完了したらBehaviorLoopを再起動する
+        if (!isDead)
+            behaviorLoopCoroutine = StartCoroutine(BehaviorLoop());
     }
 
     // ─── ノックバック（山なり弧） ────────────────────────────────
     IEnumerator Knockback()
     {
         if (animator != null)
+        {
             animator.SetBool(damageAnimBool, true);
+            StartCoroutine(TurnOffDamageAnimAfterDelay());
+        }
 
         Vector3 startPos = transform.position;
         Vector3 knockDest = startPos + new Vector3(-side * handData.knockbackDistance, 0f, 0f);
@@ -625,11 +670,16 @@ public class BossHand : MonoBehaviour
         }
         transform.position = returnDest;
 
-        if (animator != null)
-            animator.SetBool(damageAnimBool, false);
-
         hitCount = 0;  // 終了時にリセット
         isKnockbacking = false;
+    }
+
+    // ─── ダメージアニメーションをdamageAnimDuration秒後にオフにする ──
+    IEnumerator TurnOffDamageAnimAfterDelay()
+    {
+        yield return new WaitForSeconds(damageAnimDuration);
+        if (animator != null)
+            animator.SetBool(damageAnimBool, false);
     }
 
     // ─── 死亡 ─────────────────────────────────────────────────────

@@ -174,6 +174,10 @@ public class LaserShooter : MonoBehaviour
         SetLaserVisible(true);
         StartLaserSound();
 
+        // 追加：Boss手が対象の場合、この照射を「被弾1回」として扱う
+        if (currentBossHand != null)
+            currentBossHand.SetContinuousDamageState(true);
+
         float elapsedTime = 0f;
 
         while (elapsedTime < laserDuration)
@@ -275,6 +279,10 @@ public class LaserShooter : MonoBehaviour
     private void FinishLaser()
     {
         StopLaserVisual();
+
+        // 追加：照射終了を通知（被弾カウントを解除）
+        if (currentBossHand != null)
+            currentBossHand.SetContinuousDamageState(false);
 
         currentTarget = null;
         currentEnemyHealth = null;
@@ -439,6 +447,10 @@ public class LaserShooter : MonoBehaviour
         }
 
         StopLaserVisual();
+
+        // 追加：強制停止時も照射終了を通知
+        if (currentBossHand != null)
+            currentBossHand.SetContinuousDamageState(false);
 
         currentTarget = null;
         currentEnemyHealth = null;
