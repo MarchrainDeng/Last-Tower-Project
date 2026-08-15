@@ -70,6 +70,7 @@ public class PowerBlock : MonoBehaviour
     // 已通电图片
     // 通電時の画像
     public Sprite poweredSprite;
+    public GameObject poweredGear;
 
     [Header("Special Settings")]
 
@@ -92,6 +93,12 @@ public class PowerBlock : MonoBehaviour
     private void Start()
     {
         UpdateSprite();
+
+        // 根据当前通电状态设置齿轮显示
+        if (poweredGear != null)
+        {
+            poweredGear.SetActive(isPowered);
+        }
 
         // 永远通电的方块，游戏开始立即通电
         // 常時通電ブロックは開始時に通電する
@@ -316,6 +323,12 @@ public class PowerBlock : MonoBehaviour
         // 根据状态更新图片
         // 状態に応じて画像を更新する
         UpdateSprite();
+
+        // 根据通电状态显示或隐藏齿轮
+        if (poweredGear != null)
+        {
+            poweredGear.SetActive(isPowered);
+        }
 
         Debug.Log(
             isPowered

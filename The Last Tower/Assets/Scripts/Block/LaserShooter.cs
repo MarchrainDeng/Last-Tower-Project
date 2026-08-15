@@ -64,6 +64,14 @@ public class LaserShooter : MonoBehaviour
     [SerializeField]
     private AudioClip laserLoopSound;
 
+    // 当前锁定目标
+    // 現在ロックしているターゲット
+    public Transform CurrentTarget => currentTarget;
+
+    // 当前是否正在发射
+    // 現在レーザーを照射中か
+    public bool IsFiring => isFiring;
+
     private void Awake()
     {
         if (laserAudioSource == null)

@@ -51,15 +51,19 @@ public class GunAimController : MonoBehaviour
     // 現在のターゲット
     private Transform currentTarget;
 
+    [Header("Laser Settings")]
+
+    // 镭射炮脚本
+    // レーザー砲スクリプト
+    [SerializeField]
+    private LaserShooter laserShooter;
+
     private void Update()
     {
-        // 没有枪轴时不执行
-        // 銃の回転軸がない場合は処理しない
         if (gunPivot == null)
             return;
 
-        // 无法攻击时不寻找或瞄准敌人
-        // 攻撃不可の場合は敵の検索と照準を行わない
+        // 无法攻击时不瞄准
         if (attackBlockState != null &&
             !attackBlockState.canAttack)
         {
@@ -67,7 +71,22 @@ public class GunAimController : MonoBehaviour
             return;
         }
 
-        FindNearestEnemy();
+        // 镭射正在发射时，强制锁定镭射当前目标
+        // レーザー照射中はレーザーの現在ターゲットを固定して追従する
+        if (laserShooter != null &&
+            laserShooter.IsFiring &&
+            laserShooter.CurrentTarget != null)
+        {
+            currentTarget =
+                laserShooter.CurrentTarget;
+        }
+        else
+        {
+            // 没有正在发射时，才寻找最近敌人
+            // 照射していない時のみ最も近い敵を検索する
+            FindNearestEnemy();
+        }
+
         RotateTowardTarget();
     }
 
