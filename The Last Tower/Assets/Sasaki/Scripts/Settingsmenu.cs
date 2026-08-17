@@ -34,6 +34,7 @@ public class SettingsMenu : MonoBehaviour
     public Key toggleKey = Key.Escape;
     public GamepadButton toggleGamepadButton = GamepadButton.Start;
     public GamepadButton closeGamepadButton = GamepadButton.East; // B
+    public GamepadButton confirmGamepadButton = GamepadButton.South; // 決定
 
     [Header("── UI：全体 ────────────────────")]
     public GameObject settingsPanel;
@@ -230,7 +231,7 @@ public class SettingsMenu : MonoBehaviour
         }
 
         // 決定
-        if (Gamepad.current.buttonSouth.wasPressedThisFrame)
+        if (Gamepad.current[confirmGamepadButton].wasPressedThisFrame)
         {
             if (currentSection == Section.Home)
             {
@@ -322,7 +323,7 @@ public class SettingsMenu : MonoBehaviour
         }
 
         // 決定：編集モードに入る
-        if (Gamepad.current.buttonSouth.wasPressedThisFrame)
+        if (Gamepad.current[confirmGamepadButton].wasPressedThisFrame)
         {
             isEditingSound = true;
             PlaySE(confirmSE);
@@ -403,7 +404,7 @@ public class SettingsMenu : MonoBehaviour
             }
         }
 
-        if (Gamepad.current.buttonSouth.wasPressedThisFrame)
+        if (Gamepad.current[confirmGamepadButton].wasPressedThisFrame)
         {
             ConfirmLanguage();
         }
@@ -512,6 +513,20 @@ public class SettingsMenu : MonoBehaviour
         // 項目選択中：Sound/Localizeそれぞれの現在フォーカス項目
         if (currentSection == Section.Sound)
         {
+            // スライダーを編集中はスライダー自体の左にカーソルを合わせる
+            if (isEditingSound)
+            {
+                RectTransform sliderTarget = soundFocus switch
+                {
+                    SoundItem.Master => masterSlider != null ? masterSlider.GetComponent<RectTransform>() : null,
+                    SoundItem.BGM => bgmSlider != null ? bgmSlider.GetComponent<RectTransform>() : null,
+                    SoundItem.SFX => sfxSlider != null ? sfxSlider.GetComponent<RectTransform>() : null,
+                    _ => null
+                };
+                if (sliderTarget != null)
+                    return sliderTarget;
+            }
+
             TMP_Text label = soundFocus switch
             {
                 SoundItem.Master => masterLabel,

@@ -126,6 +126,15 @@ public class BossManager : MonoBehaviour
         if (bgmSource != null)
             bgmSource.transform.SetParent(null);
 
+        // Destroyの実行が次フレームまで遅延する間に
+        // イベントが誤発火しないよう、ここでも明示的に解除しておく
+        if (towerHP != null)
+            towerHP.OnDead -= OnDefeat;
+        if (leftHand != null)
+            leftHand.OnDefeated -= CheckVictory;
+        if (rightHand != null)
+            rightHand.OnDefeated -= CheckVictory;
+
         Destroy(gameObject);
     }
 

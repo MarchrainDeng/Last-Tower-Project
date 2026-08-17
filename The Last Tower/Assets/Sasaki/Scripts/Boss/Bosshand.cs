@@ -64,6 +64,7 @@ public class BossHand : MonoBehaviour
     // 現在実行中のアクションコルーチン（キャンセル用）
     Coroutine currentActionCoroutine;
     Coroutine behaviorLoopCoroutine; // BehaviorLoop自体の参照（強制再起動用）
+    Coroutine damageAnimCoroutine;   // ダメージアニメーションOFFタイマーの参照（重複防止用）
 
     // ─── チャージ状態（RandomTriggerでの優先判定用） ─────────────
     public bool IsCharging { get; private set; } = false;
@@ -600,6 +601,8 @@ public class BossHand : MonoBehaviour
             StopCoroutine(currentActionCoroutine);
             currentActionCoroutine = null;
         }
+        // Approach()実行中に停止させられた場合に備えてリセットする
+        isApproaching = false;
         EndCharging();
 
         // 演出系の後始末（Trigger/UI/物理などを元に戻す）
@@ -630,7 +633,12 @@ public class BossHand : MonoBehaviour
         if (animator != null)
         {
             animator.SetBool(damageAnimBool, true);
-            StartCoroutine(TurnOffDamageAnimAfterDelay());
+
+            // 短時間で連続ノックバックした場合、古いタイマーが
+            // 新しいDamageアニメーションを途中で消してしまうのを防ぐ
+            if (damageAnimCoroutine != null)
+                StopCoroutine(damageAnimCoroutine);
+            damageAnimCoroutine = StartCoroutine(TurnOffDamageAnimAfterDelay());
         }
 
         Vector3 startPos = transform.position;
@@ -680,6 +688,7 @@ public class BossHand : MonoBehaviour
         yield return new WaitForSeconds(damageAnimDuration);
         if (animator != null)
             animator.SetBool(damageAnimBool, false);
+        damageAnimCoroutine = null;
     }
 
     // ─── 死亡 ─────────────────────────────────────────────────────
