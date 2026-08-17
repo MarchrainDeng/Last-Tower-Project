@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using System.Collections;
+using TMPro;
 
 /*
 ----------------------------------------
@@ -85,6 +87,23 @@ public class AttackBlockState : MonoBehaviour
     // すべての子ブロックのSpriteRenderer
     private SpriteRenderer[] childSpriteRenderers;
 
+    [Header("Special Attack Settings")]
+
+    [SerializeField]
+    private string specialLayerName = "SpecialAttackBlock";
+
+    [SerializeField]
+    private TMP_Text countdownText;
+
+    [SerializeField]
+    private float countdownDuration = 3f;
+
+    private Coroutine countdownCoroutine;
+
+    private bool specialCountdownFinished = false;
+
+    [SerializeField] bool isFinalCannon = false;
+
     private void Awake()
     {
         // 自动获取所有直接子物体作为子方块
@@ -104,6 +123,11 @@ public class AttackBlockState : MonoBehaviour
         // 初始化显示状态
         // 表示状態を初期化する
         UpdateVisualState();
+
+        if (countdownText != null)
+        {
+            countdownText.gameObject.SetActive(false);
+        }
     }
 
     private void Update()
@@ -241,16 +265,23 @@ public class AttackBlockState : MonoBehaviour
         canAttack = state;
 
         // 更新图像显示
-        // 画像表示を更新する
         UpdateVisualState();
 
-        if (canAttack)
+        // 如果是特殊攻击方块
+        if (isFinalCannon)
         {
-            //Debug.Log("Attack Block Ready / 攻撃ブロック起動");
-        }
-        else
-        {
-            //Debug.Log("Attack Block Disabled / 攻撃ブロック停止");
+            Debug.Log("最终加农");
+
+            if (canAttack)
+            {
+                // 通电后开始倒计时
+                StartSpecialCountdown();
+            }
+            else
+            {
+                // 断电后取消倒计时
+                CancelSpecialCountdown();
+            }
         }
     }
 
@@ -324,6 +355,123 @@ public class AttackBlockState : MonoBehaviour
                 horizontalCheckSize
             );
         }
+    }
+
+    /// <summary>
+    /// 判断当前物体是否为特殊攻击方块Layer
+    /// </summary>
+    private bool IsSpecialAttackBlock()
+    {
+        int specialLayer =
+            LayerMask.NameToLayer(specialLayerName);
+
+        if (specialLayer == -1)
+            return false;
+
+        return gameObject.layer == specialLayer;
+    }
+
+    /// <summary>
+    /// 开始特殊攻击倒计时
+    /// </summary>
+    private void StartSpecialCountdown()
+    {
+        if (specialCountdownFinished)
+            return;
+
+        if (countdownCoroutine != null)
+            return;
+
+        countdownCoroutine =
+            StartCoroutine(
+                SpecialCountdownRoutine()
+            );
+    }
+
+    /// <summary>
+    /// 特殊攻击倒计时流程
+    /// </summary>
+    private IEnumerator SpecialCountdownRoutine()
+    {
+        if (countdownText != null)
+        {
+            countdownText.gameObject.SetActive(true);
+        }
+
+        float timer =
+            countdownDuration;
+
+        while (timer > 0f)
+        {
+            // 如果中途失去攻击资格，则取消倒计时
+            if (!canAttack)
+            {
+                countdownCoroutine = null;
+
+                if (countdownText != null)
+                {
+                    countdownText.gameObject.SetActive(false);
+                }
+
+                yield break;
+            }
+
+            if (countdownText != null)
+            {
+                countdownText.text =
+                    Mathf.CeilToInt(timer).ToString();
+            }
+
+            timer -= Time.deltaTime;
+
+            yield return null;
+        }
+
+        if (countdownText != null)
+        {
+            countdownText.text = "0";
+        }
+
+        specialCountdownFinished = true;
+        countdownCoroutine = null;
+
+        // 倒计时结束后的事件
+        OnSpecialCountdownFinished();
+
+        if (countdownText != null)
+        {
+            countdownText.gameObject.SetActive(false);
+        }
+    }
+
+    /// <summary>
+    /// 取消特殊攻击倒计时
+    /// </summary>
+    private void CancelSpecialCountdown()
+    {
+        if (countdownCoroutine != null)
+        {
+            StopCoroutine(countdownCoroutine);
+            countdownCoroutine = null;
+        }
+
+        if (countdownText != null)
+        {
+            countdownText.gameObject.SetActive(false);
+        }
+    }
+
+    /// <summary>
+    /// 特殊攻击倒计时结束后的事件
+    /// </summary>
+    private void OnSpecialCountdownFinished()
+    {
+        Debug.Log("Special Attack Countdown Finished");
+
+        // 在这里添加后续事件
+        // 例如：
+        // bossManager.StartFinalAttack();
+        // BlockManager.Instance.DestroyAllBlocks();
     }
 
     /// <summary>

@@ -129,6 +129,9 @@ public class CardSelector : MonoBehaviour
         if (!inputEnabled)
             return;
 
+        if (GameStateManager.IsPaused)
+            return;
+
         HandleSelection();
         HandleConfirm();
     }
