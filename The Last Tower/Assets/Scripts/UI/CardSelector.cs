@@ -25,6 +25,10 @@ Deng Guangpeng
 2026/07/15：
 対応普通选择与特殊选择。
 通常選択と特殊選択に対応。
+
+2026/08/17：
+追加了设置画面打开时禁止卡牌操作的判定。
+設定画面が開いている間はカード操作を無効化する判定を追加。
 ----------------------------------------
 */
 
@@ -122,6 +126,11 @@ public class CardSelector : MonoBehaviour
         // 卡牌进入动画期间不接受输入
         // カード登場アニメーション中は入力を受け付けない
         if (!cardEnterController.CanAcceptInput)
+            return;
+
+        // 设置画面等暂停中时不接受输入
+        // 設定画面などで一時停止中は操作を無効化する
+        if (GameStateManager.IsPaused)
             return;
 
         gamepad = Gamepad.current;
