@@ -68,10 +68,22 @@ public class BlockManager : MonoBehaviour
         if (Gamepad.current != null &&
             Gamepad.current.dpad.down.wasPressedThisFrame)
         {
-            DestroyAllBlocks();
-            OtherFunction();
-            StartCoroutine(CountdownCoroutine(countDown));
+            StartFinalSequence();
         }
+    }
+
+    /// <summary>
+    /// 执行最终阶段流程
+    /// </summary>
+    public void StartFinalSequence()
+    {
+        DestroyAllBlocks();
+
+        OtherFunction();
+
+        StartCoroutine(
+            CountdownCoroutine(countDown)
+        );
     }
 
     /// <summary>

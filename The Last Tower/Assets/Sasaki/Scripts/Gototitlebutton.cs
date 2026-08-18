@@ -1,25 +1,53 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// ƒŠƒUƒ‹ƒgUI‚ÌGameObject‚ÉƒAƒ^ƒbƒ`‚·‚é
-/// ƒRƒ“ƒgƒ[ƒ‰[‚Ìw’èƒ{ƒ^ƒ“‚Åƒ^ƒCƒgƒ‹ƒV[ƒ“‚É‘JˆÚ‚·‚é
+/// ãƒªã‚¶ãƒ«ãƒˆUIã®GameObjectã«ã‚¢ã‚¿ãƒƒãƒã™ã‚‹
+/// ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼ã®æŒ‡å®šãƒœã‚¿ãƒ³ã§ã‚¿ã‚¤ãƒˆãƒ«ã‚·ãƒ¼ãƒ³ã«é·ç§»ã™ã‚‹
 /// </summary>
 public class GoToTitleButton : MonoBehaviour
 {
-    [Header("„Ÿ„Ÿ ‘JˆÚæƒV[ƒ“ „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ")]
+    [Header("â”€â”€ é·ç§»å…ˆã‚·ãƒ¼ãƒ³ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€")]
     public string titleSceneName = "Title";
 
-    [Header("„Ÿ„Ÿ ‘€ì „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ")]
-    public GamepadButton toggleGamepadButton = GamepadButton.South; // ‘JˆÚ‚Ég‚¤ƒRƒ“ƒgƒ[ƒ‰[ƒ{ƒ^ƒ“
+    [Header("â”€â”€ æ“ä½œ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€")]
+    public GamepadButton toggleGamepadButton = GamepadButton.South; // é·ç§»ã«ä½¿ã†ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼ãƒœã‚¿ãƒ³
+
+    public BlockManager blockManager;
+
+    [SerializeField]
+    private float autoStartDelay = 5f;
+
+    private float timer = 0f;
+    private bool hasStarted = false;
+
+    public GameObject canvas;
+
+    public bool isVictory = false;
 
     void Update()
     {
-        if (Gamepad.current != null && Gamepad.current[toggleGamepadButton].wasPressedThisFrame)
+        if (hasStarted)
+            return;
+
+        if (Gamepad.current != null && Gamepad.current[toggleGamepadButton].wasPressedThisFrame && isVictory)
+        {
+            StartSequence();
+            return;
+        }
+        else if (Gamepad.current != null && Gamepad.current[toggleGamepadButton].wasPressedThisFrame && !isVictory)
         {
             GoToTitle();
+        }
+
+            // è‡ªåŠ¨å€’è®¡æ—¶
+            timer += Time.unscaledDeltaTime;
+
+        if (timer >= autoStartDelay)
+        {
+            StartSequence();
         }
     }
 
@@ -27,5 +55,17 @@ public class GoToTitleButton : MonoBehaviour
     {
         Time.timeScale = 1f;
         SceneManager.LoadScene(titleSceneName);
+    }
+
+    private void StartSequence()
+    {
+        if (hasStarted)
+            return;
+
+        hasStarted = true;
+        Time.timeScale = 1f;
+        canvas.SetActive(false);
+        GameStateManager.SetPaused(false);
+        blockManager.StartFinalSequence();
     }
 }
