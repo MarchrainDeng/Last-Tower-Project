@@ -5,6 +5,8 @@ using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
 using System.Collections;
+using UnityEngine.Localization;
+using UnityEngine.Localization.Settings;
 
 /// <summary>
 /// 設定メニュー（進行画面仕様）
@@ -161,6 +163,7 @@ public class SettingsMenu : MonoBehaviour
         int savedIndex = System.Array.IndexOf(LangCodes, savedLang);
         int displayIndex = savedIndex >= 0 ? savedIndex : localizeFocus;
         UpdateCurrentLanguageDisplay(displayIndex);
+        ApplyLocale(savedLang);
     }
 
     void Update()
@@ -424,6 +427,32 @@ public class SettingsMenu : MonoBehaviour
         PlaySE(confirmSE);
         UpdateHighlight();
         UpdateCurrentLanguageDisplay(localizeFocus);
+        ApplyLocale(LangCodes[localizeFocus]);
+    }
+
+    // ─── Unity Localizationの言語を切り替える ────────────────────────
+    // LangCodes と Unity側のLocale Codeが違う場合はここで変換する
+    // （例：中国語は "zh" ではなく "zh-Hans" になっていることが多い）
+    void ApplyLocale(string code)
+    {
+        string localeCode = code switch
+        {
+            "en" => "en",
+            "ja" => "ja",
+            "zh" => "zh",
+            "ko" => "ko",
+            _ => code
+        };
+
+        var locale = LocalizationSettings.AvailableLocales.GetLocale(localeCode);
+        if (locale != null)
+        {
+            LocalizationSettings.SelectedLocale = locale;
+        }
+        else
+        {
+            Debug.LogWarning($"[SettingsMenu] Locale '{localeCode}' が見つかりません。Localization Settingsの Available Locales を確認してください。");
+        }
     }
 
     // ─── 現在選択中の言語をUI・Inspectorに表示 ──────────────────────
