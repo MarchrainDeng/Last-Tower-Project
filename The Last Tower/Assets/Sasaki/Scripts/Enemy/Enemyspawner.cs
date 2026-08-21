@@ -79,6 +79,14 @@ public class EnemySpawner : MonoBehaviour
         var spawnTr = Random.value < 0.5f ? spawnPointL : spawnPointR;
         var go = Instantiate(entry.prefab, spawnTr.position, Quaternion.identity);
 
+        // 右側スポーンの場合は見た目を左右反転する
+        if (spawnTr == spawnPointR)
+        {
+            var scale = go.transform.localScale;
+            scale.x = -Mathf.Abs(scale.x);
+            go.transform.localScale = scale;
+        }
+
         // EnemyBaseを取得してInit
         EnemyBase enemy = null;
         foreach (var mb in go.GetComponents<MonoBehaviour>())

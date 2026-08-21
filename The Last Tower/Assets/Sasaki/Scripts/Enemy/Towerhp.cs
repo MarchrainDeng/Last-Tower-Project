@@ -43,7 +43,7 @@ public class TowerHP : MonoBehaviour
 
     public System.Action OnDead;
 
-    float currentHP;
+    public  float currentHP;
     bool triggered75, triggered50, triggered25;
 
     public bool IsDead => currentHP <= 0f;

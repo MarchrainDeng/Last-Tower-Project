@@ -114,20 +114,25 @@ public class BossManager : MonoBehaviour
             randomTriggerSpawner.StopSpawning();
 
         if (victoryResultUI != null)
+        {
             victoryResultUI.SetActive(true);
+
+            // 偽勝利演出の再生呼び出し
+            FakeVictorySequence sequence = victoryResultUI.GetComponent<FakeVictorySequence>();
+            if (sequence != null)
+            {
+                sequence.PlaySequence();
+            }
+        }
 
         PlayBGM(victoryBGM);
 
-        Time.timeScale = 0f;
+        // 演出アニメーションを動かすため、Time.timeScale = 0f は行わずにゲーム進行のみ止める
         GameStateManager.SetPaused(true);
 
-        // bgmSourceがこのGameObjectの子だと再生中に消えてしまうため、
-        // Destroyする前に切り離しておく
         if (bgmSource != null)
             bgmSource.transform.SetParent(null);
 
-        // Destroyの実行が次フレームまで遅延する間に
-        // イベントが誤発火しないよう、ここでも明示的に解除しておく
         if (towerHP != null)
             towerHP.OnDead -= OnDefeat;
         if (leftHand != null)
@@ -135,7 +140,8 @@ public class BossManager : MonoBehaviour
         if (rightHand != null)
             rightHand.OnDefeated -= CheckVictory;
 
-        Destroy(gameObject);
+        // BossManagerコンポーネントのみ無効化（Destroyすると演出コルーチンが止まるのを防ぐ）
+        this.enabled = false;
     }
 
     void OnDefeat()
@@ -146,13 +152,24 @@ public class BossManager : MonoBehaviour
             randomTriggerSpawner.StopSpawning();
 
         if (defeatResultUI != null)
+        {
             defeatResultUI.SetActive(true);
+
+            // ゲームオーバー演出の再生呼び出し
+            GameOverSequence sequence = defeatResultUI.GetComponent<GameOverSequence>();
+            if (sequence != null)
+            {
+                sequence.PlaySequence();
+            }
+        }
 
         PlayBGM(defeatBGM);
 
         GameStateManager.SetPaused(true);
-    }
 
+        // コンポーネントのみ停止（Destroyすると演出のコルーチンが途中停止するため）
+        this.enabled = false;
+    }
     // ─── リザルトBGM再生 ─────────────────────────────────────────
     void PlayBGM(AudioClip clip)
     {
