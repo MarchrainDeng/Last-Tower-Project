@@ -3,8 +3,6 @@
 public class DestroyZone : MonoBehaviour
 {
     [Header("Destroy Setting")]
-    // 可以被销毁的Tag
-    // 削除対象Tag
     public string[] destroyTags =
     {
         "Bullet",
@@ -17,6 +15,10 @@ public class DestroyZone : MonoBehaviour
         {
             if (other.CompareTag(tag))
             {
+                // 追加：Blockタグが削除される時だけ「落としたブロック」としてカウント
+                if (tag == "Block" && GameStatsManager.Instance != null)
+                    GameStatsManager.Instance.OnBlockDropped();
+
                 Destroy(other.gameObject);
                 return;
             }

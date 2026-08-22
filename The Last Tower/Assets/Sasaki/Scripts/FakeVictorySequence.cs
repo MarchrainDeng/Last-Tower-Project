@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
@@ -22,6 +23,12 @@ public class FakeVictorySequence : MonoBehaviour
     [SerializeField] private CanvasGroup bgPanelGroup;         // 真っ黒な背景用CanvasGroup
     [SerializeField] private RectTransform victoryTextRect;    // 「勝利！」テキストのRectTransform
     [SerializeField] private List<GameObject> resultItems;     // ゲーム内容（1:倒した敵の数、2:配置したブロックの数...）
+
+    [Header("── 統計テキスト（resultItemsと同じ並び順） ──")]
+    [SerializeField] private TMP_Text enemiesDefeatedText;
+    [SerializeField] private TMP_Text blocksPlacedText;
+    [SerializeField] private TMP_Text blocksDroppedText;
+    [SerializeField] private TMP_Text blocksConnectedText;
     [SerializeField] private GameObject buttonGroup;           // ボタン群（③リプレイ / ④スタッフロール / ⑤タイトル）
     [SerializeField] private RectTransform uiRoot;             // 崩壊させるUI全体のルート
 
@@ -73,6 +80,15 @@ public class FakeVictorySequence : MonoBehaviour
 
     private IEnumerator SequenceCoroutine()
     {
+        // ─── 統計値を反映 ───
+        if (GameStatsManager.Instance != null)
+        {
+            if (enemiesDefeatedText != null) enemiesDefeatedText.text = GameStatsManager.Instance.EnemiesDefeated.ToString();
+            if (blocksPlacedText != null) blocksPlacedText.text = GameStatsManager.Instance.BlocksPlaced.ToString();
+            if (blocksDroppedText != null) blocksDroppedText.text = GameStatsManager.Instance.BlocksDropped.ToString();
+            if (blocksConnectedText != null) blocksConnectedText.text = GameStatsManager.Instance.BlocksConnected.ToString();
+        }
+
         // ─── 初期状態の設定 ───
         bgPanelGroup.alpha = 0f;
         victoryTextRect.gameObject.SetActive(false);

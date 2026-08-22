@@ -361,6 +361,10 @@ public class BlockLanding : MonoBehaviour
 
         isLanded = true;
 
+        // 追加：配置したブロック数をカウント
+        if (GameStatsManager.Instance != null)
+            GameStatsManager.Instance.OnBlockPlaced();
+
         // 播放方块落地音效
         // ブロック着地効果音を再生する
         if (SFXManager.Instance != null)

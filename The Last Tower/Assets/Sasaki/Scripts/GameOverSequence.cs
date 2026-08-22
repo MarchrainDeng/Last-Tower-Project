@@ -21,6 +21,12 @@ public class GameOverSequence : MonoBehaviour
     [SerializeField] private List<GameObject> resultItems;     // ゲーム内容（1:倒した敵の数、2:配置したブロックの数...）
     [SerializeField] private GameObject buttonGroup;          // ボタン群（③リプレイ / ④スタッフロール / ⑤タイトル）
 
+    [Header("── 統計テキスト（resultItemsと同じ並び順） ──")]
+    [SerializeField] private TMP_Text enemiesDefeatedText;
+    [SerializeField] private TMP_Text blocksPlacedText;
+    [SerializeField] private TMP_Text blocksDroppedText;
+    [SerializeField] private TMP_Text blocksConnectedText;
+
     [Header("── 演出パラメータ ──────────────────")]
     [SerializeField] private Vector2 textTopPos = new Vector2(0, 250f); // テキスト移動後の座標
     [SerializeField] private float fadeDuration = 0.5f;        // 暗転にかかる時間
@@ -55,6 +61,15 @@ public class GameOverSequence : MonoBehaviour
 
     private IEnumerator SequenceCoroutine()
     {
+        // ─── 統計値を反映 ───
+        if (GameStatsManager.Instance != null)
+        {
+            if (enemiesDefeatedText != null) enemiesDefeatedText.text = GameStatsManager.Instance.EnemiesDefeated.ToString();
+            if (blocksPlacedText != null) blocksPlacedText.text = GameStatsManager.Instance.BlocksPlaced.ToString();
+            if (blocksDroppedText != null) blocksDroppedText.text = GameStatsManager.Instance.BlocksDropped.ToString();
+            if (blocksConnectedText != null) blocksConnectedText.text = GameStatsManager.Instance.BlocksConnected.ToString();
+        }
+
         // ─── 初期状態の設定 ───
         bgPanelGroup.alpha = 0f;
         gameOverTextRect.gameObject.SetActive(false);

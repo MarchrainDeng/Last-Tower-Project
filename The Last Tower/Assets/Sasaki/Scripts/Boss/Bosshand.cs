@@ -78,6 +78,17 @@ public class BossHand : MonoBehaviour
     // ─── 起動 ─────────────────────────────────────────────────────
     void Awake()
     {
+        if (handData == null)
+        {
+            Debug.LogError($"[BossHand] {gameObject.name} に handData がアサインされていません");
+            return;
+        }
+        if (towerTransform == null)
+        {
+            Debug.LogError($"[BossHand] {gameObject.name} に towerTransform がアサインされていません");
+            return;
+        }
+
         currentHP = handData.maxHP;
         originPos = transform.position;
         side = transform.position.x < towerTransform.position.x ? 1f : -1f;
@@ -193,6 +204,10 @@ public class BossHand : MonoBehaviour
             case BossActionType.Flick:
                 yield return StartCoroutine(ActionFlick(action));
                 break;
+
+            default:
+                Debug.LogWarning($"[BossHand] 未対応のBossActionType: {action.type}");
+                break;
         }
     }
 
@@ -219,9 +234,9 @@ public class BossHand : MonoBehaviour
         if (cameraShake != null)
             StartCoroutine(DelayedShake());
 
-        towerHP.TakeDamage(action.damage);
+        if (towerHP != null) towerHP.TakeDamage(action.damage);
 
-        if (towerHP.pedestalRb != null)
+        if (towerHP != null && towerHP.pedestalRb != null)
             yield return StartCoroutine(ShakePedestal());
 
         yield return new WaitForSeconds(handData.punchAnimDuration);
@@ -379,7 +394,7 @@ public class BossHand : MonoBehaviour
         }
         transform.position = pokeDest;
 
-        towerHP.TakeDamage(action.damage);
+        if (towerHP != null) towerHP.TakeDamage(action.damage);
 
         // 引く
         timer = 0f;
@@ -418,7 +433,7 @@ public class BossHand : MonoBehaviour
         PlaySE(flickSE);
         GamepadVibrationManager.Instance?.PlayVibration(0.5f, 0.9f, 0.15f);
 
-        towerHP.TakeDamage(action.damage);
+        if (towerHP != null) towerHP.TakeDamage(action.damage);
 
         var topBlock = GetTopBlock();
         if (topBlock != null)

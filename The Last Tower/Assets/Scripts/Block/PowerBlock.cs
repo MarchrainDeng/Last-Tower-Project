@@ -309,6 +309,10 @@ public class PowerBlock : MonoBehaviour
 
         if (isPowered)
         {
+            // 追加：連結して充電状態になった回数をカウント
+            if (GameStatsManager.Instance != null)
+                GameStatsManager.Instance.OnBlockConnected();
+
             // 修改整个方块的Layer
             // ブロック全体のLayerを変更する
             SetLayerRecursively(gameObject, LayerMask.NameToLayer("PowerBlock"));

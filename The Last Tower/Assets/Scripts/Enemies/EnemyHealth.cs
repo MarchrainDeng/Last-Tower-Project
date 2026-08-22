@@ -66,7 +66,10 @@ public class EnemyHealth : MonoBehaviour
     /// 敵が死亡する
     /// </summary>
     private void Die()
-    {
+    {  
+        // 追加：撃破数をカウント
+        if (GameStatsManager.Instance != null)
+            GameStatsManager.Instance.OnEnemyDefeated();
         // TODO：以后播放死亡动画、掉落金币等
         // TODO：今後、死亡アニメーションやドロップ処理などを追加
 
