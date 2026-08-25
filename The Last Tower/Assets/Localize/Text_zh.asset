@@ -58,6 +58,10 @@ MonoBehaviour:
     m_Localized: "\u9000\u51FA"
     m_Metadata:
       m_Items: []
+  - m_Id: 1563035764150272
+    m_Localized: TestCHN
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

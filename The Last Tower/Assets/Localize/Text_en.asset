@@ -54,6 +54,10 @@ MonoBehaviour:
     m_Localized: Exit
     m_Metadata:
       m_Items: []
+  - m_Id: 1563035764150272
+    m_Localized: Is this your first time playing this game?
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

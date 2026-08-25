@@ -54,6 +54,10 @@ MonoBehaviour:
     m_Localized: "\uC885\uB8CC"
     m_Metadata:
       m_Items: []
+  - m_Id: 1563035764150272
+    m_Localized: TestKOR
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

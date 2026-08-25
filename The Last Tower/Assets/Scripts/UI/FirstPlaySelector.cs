@@ -1,138 +1,76 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
 
 public class FirstPlaySelector : MonoBehaviour
 {
-    [Header("Buttons")]
+    [Header("References")]
 
-    // “是”按钮
+    // 教学页面管理器
+    // チュートリアルページ管理
     [SerializeField]
-    private Button yesButton;
-
-    // “否”按钮
-    [SerializeField]
-    private Button noButton;
-
-    [Header("Selection Settings")]
-
-    // 当前选中的按钮
-    // 0 = 是
-    // 1 = 否
-    [SerializeField]
-    private int currentIndex = 0;
-
-    // 摇杆触发切换的阈值
-    [SerializeField]
-    private float stickThreshold = 0.5f;
-
-    // 摇杆回中阈值
-    [SerializeField]
-    private float returnThreshold = 0.2f;
-
-    // 摇杆是否已经回中
-    private bool stickReturned = true;
-
-    [Header("Button Images")]
-
-    [SerializeField]
-    private Image yesButtonImage;
-
-    [SerializeField]
-    private Image noButtonImage;
-
-    [SerializeField]
-    private Sprite selectedSprite;
-
-    [SerializeField]
-    private Sprite normalSprite;
-
-    private void Start()
-    {
-        UpdateSelection();
-    }
+    private TutorialPageController tutorialPageController;
 
     private void Update()
-    {
-        HandleStickSelection();
-    }
-
-    /// <summary>
-    /// 处理左摇杆选择
-    /// </summary>
-    private void HandleStickSelection()
     {
         if (Gamepad.current == null)
             return;
 
-        float horizontal =
-            Gamepad.current.leftStick.x.ReadValue();
-
-        // 摇杆必须先回中，才能进行下一次选择
-        if (!stickReturned)
+        // B键：Yes
+        // Bボタン：Yes
+        if (Gamepad.current.buttonEast.wasPressedThisFrame)
         {
-            if (Mathf.Abs(horizontal) <= returnThreshold)
-            {
-                stickReturned = true;
-            }
-
+            ConfirmYes();
             return;
         }
 
-        // 向左
-        if (horizontal <= -stickThreshold)
+        // A键：No
+        // Aボタン：No
+        if (Gamepad.current.buttonSouth.wasPressedThisFrame)
         {
-            currentIndex = 0;
-
-            stickReturned = false;
-
-            UpdateSelection();
-        }
-        // 向右
-        else if (horizontal >= stickThreshold)
-        {
-            currentIndex = 1;
-
-            stickReturned = false;
-
-            UpdateSelection();
+            ConfirmNo();
         }
     }
 
     /// <summary>
-    /// 更新当前选中的按钮
+    /// 选择Yes，进入新手教学
+    /// Yesを選択し、チュートリアルを開始する
     /// </summary>
-    /// <summary>
-    /// 更新按钮选中状态
-    /// ボタンの選択状態を更新する
-    /// </summary>
-    private void UpdateSelection()
+    private void ConfirmYes()
     {
-        if (yesButtonImage == null ||
-            noButtonImage == null)
-        {
-            return;
-        }
+        // 关闭初次游玩确认界面
+        // 初回プレイ確認画面を閉じる
+        gameObject.SetActive(false);
 
-        if (currentIndex == 0)
+        if (tutorialPageController != null)
         {
-            // “是”被选中
-            // 「はい」が選択中
-            yesButtonImage.sprite =
-                selectedSprite;
-
-            noButtonImage.sprite =
-                normalSprite;
+            tutorialPageController.StartTutorial();
         }
-        else
-        {
-            // “否”被选中
-            // 「いいえ」が選択中
-            yesButtonImage.sprite =
-                normalSprite;
+    }
 
-            noButtonImage.sprite =
-                selectedSprite;
-        }
+    /// <summary>
+    /// 选择No，跳过新手教学
+    /// Noを選択し、チュートリアルをスキップする
+    /// </summary>
+    private void ConfirmNo()
+    {
+        // 关闭初次游玩确认界面
+        // 初回プレイ確認画面を閉じる
+        gameObject.SetActive(false);
+
+        // ====================================
+        // 跳过教学后的处理写在这里
+        // チュートリアルをスキップした後の処理
+        // ====================================
+
+        Debug.Log("Tutorial Skipped");
+    }
+
+    /// <summary>
+    /// 重新打开初次游玩确认界面
+    /// 初回プレイ確認画面を再表示する
+    /// </summary>
+    public void Open()
+    {
+        gameObject.SetActive(true);
     }
 }

@@ -160,7 +160,8 @@ public class TitleMenu : MonoBehaviour
         switch (item.action)
         {
             case MenuAction.StartGame:
-                SceneManager.LoadScene(gameSceneName);
+                //SceneManager.LoadScene(gameSceneName);
+                SceneFadeManager.Instance.LoadScene(gameSceneName);
                 break;
 
             case MenuAction.OpenSettings:
