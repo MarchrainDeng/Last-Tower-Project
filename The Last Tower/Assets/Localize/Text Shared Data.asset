@@ -75,6 +75,42 @@ MonoBehaviour:
     m_Key: LRbutton
     m_Metadata:
       m_Items: []
+  - m_Id: 3050218861776896
+    m_Key: Dpad
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3051213855543296
+    m_Key: Ybtn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3055098812846080
+    m_Key: Bbtn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3055268703129600
+    m_Key: Abtn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3055785571405824
+    m_Key: Page04
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3056052845039616
+    m_Key: Page05
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3056541024276480
+    m_Key: Page06
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3056799225630720
+    m_Key: Page07
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3057075282137088
+    m_Key: Page08
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
