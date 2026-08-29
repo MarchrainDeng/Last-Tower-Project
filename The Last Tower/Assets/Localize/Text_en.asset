@@ -58,6 +58,30 @@ MonoBehaviour:
     m_Localized: Is this your first time playing this game?
     m_Metadata:
       m_Items: []
+  - m_Id: 3021443692384256
+    m_Localized: Final Tower is a defense game where you stack blocks to defeat enemies.
+      Survive the enemy attacks for 90 seconds to win.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3022447267696640
+    m_Localized: '"Three blocks will appear in the upper-right corner.
+
+
+      Use
+      left and right on the D-pad to move the cursor, then press the Confirm button
+      to select a block."'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3023539154079744
+    m_Localized: After selecting a block, you can move and rotate it freely.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3033986028687360
+    m_Localized: 'Slowly rotate.
+
+      L : Counterclockwise R : Clockwise'
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
