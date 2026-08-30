@@ -49,6 +49,10 @@ public class BlockManager : MonoBehaviour
     [SerializeField]
     private RectTransform targetUI;
 
+    [Header("Final Result (仕様8: home/replay選択)")]
+    [Tooltip("仕様4〜7(キャノン発射/インク爆発/インク退場演出)が未実装のため、暫定的にここから直接呼び出してテストする。実装後はインク演出完了後に呼ぶよう差し替えること")]
+    [SerializeField] private FinalResultChooser finalResultChooser;
+
     private void Awake()
     {
         if (Instance == null)
@@ -77,9 +81,25 @@ public class BlockManager : MonoBehaviour
     /// </summary>
     public void StartFinalSequence()
     {
+        Debug.Log("[BlockManager] StartFinalSequence 開始");
+
+        // カード選択等で timeScale が 0 のまま残っていると、カウントダウンやカメラ演出が
+        // 進まず「何も起きていないように見える」状態になるため、念のためここでリセットする
+        Time.timeScale = 1f;
+
+        // BossManager.OnVictory() でボス撃破時に GameStateManager.SetPaused(true) が呼ばれるが、
+        // このプロジェクトの BlockSelectionFlowManager は pauseGameDuringSelection = false のため
+        // カード選択完了時に SetPaused(false) へ戻す処理が実行されない。
+        // その結果 IsPaused が true のまま残り、CardSelector/BlockMoveController の入力判定
+        // (if (GameStateManager.IsPaused) return;) でずっと入力がブロックされてしまうため、
+        // トウscene開始時にここで明示的に解除する
+        GameStateManager.SetPaused(false);
+
         DestroyAllBlocks();
+        Debug.Log("[BlockManager] DestroyAllBlocks 完了");
 
         OtherFunction();
+        Debug.Log("[BlockManager] OtherFunction 完了");
 
         StartCoroutine(
             CountdownCoroutine(countDown)
@@ -167,6 +187,12 @@ public class BlockManager : MonoBehaviour
         Debug.Log("30秒倒计时结束");
 
         // 在这里写你需要执行的事件
+        // TODO: 本来は仕様4〜7(キャノン発射→ボス爆発→インクが画面を覆って引いていく演出)の後に
+        //       home/replay選択(仕様8)を出す。仕様4〜7が未実装のため、暫定的にここから直接呼び出す
+        if (finalResultChooser != null)
+        {
+            finalResultChooser.Show();
+        }
     }
 
     /// <summary>

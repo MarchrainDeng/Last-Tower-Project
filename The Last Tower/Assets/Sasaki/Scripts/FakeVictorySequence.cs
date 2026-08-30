@@ -15,7 +15,8 @@ using UnityEngine.SceneManagement;
 /// 3. 2秒後、「勝利！」が上に0.5秒で移動、ゲーム内容を1秒ごとに1項目表示
 /// 4. 3つ目の項目表示時にカメラシェイク＋コントローラー振動が1回発生
 /// 5. 1秒後、画面が3秒間大きく揺れ、UI全体が3秒かけて崩壊（落下＋回転）
-/// 6. その後③④⑤ボタン表示（横並び、スティック左右で操作）
+/// 6. 崩壊完了後、ボスの叫びでタワーも破壊し、トウscene（最終ブロック構築フェーズ）へ移行
+///    ※transitionToTouSceneOnCollapse を false にすると旧仕様（③④⑤ボタン表示）に戻せる
 /// </summary>
 public class FakeVictorySequence : MonoBehaviour
 {
@@ -51,6 +52,10 @@ public class FakeVictorySequence : MonoBehaviour
     [SerializeField] private float itemShakeVibeDuration = 0.2f;
     [SerializeField] private float collapseVibeLow = 0.6f;
     [SerializeField] private float collapseVibeHigh = 0.9f;
+
+    [Header("── トウscene移行（新仕様） ──────────")]
+    [Tooltip("true: 崩壊完了後、ボスの叫びでタワーも破壊してトウscene(最終ブロック構築フェーズ)へ移行する。false: 旧仕様どおりその場でリザルトボタンを表示する")]
+    [SerializeField] private bool transitionToTouSceneOnCollapse = true;
 
     [Header("── ボタン操作（横並び：③④⑤） ────────")]
     [SerializeField] private RectTransform[] buttonRects = new RectTransform[3]; // 0:リプレイ 1:スタッフロール 2:タイトル
@@ -148,13 +153,32 @@ public class FakeVictorySequence : MonoBehaviour
         StartCoroutine(CollapseShakeRoutine());
         yield return StartCoroutine(CollapseUIRoutine());
 
-        // 6. 崩壊完了後、ボタン表示
-        if (buttonGroup != null)
-            buttonGroup.SetActive(true);
+        // 6. 崩壊完了後
+        Debug.Log("[FakeVictorySequence] 崩壊演出完了。transitionToTouSceneOnCollapse=" + transitionToTouSceneOnCollapse);
+        if (transitionToTouSceneOnCollapse)
+        {
+            // ボスの叫びでタワーも破壊し、トウscene(最終ブロック構築フェーズ)へ移行する
+            // BlockManager.StartFinalSequence() が既存のタワー破壊/カメラ移動/最終ブロック選択の開始処理を持っている
+            if (BlockManager.Instance != null)
+            {
+                Debug.Log("[FakeVictorySequence] BlockManager.Instance.StartFinalSequence() を呼び出します");
+                BlockManager.Instance.StartFinalSequence();
+            }
+            else
+            {
+                Debug.LogWarning("[FakeVictorySequence] BlockManager.Instance が見つからないため、トウsceneへ移行できませんでした");
+            }
+        }
+        else
+        {
+            // (旧仕様) その場でリザルトボタンを表示する
+            if (buttonGroup != null)
+                buttonGroup.SetActive(true);
 
-        buttonFocus = 0;
-        navInputTimer = navInputCooldown;
-        buttonInputEnabled = true;
+            buttonFocus = 0;
+            navInputTimer = navInputCooldown;
+            buttonInputEnabled = true;
+        }
     }
 
     // ─── 画面が大きく揺れ続ける（カメラ＋コントローラー） ────────────

@@ -15,7 +15,24 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public class GameStatsManager : MonoBehaviour
 {
-    public static GameStatsManager Instance { get; private set; }
+    private static GameStatsManager instance;
+
+    /// <summary>
+    /// シーンに配置し忘れていても統計が取れるよう、
+    /// 初回アクセス時に自動でGameObjectを生成する
+    /// </summary>
+    public static GameStatsManager Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
+                var go = new GameObject("GameStatsManager (Auto)");
+                instance = go.AddComponent<GameStatsManager>();
+            }
+            return instance;
+        }
+    }
 
     [Header("── 統計（読み取り専用表示） ──────")]
     [SerializeField] private int enemiesDefeated = 0;
@@ -30,12 +47,12 @@ public class GameStatsManager : MonoBehaviour
 
     void Awake()
     {
-        if (Instance != null && Instance != this)
+        if (instance != null && instance != this)
         {
             Destroy(gameObject);
             return;
         }
-        Instance = this;
+        instance = this;
         // シーン再読み込みでリセットしたいので DontDestroyOnLoad はしない
     }
 

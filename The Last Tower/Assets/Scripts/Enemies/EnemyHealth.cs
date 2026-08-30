@@ -26,6 +26,8 @@ public class EnemyHealth : MonoBehaviour
     [Header("── 死亡演出 ──────────────────────")]
     public GameObject deathEffectPrefab;
     public float deathEffectDuration = 2f;
+    [Tooltip("死亡演出のうち、フェードアウトに使う時間（deathEffectDurationの範囲内）")]
+    public float deathEffectFadeDuration = 0.6f;
 
     private void Awake()
     {
@@ -83,7 +85,14 @@ public class EnemyHealth : MonoBehaviour
         {
             var effect = Instantiate(deathEffectPrefab, transform.position, transform.rotation);
             effect.transform.SetParent(null);
-            Destroy(effect, deathEffectDuration);
+
+            // 追加：即座に消すのではなく、徐々に透明度を上げてフェードアウトさせてから破棄する
+            var fader = effect.GetComponent<DeathEffectFadeOut>();
+            if (fader == null)
+                fader = effect.AddComponent<DeathEffectFadeOut>();
+
+            fader.fadeDuration = Mathf.Clamp(deathEffectFadeDuration, 0f, deathEffectDuration);
+            fader.holdDuration = Mathf.Max(0f, deathEffectDuration - fader.fadeDuration);
         }
 
         Destroy(gameObject);
