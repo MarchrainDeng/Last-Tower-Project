@@ -58,6 +58,85 @@ MonoBehaviour:
     m_Localized: Is this your first time playing this game?
     m_Metadata:
       m_Items: []
+  - m_Id: 3021443692384256
+    m_Localized: Final Tower is a defense game where you stack blocks to defeat enemies.
+      Survive the enemy attacks for 90 seconds to win.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3022447267696640
+    m_Localized: '"Three blocks will appear in the upper-right corner.
+
+
+      Use
+      left and right on the D-pad to move the cursor, then press the Confirm button
+      to select a block."'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3023539154079744
+    m_Localized: After selecting a block, you can move and rotate it freely.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3033986028687360
+    m_Localized: 'Slowly rotate.
+
+      L : Counterclockwise R : Clockwise'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3050218861776896
+    m_Localized: 'Move the block
+
+      left and right'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3051213855543296
+    m_Localized: '90 degrees
+
+      rotate'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3055098812846080
+    m_Localized: Confirm
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3055268703129600
+    m_Localized: Quickly drop
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3055785571405824
+    m_Localized: '"Power Blocks can transmit power from the base to other blocks.
+
+
+      Drop
+      a Power Block onto the base to connect it to the power supply."'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3056052845039616
+    m_Localized: '"Attack Blocks target the nearest enemy when connected to a powered
+      Power Block.
+
+
+      Connect an Attack Block to a Power Block and try attacking
+      an enemy."'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3056541024276480
+    m_Localized: Special Blocks become available the next time you select a block
+      after certain conditions are met.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3056799225630720
+    m_Localized: 'There are three powerful Special Blocks: the Zero-Gravity Block,
+      which stays fixed in place; the Core Block, which provides power; and the Enhance
+      Block, which enhances Attack Blocks.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3057075282137088
+    m_Localized: '"That concludes the tutorial.
+
+
+      Now, enjoy the game!"'
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

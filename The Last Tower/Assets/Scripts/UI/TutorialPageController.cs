@@ -194,6 +194,7 @@ public class TutorialPageController : MonoBehaviour
         // =====================================
 
         Debug.Log("Tutorial Finished");
+        SceneFadeManager.Instance.LoadScene("MainScene");
     }
 
     /// <summary>
