@@ -104,6 +104,19 @@ public class AttackBlockState : MonoBehaviour
 
     [SerializeField] bool isFinalCannon = false;
 
+    //[SerializeField] GameObject countdownUI;
+
+    [Header("Final Attack Camera")]
+    [SerializeField] private Camera mainCamera;
+
+    // 相机最终移动到的位置
+    // カメラの移動先
+    [SerializeField] private Transform cameraTarget;
+
+    // 相机移动时间
+    // カメラの移動時間
+    [SerializeField] private float cameraMoveDuration = 2f;
+
     private void Awake()
     {
         // 自动获取所有直接子物体作为子方块
@@ -128,6 +141,11 @@ public class AttackBlockState : MonoBehaviour
         {
             countdownText.gameObject.SetActive(false);
         }
+    }
+
+    private void Start()
+    {
+        mainCamera = Camera.main;
     }
 
     private void Update()
@@ -468,10 +486,88 @@ public class AttackBlockState : MonoBehaviour
     {
         Debug.Log("Special Attack Countdown Finished");
 
+        if (FinalSequenceManager.Instance != null)
+        {
+            FinalSequenceManager.Instance.StartFinalAttackSequence();
+        }
+
         // 在这里添加后续事件
         // 例如：
         // bossManager.StartFinalAttack();
         // BlockManager.Instance.DestroyAllBlocks();
+    }
+
+    /// <summary>
+    /// 最终攻击演出
+    /// 最終攻撃演出
+    /// </summary>
+    private IEnumerator FinalAttackSequence()
+    {
+        // 相机移动
+        // カメラを移動する
+        yield return MoveCameraToTarget();
+
+        Debug.Log("相机移动完成");
+
+        // =========================
+        // 下一步最终演出写在这里
+        // =========================
+    }
+
+    /// <summary>
+    /// 平滑移动相机到目标位置
+    /// カメラを目標位置まで滑らかに移動する
+    /// </summary>
+    private IEnumerator MoveCameraToTarget()
+    {
+        if (mainCamera == null ||
+            cameraTarget == null)
+        {
+            yield break;
+        }
+
+        Vector3 startPosition =
+            mainCamera.transform.position;
+
+        Vector3 targetPosition =
+            cameraTarget.position;
+
+        // 保持相机原本的Z轴
+        // カメラの元のZ座標を維持する
+        targetPosition.z =
+            startPosition.z;
+
+        float timer = 0f;
+
+        while (timer < cameraMoveDuration)
+        {
+            timer += Time.deltaTime;
+
+            float t =
+                Mathf.Clamp01(
+                    timer / cameraMoveDuration
+                );
+
+            // 平滑移动
+            // 滑らかに移動する
+            t = Mathf.SmoothStep(
+                0f,
+                1f,
+                t
+            );
+
+            mainCamera.transform.position =
+                Vector3.Lerp(
+                    startPosition,
+                    targetPosition,
+                    t
+                );
+
+            yield return null;
+        }
+
+        mainCamera.transform.position =
+            targetPosition;
     }
 
     /// <summary>

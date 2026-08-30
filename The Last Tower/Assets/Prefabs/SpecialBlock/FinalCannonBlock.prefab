@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3843938822916654368}
   - component: {fileID: 1764386308409883831}
   m_Layer: 12
-  m_Name: GunPivot
+  m_Name: FinalGunPivot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -848,6 +848,9 @@ MonoBehaviour:
   countdownText: {fileID: 6198094318549763198}
   countdownDuration: 3
   isFinalCannon: 1
+  mainCamera: {fileID: 0}
+  cameraTarget: {fileID: 0}
+  cameraMoveDuration: 2
 --- !u!114 &1247343762496461692
 MonoBehaviour:
   m_ObjectHideFlags: 0

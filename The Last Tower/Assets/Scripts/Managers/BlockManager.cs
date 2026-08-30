@@ -150,7 +150,23 @@ public class BlockManager : MonoBehaviour
 
         countdownText.text = "00:00:00";
 
+        // =========================
+        // 在这里处理倒计时结束事件
+        // =========================
+        OnCountdownFinished();
+
         countdownText.gameObject.SetActive(false);
+    }
+
+    /// <summary>
+    /// 倒计时结束时执行
+    /// カウントダウン終了時に実行
+    /// </summary>
+    private void OnCountdownFinished()
+    {
+        Debug.Log("30秒倒计时结束");
+
+        // 在这里写你需要执行的事件
     }
 
     /// <summary>

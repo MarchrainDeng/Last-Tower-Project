@@ -4,10 +4,10 @@ using UnityEngine;
 /*
 ----------------------------------------
 ¡¾¹¦ÄÜ / ™CÄÜ¡¿
-ÔÚÖ¸¶¨Î»ÖÃÉú³ÉÎïÌå£¬²¢Æ½»¬ÒÆ¶¯µ½Ä¿±êÎ»ÖÃ¡£
+ÔÚÖ¸¶¨Î»ÖÃÉú³ÉÎEå£¬²¢Æ½»¬ÒÆ¶¯µ½Ä¿±E»ÖÃ¡£
 
 Ö¸¶¨Î»ÖÃ¤Ë¥ª¥Ö¥¸¥§¥¯¥È¤òÉú³É¤·¡¢
-Ä¿˜ËÎ»ÖÃ¤Ş¤Ç¥¹¥à©`¥º¤ËÒÆ„Ó¤¹¤ë¡£
+Ä¿˜ËÎ»ÖÃ¤Ş¤Ç¥¹¥à©`¥º¤ËÒÆE¤¹¤E£
 
 ----------------------------------------
 */
@@ -16,8 +16,8 @@ public class ObjectSpawner : MonoBehaviour
 {
     [Header("Spawn")]
 
-    // ÒªÉú³ÉµÄÔ¤ÖÆÌå
-    // Éú³É¤¹¤ë¥×¥ì¥Ï¥Ö
+    // ÒªÉú³ÉµÄÔ¤ÖÆÌE
+    // Éú³É¤¹¤E×¥EÏ¥Ö
     [SerializeField]
     private GameObject prefab;
 
@@ -26,19 +26,19 @@ public class ObjectSpawner : MonoBehaviour
     [SerializeField]
     private Transform spawnPoint;
 
-    // Ä¿±êÎ»ÖÃ
+    // Ä¿±E»ÖÃ
     // Ä¿˜ËÎ»ÖÃ
     [SerializeField]
     private Transform targetPoint;
 
     // ÒÆ¶¯ËÙ¶È
-    // ÒÆ„ÓËÙ¶È
+    // ÒÆEËÙ¶È
     [SerializeField]
     private float moveSpeed = 5f;
 
     /// <summary>
     /// Éú³É²¢ÒÆ¶¯
-    /// Éú³É¤·¤ÆÒÆ„Ó¤¹¤ë
+    /// Éú³É¤·¤ÆÒÆE¤¹¤E
     /// </summary>
     /*
     public void SpawnAndMove()
@@ -75,6 +75,8 @@ public class ObjectSpawner : MonoBehaviour
             Quaternion.identity
         );
 
+        //FinalSequenceManager.Instance.SetFinalCannon(obj);
+
         StartCoroutine(
             MoveCoroutine(
                 obj.transform,
@@ -85,7 +87,7 @@ public class ObjectSpawner : MonoBehaviour
 
     /// <summary>
     /// Æ½»¬ÒÆ¶¯
-    /// ¥¹¥à©`¥º¤ËÒÆ„Ó¤¹¤ë
+    /// ¥¹¥à©`¥º¤ËÒÆE¤¹¤E
     /// </summary>
     private IEnumerator MoveCoroutine(
         Transform target,
