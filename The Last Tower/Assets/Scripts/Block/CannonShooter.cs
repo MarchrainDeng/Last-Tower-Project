@@ -10,7 +10,7 @@
 砲弾は発射時のみ敵の方向を固定する。
 ----------------------------------------
 */
-public class CannonShooter : MonoBehaviour
+public class CannonShooter : MonoBehaviour, IAttackSpeedBoostable
 {
     [Header("References")]
     // 攻击状态脚本
@@ -45,6 +45,8 @@ public class CannonShooter : MonoBehaviour
     [SerializeField]
     private AudioClip shootSound;
 
+    private float attackSpeedMultiplier = 1f;
+
     private void Awake()
     {
         if (attackState == null)
@@ -66,7 +68,7 @@ public class CannonShooter : MonoBehaviour
 
         shootTimer += Time.deltaTime;
 
-        if (shootTimer >= shootInterval)
+        if (shootTimer >= shootInterval / attackSpeedMultiplier)
         {
             shootTimer = 0f;
             Shoot();
@@ -171,6 +173,16 @@ public class CannonShooter : MonoBehaviour
         }
 
         return nearestEnemy;
+    }
+
+    public void AddAttackSpeedBoost(float multiplier)
+    {
+        attackSpeedMultiplier *= multiplier;
+    }
+
+    public void RemoveAttackSpeedBoost(float multiplier)
+    {
+        attackSpeedMultiplier /= multiplier;
     }
 
     private void OnDrawGizmosSelected()

@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public class LaserShooter : MonoBehaviour
+public class LaserShooter : MonoBehaviour, IAttackSpeedBoostable
 {
     [Header("References")]
 
@@ -71,6 +71,8 @@ public class LaserShooter : MonoBehaviour
     // 当前是否正在发射
     // 現在レーザーを照射中か
     public bool IsFiring => isFiring;
+
+    private float attackSpeedMultiplier = 1f;
 
     private void Awake()
     {
@@ -212,7 +214,7 @@ public class LaserShooter : MonoBehaviour
             UpdateLaserPositions();
 
             float damageThisFrame =
-                damagePerSecond * Time.deltaTime;
+                damagePerSecond * Time.deltaTime * attackSpeedMultiplier;
 
             DamageCurrentTarget(
                 damageThisFrame
@@ -511,6 +513,16 @@ public class LaserShooter : MonoBehaviour
         {
             laserAudioSource.Stop();
         }
+    }
+
+    public void AddAttackSpeedBoost(float multiplier)
+    {
+        attackSpeedMultiplier *= multiplier;
+    }
+
+    public void RemoveAttackSpeedBoost(float multiplier)
+    {
+        attackSpeedMultiplier /= multiplier;
     }
 
     private void OnDrawGizmosSelected()

@@ -289,8 +289,7 @@ GameObject:
   - component: {fileID: 7013556550540906629}
   - component: {fileID: 6705788285441112298}
   - component: {fileID: 9000584566436988441}
-  - component: {fileID: 9074457285520803000}
-  - component: {fileID: 8404186904518523185}
+  - component: {fileID: -6140440946426588117}
   m_Layer: 7
   m_Name: StickyBlock
   m_TagString: TowerBlock
@@ -416,7 +415,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BlockLanding
   rb: {fileID: 7013556550540906629}
-  stickyBlockJoint: {fileID: 8404186904518523185}
+  stickyBlockJoint: {fileID: 0}
   landingLayer:
     serializedVersion: 2
     m_Bits: 3008
@@ -433,6 +432,18 @@ MonoBehaviour:
   fallingMaterial: {fileID: 6200000, guid: 1a8e6cdc8c458d549aff8fa4e8481b5f, type: 2}
   landMaterial: {fileID: 6200000, guid: 05cb8a6ebe954344f83cb5c14e3598da, type: 2}
   landingSound: {fileID: 8300000, guid: 3b5983c3f8d896e4f9addaf813c06fe9, type: 3}
+  landingVelocityRetention: 0.4
+  landingDeceleration: 8
+  stopVelocityThreshold: 0.05
+  rotationLockDuration: 0.2
+  landingPushForce: 0.25
+  landingInputDeadZone: 0.2
+  maximumLandingPushSpeed: 1
+  sideCheckDistance: 0.05
+  sideCheckWidth: 0.05
+  sideCheckHeight: 0.45
+  normalBlockLandingDelay: 0.2
+  rotationLockTime: 0.2
 --- !u!114 &9000584566436988441
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -453,22 +464,7 @@ MonoBehaviour:
   fastFallMultiplier: 7
   deadLineY: -6
   rotateClockwiseButton: 1
---- !u!114 &9074457285520803000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2474595735599288801}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e4e8d8eed4d7a874bb46edb87f0e212e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BlockGroup
-  rb: {fileID: 7013556550540906629}
-  disableOtherMoveController: 1
-  preserveWorldPosition: 1
---- !u!114 &8404186904518523185
+--- !u!114 &-6140440946426588117
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -477,19 +473,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 2474595735599288801}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d795108d93b46047a912d3515a70511, type: 3}
+  m_Script: {fileID: 11500000, guid: 14f1e85c90a480848b5da88d588080e5, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::StickyBlockJoint
-  rb: {fileID: 7013556550540906629}
-  stickyTargetLayers:
+  m_EditorClassIdentifier: Assembly-CSharp::AttackSpeedBoostBlock
+  speedMultiplier: 1.5
+  detectionSize: {x: 2.1, y: 0.6}
+  attackBlockLayer:
     serializedVersion: 2
-    m_Bits: 3008
-  stickyOnlyAfterLanding: 1
-  stickyDelay: 0
-  enableCollisionBetweenConnectedBlocks: 1
-  breakForce: Infinity
-  breakTorque: Infinity
-  showDebugLog: 0
+    m_Bits: 512
 --- !u!1 &8242326998237043071
 GameObject:
   m_ObjectHideFlags: 0

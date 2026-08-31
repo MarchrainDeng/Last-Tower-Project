@@ -19,7 +19,7 @@ Deng Guangpeng
 ---------------------------------------
 */
 
-public class BulletShooter : MonoBehaviour
+public class BulletShooter : MonoBehaviour,IAttackSpeedBoostable
 {
     [Header("References")]
 
@@ -56,6 +56,8 @@ public class BulletShooter : MonoBehaviour
     [SerializeField]
     private AudioClip shootSound;
 
+    private float attackSpeedMultiplier = 1f;
+
     private void Awake()
     {
         // 获取攻击状态脚本
@@ -71,9 +73,11 @@ public class BulletShooter : MonoBehaviour
             return;
         }
 
+        Debug.Log("攻击间隔：" + attackSpeedMultiplier);
+
         shootTimer += Time.deltaTime;
 
-        if (shootTimer < shootInterval)
+        if (shootTimer < shootInterval / attackSpeedMultiplier)
             return;
 
         // 只有成功发射后才重置计时器
@@ -185,6 +189,16 @@ public class BulletShooter : MonoBehaviour
         }
 
         return nearestEnemy;
+    }
+
+    public void AddAttackSpeedBoost(float multiplier)
+    {
+        attackSpeedMultiplier *= multiplier;
+    }
+
+    public void RemoveAttackSpeedBoost(float multiplier)
+    {
+        attackSpeedMultiplier /= multiplier;
     }
 
     private void OnDrawGizmosSelected()
