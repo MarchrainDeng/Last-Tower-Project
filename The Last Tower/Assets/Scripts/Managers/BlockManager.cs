@@ -53,6 +53,9 @@ public class BlockManager : MonoBehaviour
     [Tooltip("仕様4〜7(キャノン発射/インク爆発/インク退場演出)が未実装のため、暫定的にここから直接呼び出してテストする。実装後はインク演出完了後に呼ぶよう差し替えること")]
     [SerializeField] private FinalResultChooser finalResultChooser;
 
+    [SerializeField] private GameOverSequence gameOverSequence;
+    [SerializeField] private GameObject defeatCanvas;
+
     private void Awake()
     {
         if (Instance == null)
@@ -189,9 +192,18 @@ public class BlockManager : MonoBehaviour
         // 在这里写你需要执行的事件
         // TODO: 本来は仕様4〜7(キャノン発射→ボス爆発→インクが画面を覆って引いていく演出)の後に
         //       home/replay選択(仕様8)を出す。仕様4〜7が未実装のため、暫定的にここから直接呼び出す
+        /*
         if (finalResultChooser != null)
         {
             finalResultChooser.Show();
+        }
+        */
+
+        defeatCanvas.SetActive(true);
+
+        if (gameOverSequence != null)
+        {
+            gameOverSequence.PlaySequence();
         }
     }
 
