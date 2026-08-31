@@ -17,6 +17,21 @@ public class FinalSequenceManager : MonoBehaviour
     // 最終的なカメラサイズ
     [SerializeField] private float targetCameraSize = 6f;
 
+    [Header("Final Bullet")]
+    [SerializeField] private GameObject finalBulletPrefab;
+
+    // 炮弹生成位置
+    // 砲弾の生成位置
+    [SerializeField] private Transform bulletSpawnPoint;
+
+    // 炮弹向上移动距离
+    // 砲弾の上方向への移動距離
+    [SerializeField] private float bulletMoveDistance = 10f;
+
+    // 炮弹移动时间
+    // 砲弾の移動時間
+    [SerializeField] private float bulletMoveDuration = 2f;
+
     private GameObject finalCannon;
 
     private void Awake()
@@ -53,17 +68,26 @@ public class FinalSequenceManager : MonoBehaviour
 
         if (targetObject != null)
         {
-            StartCoroutine(
-                RotateObject(
-                    targetObject.transform,
-                    270f,
-                    2f
-                )
+            // 等待炮台旋转完成
+            yield return RotateObject(
+                targetObject.transform,
+                270f,
+                3f
             );
         }
 
         // 后续最终演出写在这里
         // この後に最終演出を追加する
+
+        // 发射炮弹
+        // 砲弾を発射する
+        yield return FireFinalBullet();
+
+        // =========================
+        // 下一段演出写这里
+        // =========================
+
+        Debug.Log("炮弹上升演出完成");
     }
 
     private IEnumerator MoveCameraToTarget()
@@ -140,7 +164,7 @@ public class FinalSequenceManager : MonoBehaviour
         Quaternion startRotation =
             target.rotation;
 
-        Quaternion endRotation =
+        Quaternion targetRotation =
             Quaternion.Euler(
                 0f,
                 0f,
@@ -158,24 +182,108 @@ public class FinalSequenceManager : MonoBehaviour
                     timer / duration
                 );
 
-            t =
-                Mathf.SmoothStep(
-                    0f,
-                    1f,
-                    t
-                );
+            t = Mathf.SmoothStep(
+                0f,
+                1f,
+                t
+            );
 
             target.rotation =
                 Quaternion.Lerp(
                     startRotation,
-                    endRotation,
+                    targetRotation,
                     t
                 );
 
             yield return null;
         }
 
-        target.rotation =
-            endRotation;
+        // 确保最终角度准确
+        target.rotation = targetRotation;
+    }
+
+    /// <summary>
+    /// 生成最终炮弹，并让炮弹与相机同步向上移动
+    /// 最終砲弾を生成し、カメラと一緒に上方向へ移動する
+    /// </summary>
+    private IEnumerator FireFinalBullet()
+    {
+        if (finalBulletPrefab == null ||
+            bulletSpawnPoint == null ||
+            mainCamera == null)
+        {
+            yield break;
+        }
+
+        // 生成炮弹
+        // 砲弾を生成する
+        GameObject bullet =
+            Instantiate(
+                finalBulletPrefab,
+                bulletSpawnPoint.position,
+                bulletSpawnPoint.rotation
+            );
+
+        Vector3 bulletStartPosition =
+            bullet.transform.position;
+
+        Vector3 bulletTargetPosition =
+            bulletStartPosition +
+            Vector3.up * bulletMoveDistance;
+
+        Vector3 cameraStartPosition =
+            mainCamera.transform.position;
+
+        Vector3 cameraTargetPosition =
+            cameraStartPosition +
+            Vector3.up * bulletMoveDistance;
+
+        float timer = 0f;
+
+        while (timer < bulletMoveDuration)
+        {
+            timer += Time.deltaTime;
+
+            float t =
+                Mathf.Clamp01(
+                    timer / bulletMoveDuration
+                );
+
+            // 缓入缓出
+            // イージング
+            t = Mathf.SmoothStep(
+                0f,
+                1f,
+                t
+            );
+
+            // 炮弹向上移动
+            // 砲弾を上方向へ移動する
+            bullet.transform.position =
+                Vector3.Lerp(
+                    bulletStartPosition,
+                    bulletTargetPosition,
+                    t
+                );
+
+            // 相机同步向上移动
+            // カメラも同時に上方向へ移動する
+            mainCamera.transform.position =
+                Vector3.Lerp(
+                    cameraStartPosition,
+                    cameraTargetPosition,
+                    t
+                );
+
+            yield return null;
+        }
+
+        // 保证最终位置准确
+        // 最終位置を確実に設定する
+        bullet.transform.position =
+            bulletTargetPosition;
+
+        mainCamera.transform.position =
+            cameraTargetPosition;
     }
 }
