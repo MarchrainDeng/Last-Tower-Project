@@ -113,6 +113,11 @@ public class BossManager : MonoBehaviour
         if (randomTriggerSpawner != null)
             randomTriggerSpawner.StopSpawning();
 
+        // 低HP演出（画面の側の暗転＋心臓音）が鳴りっぱなしにならないよう停止する
+        var lowHPEffect = FindFirstObjectByType<LowHPEffect>();
+        if (lowHPEffect != null)
+            lowHPEffect.OnGameOver();
+
         if (victoryResultUI != null)
         {
             victoryResultUI.SetActive(true);
