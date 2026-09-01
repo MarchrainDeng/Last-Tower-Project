@@ -111,6 +111,34 @@ MonoBehaviour:
     m_Key: Page08
     m_Metadata:
       m_Items: []
+  - m_Id: 4112265082982400
+    m_Key: enemies
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4112828994572288
+    m_Key: placedBlocks
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4114427926171648
+    m_Key: droppedBlocks
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4114756453421056
+    m_Key: connect
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4115233719078912
+    m_Key: again
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4115500808163328
+    m_Key: returnTitle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4124009473921024
+    m_Key: placedBlock
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

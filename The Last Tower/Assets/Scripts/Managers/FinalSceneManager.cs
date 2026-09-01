@@ -34,6 +34,22 @@ public class FinalSequenceManager : MonoBehaviour
 
     private GameObject finalCannon;
 
+    [SerializeField] GameObject UI_1;
+    [SerializeField] GameObject UI_2;
+
+    [SerializeField] GameObject finalBoomObject;
+
+    [Header("Final Result")]
+    // 动画开始后等待多久显示最终结果选择
+    // アニメーション開始後、最終結果選択を表示するまでの待機時間
+    [SerializeField] private float resultShowDelay = 2f;
+
+    // 最终结果选择器
+    // 最終結果選択コントローラー
+    [SerializeField] private FinalResultChooser finalResultChooser;
+
+    [SerializeField] BlockManager blockManager;
+
     private void Awake()
     {
         Instance = this;
@@ -50,12 +66,21 @@ public class FinalSequenceManager : MonoBehaviour
 
     private IEnumerator FinalAttackSequence()
     {
+
+        if (blockManager != null)
+        {
+            blockManager.SetFinalAttackStarted();
+        }
+
         // 隐藏倒计时UI
         // カウントダウンUIを非表示にする
         if (countdownUI != null)
         {
             countdownUI.SetActive(false);
         }
+
+        UI_1.SetActive(false);
+        UI_2.SetActive(false);
 
         // 相机移动
         // カメラを移動する
@@ -285,5 +310,26 @@ public class FinalSequenceManager : MonoBehaviour
 
         mainCamera.transform.position =
             cameraTargetPosition;
+
+        // 炮弹到达后立即销毁
+        // 砲弾が到着したらすぐに削除する
+        Destroy(bullet);
+
+
+        if (finalBoomObject != null)
+        {
+            finalBoomObject.SetActive(true);
+        }
+
+        // 等待一段时间
+        // 一定時間待機する
+        yield return new WaitForSeconds(resultShowDelay);
+
+        // 显示最终结果选择
+        // 最終結果選択を表示する
+        if (finalResultChooser != null)
+        {
+            finalResultChooser.Show();
+        }
     }
 }

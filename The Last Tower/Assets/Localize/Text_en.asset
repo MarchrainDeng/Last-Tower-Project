@@ -137,6 +137,34 @@ MonoBehaviour:
       Now, enjoy the game!"'
     m_Metadata:
       m_Items: []
+  - m_Id: 4112265082982400
+    m_Localized: Enemies Defeated
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4112828994572288
+    m_Localized: Blocks Placed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4114427926171648
+    m_Localized: Blocks Dropped
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4114756453421056
+    m_Localized: Blocks Connected
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4115233719078912
+    m_Localized: Play Again
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4115500808163328
+    m_Localized: Title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4124009473921024
+    m_Localized: Blocks Placed
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

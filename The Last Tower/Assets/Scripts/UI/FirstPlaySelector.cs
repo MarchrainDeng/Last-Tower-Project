@@ -63,6 +63,8 @@ public class FirstPlaySelector : MonoBehaviour
         // ====================================
 
         Debug.Log("Tutorial Skipped");
+
+        SceneFadeManager.Instance.LoadScene("MainScene");
     }
 
     /// <summary>

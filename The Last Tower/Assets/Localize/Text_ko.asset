@@ -132,6 +132,34 @@ MonoBehaviour:
       \uB9C8\uC74C\uAECF \uC990\uACA8 \uC8FC\uC138\uC694!\""
     m_Metadata:
       m_Items: []
+  - m_Id: 4112265082982400
+    m_Localized: "\uCC98\uCE58\uD55C \uC801\uC758 \uC218"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4112828994572288
+    m_Localized: "\uBC30\uCE58\uD55C \uBE14\uB85D\uC758 \uC218"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4114427926171648
+    m_Localized: "\uB5A8\uC5B4\uB728\uB9B0 \uBE14\uB85D\uC758 \uC218"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4114756453421056
+    m_Localized: "\uC5F0\uACB0\uD55C \uBE14\uB85D\uC758 \uC218"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4115233719078912
+    m_Localized: "\uB2E4\uC2DC \uD558\uAE30"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4115500808163328
+    m_Localized: "\uD0C0\uC774\uD2C0\uB85C"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4124009473921024
+    m_Localized: "\uBC30\uCE58\uD55C \uBE14\uB85D\uC758 \uC218"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

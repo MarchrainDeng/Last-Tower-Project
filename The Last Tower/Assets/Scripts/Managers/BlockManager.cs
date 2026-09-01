@@ -56,6 +56,10 @@ public class BlockManager : MonoBehaviour
     [SerializeField] private GameOverSequence gameOverSequence;
     [SerializeField] private GameObject defeatCanvas;
 
+    // 是否已经开始最终攻击演出
+    // 最終攻撃演出が開始されているか
+    private bool isFinalAttackStarted = false;
+
     private void Awake()
     {
         if (Instance == null)
@@ -77,6 +81,15 @@ public class BlockManager : MonoBehaviour
         {
             StartFinalSequence();
         }
+    }
+
+    /// <summary>
+    /// 通知BlockManager最终攻击演出已经开始
+    /// BlockManagerへ最終攻撃演出の開始を通知する
+    /// </summary>
+    public void SetFinalAttackStarted()
+    {
+        isFinalAttackStarted = true;
     }
 
     /// <summary>
@@ -198,6 +211,12 @@ public class BlockManager : MonoBehaviour
             finalResultChooser.Show();
         }
         */
+
+        if (isFinalAttackStarted)
+        {
+            Debug.Log("最终攻击演出进行中，跳过GameOver处理");
+            return;
+        }
 
         defeatCanvas.SetActive(true);
 
