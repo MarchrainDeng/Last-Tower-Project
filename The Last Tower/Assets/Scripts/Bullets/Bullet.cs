@@ -28,6 +28,10 @@ public class Bullet : MonoBehaviour
     // 弾の移動速度
     public float moveSpeed = 5f;
 
+    // 子弹最大存在时间
+    // 弾の最大生存時間
+    [SerializeField] private float lifeTime = 5f;
+
     // 当前追踪目标
     // 現在追跡中の目標
     private Transform target;
@@ -39,6 +43,10 @@ public class Bullet : MonoBehaviour
     private void Start()
     {
         FindNearestEnemy();
+
+        // 防止没有命中时永久存在
+        // 命中しなかった場合に永久に残らないようにする
+        Destroy(gameObject, lifeTime);
     }
 
     private void Update()

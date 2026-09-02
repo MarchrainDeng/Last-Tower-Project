@@ -24,6 +24,10 @@ public class BlockManager : MonoBehaviour
     [SerializeField]
     private string blockTag = "TowerBlock";
 
+    // 弾丸のTag（Bullet.prefab / Cannon.prefab が使用）
+    [SerializeField]
+    private string bulletTag = "Bullet";
+
     [Header("References")]
     // 方块选择流程管理器
     // ブロック選択フローマネージャー
@@ -114,6 +118,9 @@ public class BlockManager : MonoBehaviour
         DestroyAllBlocks();
         Debug.Log("[BlockManager] DestroyAllBlocks 完了");
 
+        // 発射済みの弾丸が画面に残り続けないように、ここで一括削除する
+        DestroyAllBullets();
+
         OtherFunction();
         Debug.Log("[BlockManager] OtherFunction 完了");
 
@@ -135,6 +142,26 @@ public class BlockManager : MonoBehaviour
         {
             Destroy(block);
         }
+    }
+
+    /// <summary>
+    /// 摧毁场景中所有已发射的子弹
+    /// シーン内の発射済みの弾丸をすべて破壊する
+    ///
+    /// トウフェーズへ移行すると敵とボスが居なくなるため、
+    /// 追尾先を失った弾丸が画面内に残り続けてしまうのを防ぐ
+    /// </summary>
+    public void DestroyAllBullets()
+    {
+        GameObject[] bullets =
+            GameObject.FindGameObjectsWithTag(bulletTag);
+
+        foreach (GameObject bullet in bullets)
+        {
+            Destroy(bullet);
+        }
+
+        Debug.Log($"[BlockManager] DestroyAllBullets 完了 ({bullets.Length}個)");
     }
 
     /// <summary>
