@@ -3281,6 +3281,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2093078382}
   - component: {fileID: 2093078381}
+  - component: {fileID: 2093078383}
   m_Layer: 0
   m_Name: SceneFadeManager
   m_TagString: Untagged
@@ -3302,7 +3303,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SceneFadeManager
   fadeCanvasGroup: {fileID: 1321104522}
   fadeOutDuration: 1
-  fadeInDuration: 2
+  fadeInDuration: 0.1
 --- !u!4 &2093078382
 Transform:
   m_ObjectHideFlags: 0
@@ -3319,6 +3320,19 @@ Transform:
   - {fileID: 1552633560}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2093078383
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2093078380}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 626a84366c0ffc9409ecf22a3a8323a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EmergencySceneLoader
+  targetSceneName: TitleScene
 --- !u!1 &2114790125
 GameObject:
   m_ObjectHideFlags: 0

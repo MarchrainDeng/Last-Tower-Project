@@ -3935,11 +3935,13 @@ MonoBehaviour:
   heightLine_1: {fileID: 1872117405}
   heightLine_2: {fileID: 1201652292}
   countdownText: {fileID: 1692018301}
-  countDown: 30
+  countDown: 45
   targetUI: {fileID: 1692018303}
   finalResultChooser: {fileID: 1820270710}
   gameOverSequence: {fileID: 1300556692}
   defeatCanvas: {fileID: 1300556690}
+  UI_1: {fileID: 1630459587}
+  UI_2: {fileID: 1612657616}
 --- !u!1 &864273649
 GameObject:
   m_ObjectHideFlags: 0

@@ -56,6 +56,9 @@ public class BlockManager : MonoBehaviour
     [SerializeField] private GameOverSequence gameOverSequence;
     [SerializeField] private GameObject defeatCanvas;
 
+    [SerializeField] GameObject UI_1;
+    [SerializeField] private GameObject UI_2;
+
     // 是否已经开始最终攻击演出
     // 最終攻撃演出が開始されているか
     private bool isFinalAttackStarted = false;
@@ -76,11 +79,12 @@ public class BlockManager : MonoBehaviour
     {
         // 测试：按下方向键摧毁全部方块
         // テスト：下方向キーですべてのブロックを破壊
+        /*
         if (Gamepad.current != null &&
             Gamepad.current.dpad.down.wasPressedThisFrame)
         {
             StartFinalSequence();
-        }
+        }*/
     }
 
     /// <summary>
@@ -217,6 +221,9 @@ public class BlockManager : MonoBehaviour
             Debug.Log("最终攻击演出进行中，跳过GameOver处理");
             return;
         }
+
+        UI_1.SetActive(false);
+        UI_2.SetActive(false);
 
         defeatCanvas.SetActive(true);
 
