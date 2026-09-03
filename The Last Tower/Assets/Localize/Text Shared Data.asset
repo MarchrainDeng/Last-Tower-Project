@@ -139,6 +139,26 @@ MonoBehaviour:
     m_Key: placedBlock
     m_Metadata:
       m_Items: []
+  - m_Id: 4839047876726784
+    m_Key: SettingTitle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4840655880605696
+    m_Key: YesBtn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4842074536824832
+    m_Key: NoBtn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4842630231773184
+    m_Key: BEFORE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4844393554923520
+    m_Key: NEXT
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

@@ -165,6 +165,26 @@ MonoBehaviour:
     m_Localized: Blocks Placed
     m_Metadata:
       m_Items: []
+  - m_Id: 4839047876726784
+    m_Localized: Title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4840655880605696
+    m_Localized: YES
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4842074536824832
+    m_Localized: NO
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4842630231773184
+    m_Localized: BEFORE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4844393554923520
+    m_Localized: NEXT
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
