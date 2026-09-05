@@ -75,6 +75,11 @@ public class FakeVictorySequence : MonoBehaviour
     bool buttonInputEnabled = false;
     float navInputTimer = 0f;
 
+    [SerializeField]
+    private AudioClip fakeVicSound;
+
+    [SerializeField] BossFlyAway bossFlyAway;
+
     /// <summary>
     /// 演出の開始
     /// </summary>
@@ -150,6 +155,8 @@ public class FakeVictorySequence : MonoBehaviour
         // 5. 1秒後、画面が3秒間大きく揺れて、UIが3秒かけて崩壊
         yield return new WaitForSecondsRealtime(preCollapseDelay);
 
+        SFXManager.Instance.PlaySFX(fakeVicSound);
+
         StartCoroutine(CollapseShakeRoutine());
         yield return StartCoroutine(CollapseUIRoutine());
 
@@ -157,6 +164,8 @@ public class FakeVictorySequence : MonoBehaviour
         Debug.Log("[FakeVictorySequence] 崩壊演出完了。transitionToTouSceneOnCollapse=" + transitionToTouSceneOnCollapse);
         if (transitionToTouSceneOnCollapse)
         {
+            bossFlyAway.PlayFlyAway();
+
             // ボスの叫びでタワーも破壊し、トウscene(最終ブロック構築フェーズ)へ移行する
             // BlockManager.StartFinalSequence() が既存のタワー破壊/カメラ移動/最終ブロック選択の開始処理を持っている
             if (BlockManager.Instance != null)

@@ -63,6 +63,8 @@ public class BlockManager : MonoBehaviour
     [SerializeField] GameObject UI_1;
     [SerializeField] private GameObject UI_2;
 
+    [SerializeField] BGMManager bgmManager;
+
     // 是否已经开始最终攻击演出
     // 最終攻撃演出が開始されているか
     private bool isFinalAttackStarted = false;
@@ -110,6 +112,8 @@ public class BlockManager : MonoBehaviour
         // カード選択等で timeScale が 0 のまま残っていると、カウントダウンやカメラ演出が
         // 進まず「何も起きていないように見える」状態になるため、念のためここでリセットする
         Time.timeScale = 1f;
+
+        bgmManager.PlayFinalBGM();
 
         // BossManager.OnVictory() でボス撃破時に GameStateManager.SetPaused(true) が呼ばれるが、
         // このプロジェクトの BlockSelectionFlowManager は pauseGameDuringSelection = false のため

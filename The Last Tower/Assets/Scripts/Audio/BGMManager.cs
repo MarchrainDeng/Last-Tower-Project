@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-
+using System.Collections;
 public class BGMManager : MonoBehaviour
 {
     [Header("References")]
@@ -9,6 +9,7 @@ public class BGMManager : MonoBehaviour
     [SerializeField] private AudioClip normalBGM;
     [SerializeField] private AudioClip finalBGM;
     [SerializeField] private AudioClip bossBGM;
+    [SerializeField] private AudioClip winBGM;
 
     private void Awake()
     {
@@ -42,6 +43,69 @@ public class BGMManager : MonoBehaviour
     }
 
     /// <summary>
+    /// 淡出并停止BGM
+    /// BGMをフェードアウトして停止する
+    /// </summary>
+    public void FadeOutBGM(float playDuration, float fadeDuration)
+    {
+        StartCoroutine(FadeOutCoroutine(playDuration,fadeDuration));
+    }
+
+    private IEnumerator FadeOutCoroutine(
+    float playDuration,
+    float fadeDuration)
+    {
+        if (audioSource == null ||
+            !audioSource.isPlaying)
+        {
+            yield break;
+        }
+
+        // 保存原本音量
+        // 元の音量を保存する
+        float startVolume = audioSource.volume;
+
+        // 淡出前保持正常播放一段时间
+        // フェードアウト前に一定時間通常再生する
+        if (playDuration > 0f)
+        {
+            yield return new WaitForSecondsRealtime(
+                playDuration
+            );
+        }
+
+        // 开始淡出
+        // フェードアウトを開始する
+        float timer = 0f;
+
+        while (timer < fadeDuration)
+        {
+            timer += Time.unscaledDeltaTime;
+
+            float t = Mathf.Clamp01(
+                timer / fadeDuration
+            );
+
+            audioSource.volume =
+                Mathf.Lerp(
+                    startVolume,
+                    0f,
+                    t
+                );
+
+            yield return null;
+        }
+
+        // 停止BGM
+        // BGMを停止する
+        audioSource.Stop();
+
+        // 恢复原本音量，方便下次播放
+        // 次回再生のため元の音量に戻す
+        audioSource.volume = startVolume;
+    }
+
+    /// <summary>
     /// 立即停止当前BGM
     /// 現在再生中のBGMを即時停止する
     /// </summary>
@@ -66,5 +130,10 @@ public class BGMManager : MonoBehaviour
     public void PlayBossBGM()
     {
         ChangeBGM(bossBGM);
+    }
+
+    public void PlayWinBGM()
+    {
+        ChangeBGM(winBGM);
     }
 }

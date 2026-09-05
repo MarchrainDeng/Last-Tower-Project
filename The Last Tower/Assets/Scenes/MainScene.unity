@@ -1955,6 +1955,55 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &433604939
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 433604940}
+  - component: {fileID: 433604941}
+  m_Layer: 0
+  m_Name: BossFlyAway
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &433604940
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 433604939}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1087879848}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &433604941
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 433604939}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04751a60854bd5545b7132063304b416, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BossFlyAway
+  bossTransform: {fileID: 1799990430}
+  targetPoint: {fileID: 1233792080}
+  scaleDuration: 1
+  targetScaleMultiplier: 0.6
+  moveDuration: 3
 --- !u!114 &436381646
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3965,6 +4014,7 @@ MonoBehaviour:
   defeatCanvas: {fileID: 1300556690}
   UI_1: {fileID: 1630459587}
   UI_2: {fileID: 1612657616}
+  bgmManager: {fileID: 1981275232}
 --- !u!1 &864273649
 GameObject:
   m_ObjectHideFlags: 0
@@ -4549,6 +4599,7 @@ Transform:
   - {fileID: 1779351619}
   - {fileID: 2045870619}
   - {fileID: 1632833422}
+  - {fileID: 433604940}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1087879849
@@ -8959,6 +9010,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &1799990430 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 849382108394756767, guid: bc9fea9ed9c1b0446bdc867306a6666d, type: 3}
+  m_PrefabInstance: {fileID: 406464030436235049}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1820270708
 GameObject:
   m_ObjectHideFlags: 0
@@ -9858,6 +9914,7 @@ MonoBehaviour:
   normalBGM: {fileID: 0}
   finalBGM: {fileID: 8300000, guid: f8e41bce8224c6f419be90d3d1bfc963, type: 3}
   bossBGM: {fileID: 8300000, guid: d4ee6e6d2425182438ace1df7ef9f168, type: 3}
+  winBGM: {fileID: 8300000, guid: 39f05c24851ab8d4b9ec07778e65995a, type: 3}
 --- !u!1 &1991662933 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5810713109773364550, guid: 7732a5f49969615418e09105ac8f217a, type: 3}
@@ -9939,6 +9996,8 @@ MonoBehaviour:
   gameSceneName: 
   titleSceneName: 
   staffRollObject: {fileID: 0}
+  fakeVicSound: {fileID: 8300000, guid: 4875166efe1ad9a40a088c713e63024b, type: 3}
+  bossFlyAway: {fileID: 433604941}
 --- !u!1 &2045870618
 GameObject:
   m_ObjectHideFlags: 0
@@ -10168,6 +10227,10 @@ PrefabInstance:
       propertyPath: randomTriggerSpawner
       value: 
       objectReference: {fileID: 1779351618}
+    - target: {fileID: 849382108394756767, guid: bc9fea9ed9c1b0446bdc867306a6666d, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1399014594036997941, guid: bc9fea9ed9c1b0446bdc867306a6666d, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -10327,6 +10390,18 @@ PrefabInstance:
     - target: {fileID: 6727219361773651212, guid: bc9fea9ed9c1b0446bdc867306a6666d, type: 3}
       propertyPath: handData.harassActions.Array.data[2].cooldown
       value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6994542974885286041, guid: bc9fea9ed9c1b0446bdc867306a6666d, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.81
+      objectReference: {fileID: 0}
+    - target: {fileID: 6994542974885286041, guid: bc9fea9ed9c1b0446bdc867306a6666d, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.81
+      objectReference: {fileID: 0}
+    - target: {fileID: 6994542974885286041, guid: bc9fea9ed9c1b0446bdc867306a6666d, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.81
       objectReference: {fileID: 0}
     - target: {fileID: 7532056172523457614, guid: bc9fea9ed9c1b0446bdc867306a6666d, type: 3}
       propertyPath: m_AnchorMax.x

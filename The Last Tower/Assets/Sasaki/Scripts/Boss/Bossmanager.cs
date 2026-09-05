@@ -115,6 +115,7 @@ public class BossManager : MonoBehaviour
         Debug.Log("[BossManager] ゲームクリア！");
 
         bgmManager.StopBGM();
+        bgmManager.PlayWinBGM();
 
         if (randomTriggerSpawner != null)
             randomTriggerSpawner.StopSpawning();
@@ -132,6 +133,7 @@ public class BossManager : MonoBehaviour
             FakeVictorySequence sequence = victoryResultUI.GetComponent<FakeVictorySequence>();
             if (sequence != null)
             {
+                bgmManager.FadeOutBGM(5f,2f);
                 sequence.PlaySequence();
             }
         }
