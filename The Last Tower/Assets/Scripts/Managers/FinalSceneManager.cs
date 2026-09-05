@@ -50,6 +50,11 @@ public class FinalSequenceManager : MonoBehaviour
 
     [SerializeField] BlockManager blockManager;
 
+    [SerializeField] BGMManager bgmManager;
+
+    [SerializeField] AudioClip cannonShoot;
+    [SerializeField] AudioClip cannonBoom;
+
     private void Awake()
     {
         Instance = this;
@@ -71,6 +76,8 @@ public class FinalSequenceManager : MonoBehaviour
         {
             blockManager.SetFinalAttackStarted();
         }
+
+        bgmManager.FadeOutBGM(0.5f, 2f);
 
         // 隐藏倒计时UI
         // カウントダウンUIを非表示にする
@@ -233,6 +240,8 @@ public class FinalSequenceManager : MonoBehaviour
     /// </summary>
     private IEnumerator FireFinalBullet()
     {
+        SFXManager.Instance.PlaySFX(cannonShoot);
+
         if (finalBulletPrefab == null ||
             bulletSpawnPoint == null ||
             mainCamera == null)
@@ -311,6 +320,8 @@ public class FinalSequenceManager : MonoBehaviour
         mainCamera.transform.position =
             cameraTargetPosition;
 
+        SFXManager.Instance.PlaySFX(cannonBoom);
+
         // 炮弹到达后立即销毁
         // 砲弾が到着したらすぐに削除する
         Destroy(bullet);
@@ -329,6 +340,7 @@ public class FinalSequenceManager : MonoBehaviour
         // 最終結果選択を表示する
         if (finalResultChooser != null)
         {
+            bgmManager.PlayWinBGM();
             finalResultChooser.Show();
         }
     }

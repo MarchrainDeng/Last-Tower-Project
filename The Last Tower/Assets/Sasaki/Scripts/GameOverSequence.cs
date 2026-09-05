@@ -51,6 +51,9 @@ public class GameOverSequence : MonoBehaviour
     bool buttonInputEnabled = false;
     float navInputTimer = 0f;
 
+    [SerializeField] BGMManager bgmManager;
+    [SerializeField] AudioClip loseBGM;
+
     /// <summary>
     /// ‰‰o‚ÌŠJn
     /// </summary>
@@ -69,6 +72,8 @@ public class GameOverSequence : MonoBehaviour
             if (blocksDroppedText != null) blocksDroppedText.text = GameStatsManager.Instance.BlocksDropped.ToString();
             if (blocksConnectedText != null) blocksConnectedText.text = GameStatsManager.Instance.BlocksConnected.ToString();
         }
+
+        bgmManager.ChangeBGMWithFade(loseBGM, 2f);
 
         // „Ÿ„Ÿ„Ÿ ‰Šúó‘Ô‚Ìİ’è „Ÿ„Ÿ„Ÿ
         bgPanelGroup.alpha = 0f;

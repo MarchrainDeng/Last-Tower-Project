@@ -10,6 +10,7 @@ public class BGMManager : MonoBehaviour
     [SerializeField] private AudioClip finalBGM;
     [SerializeField] private AudioClip bossBGM;
     [SerializeField] private AudioClip winBGM;
+    [SerializeField] private AudioClip trueWinBGM;
 
     private void Awake()
     {
@@ -106,6 +107,83 @@ public class BGMManager : MonoBehaviour
     }
 
     /// <summary>
+    /// 淡出当前BGM后切换并播放指定BGM
+    /// 現在のBGMをフェードアウトした後、指定したBGMへ切り替える
+    /// </summary>
+    public void ChangeBGMWithFade(
+        AudioClip newBGM,
+        float fadeDuration)
+    {
+        if (audioSource == null ||
+            newBGM == null)
+        {
+            return;
+        }
+
+        StartCoroutine(
+            ChangeBGMWithFadeCoroutine(
+                newBGM,
+                fadeDuration
+            )
+        );
+    }
+
+    private IEnumerator ChangeBGMWithFadeCoroutine(
+        AudioClip newBGM,
+        float fadeDuration)
+    {
+        // 保存当前音量
+        // 現在の音量を保存する
+        float startVolume =
+            audioSource.volume;
+
+        // 当前有BGM正在播放时进行淡出
+        // 現在BGMが再生中の場合はフェードアウトする
+        if (audioSource.isPlaying)
+        {
+            float timer = 0f;
+
+            while (timer < fadeDuration)
+            {
+                timer += Time.unscaledDeltaTime;
+
+                float t = Mathf.Clamp01(
+                    timer / fadeDuration
+                );
+
+                audioSource.volume =
+                    Mathf.Lerp(
+                        startVolume,
+                        0f,
+                        t
+                    );
+
+                yield return null;
+            }
+        }
+
+        // 停止当前BGM
+        // 現在のBGMを停止する
+        audioSource.Stop();
+
+        // 切换到新的BGM
+        // 新しいBGMへ切り替える
+        audioSource.clip = newBGM;
+
+        // 恢复原来的音量
+        // 元の音量に戻す
+        audioSource.volume = startVolume;
+
+        // 循环播放
+        // ループ再生する
+        audioSource.loop = true;
+
+        // 播放新的BGM
+        // 新しいBGMを再生する
+        audioSource.Play();
+    }
+
+    /// <summary>
     /// 立即停止当前BGM
     /// 現在再生中のBGMを即時停止する
     /// </summary>
@@ -135,5 +213,10 @@ public class BGMManager : MonoBehaviour
     public void PlayWinBGM()
     {
         ChangeBGM(winBGM);
+    }
+
+    public void PlayTrueWinBGM()
+    {
+        ChangeBGM(trueWinBGM);
     }
 }

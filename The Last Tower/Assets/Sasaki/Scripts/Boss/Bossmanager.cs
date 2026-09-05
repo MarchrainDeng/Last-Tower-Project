@@ -176,7 +176,7 @@ public class BossManager : MonoBehaviour
             }
         }
 
-        PlayBGM(defeatBGM);
+        //PlayBGM(defeatBGM);
 
         GameStateManager.SetPaused(true);
 
