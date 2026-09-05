@@ -43,6 +43,8 @@ public class BossManager : MonoBehaviour
     [SerializeField]
     private RandomTriggerSpawner randomTriggerSpawner;
 
+    [SerializeField] BGMManager bgmManager;
+
     // ─── 起動 ─────────────────────────────────────────────────────
     void Start()
     {
@@ -62,6 +64,8 @@ public class BossManager : MonoBehaviour
     IEnumerator SpawnBoss()
     {
         yield return new WaitForSeconds(spawnDelay);
+
+        bgmManager.PlayBossBGM();
 
         Debug.Log("[BossManager] ボス出現！");
 
@@ -110,6 +114,8 @@ public class BossManager : MonoBehaviour
     {
         Debug.Log("[BossManager] ゲームクリア！");
 
+        bgmManager.StopBGM();
+
         if (randomTriggerSpawner != null)
             randomTriggerSpawner.StopSpawning();
 
@@ -130,7 +136,7 @@ public class BossManager : MonoBehaviour
             }
         }
 
-        PlayBGM(victoryBGM);
+        //PlayBGM(victoryBGM);
 
         // 演出アニメーションを動かすため、Time.timeScale = 0f は行わずにゲーム進行のみ止める
         GameStateManager.SetPaused(true);
