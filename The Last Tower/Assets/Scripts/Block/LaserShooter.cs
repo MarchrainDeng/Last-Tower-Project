@@ -497,6 +497,8 @@ public class LaserShooter : MonoBehaviour, IAttackSpeedBoostable
         laserAudioSource.clip =
             laserLoopSound;
 
+        laserAudioSource.volume = 0.3f;
+
         laserAudioSource.loop = true;
         laserAudioSource.Play();
     }

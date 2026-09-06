@@ -1221,7 +1221,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -78.82, y: -1}
+  m_AnchoredPosition: {x: -40, y: -1}
   m_SizeDelta: {x: 5128.9, y: 1025.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &927643952
@@ -2517,7 +2517,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -78.82, y: 0}
+  m_AnchoredPosition: {x: -40, y: 0}
   m_SizeDelta: {x: 5128.9, y: 1025.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1685686737
@@ -3514,7 +3514,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 626a84366c0ffc9409ecf22a3a8323a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EmergencySceneLoader
-  targetSceneName: TitleScene
+  titleSceneName: TitleScene
+  holdDuration: 3
+  triggerThreshold: 0.8
 --- !u!1 &2114790125
 GameObject:
   m_ObjectHideFlags: 0
@@ -3551,7 +3553,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -78.82, y: 2}
+  m_AnchoredPosition: {x: -40, y: 2}
   m_SizeDelta: {x: 5128.9, y: 1025.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2114790127

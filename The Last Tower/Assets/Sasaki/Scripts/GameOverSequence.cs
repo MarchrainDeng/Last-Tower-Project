@@ -54,6 +54,9 @@ public class GameOverSequence : MonoBehaviour
     [SerializeField] BGMManager bgmManager;
     [SerializeField] AudioClip loseBGM;
 
+    [SerializeField] GameObject UI_1;
+    [SerializeField] GameObject UI_2;
+
     /// <summary>
     /// ‰‰o‚ÌŠJn
     /// </summary>
@@ -74,6 +77,10 @@ public class GameOverSequence : MonoBehaviour
         }
 
         bgmManager.ChangeBGMWithFade(loseBGM, 2f);
+
+        Time.timeScale = 0f;
+        UI_1.SetActive(false);
+        UI_2.SetActive(false);
 
         // „Ÿ„Ÿ„Ÿ ‰Šúó‘Ô‚Ìİ’è „Ÿ„Ÿ„Ÿ
         bgPanelGroup.alpha = 0f;

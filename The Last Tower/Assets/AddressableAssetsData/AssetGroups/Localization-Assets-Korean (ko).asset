@@ -10,20 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
-  m_Name: Localization-Assets-Japanese (ja)
+  m_Name: Localization-Assets-Korean (ko)
   m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
-  m_GroupName: Localization-Assets-Japanese (ja)
-  m_GUID: ad678dafb1a1c2d428131ef8e23a2d9a
+  m_GroupName: Localization-Assets-Korean (ko)
+  m_GUID: b636be4e275da194bba4d26f8470b210
   m_SerializeEntries:
-  - m_GUID: 566f7abf65962eb4eb45688f9db911cb
-    m_Address: MochiyPopOne-Regular SDF
+  - m_GUID: f24190fa2978008428fc2b8ab434f554
+    m_Address: JA_KO SDF
     m_ReadOnly: 1
     m_SerializedLabels:
-    - Locale-ja
+    - Locale-ko
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 1
   m_Settings: {fileID: 11400000, guid: f898f9d116e90d7439828e324e62fe2b, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: 77f3bff5ca573f14393bbe1495af0c42, type: 2}
-    - {fileID: 11400000, guid: 5e541799b146a244c95778c6191a7abd, type: 2}
+    - {fileID: 11400000, guid: ae089ddd172b8fe49bd000a821c669dc, type: 2}
+    - {fileID: 11400000, guid: 233ba4c1eeb33344b81d09227994e1a6, type: 2}

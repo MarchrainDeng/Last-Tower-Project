@@ -160,7 +160,7 @@ public class SFXManager : MonoBehaviour
 
         sfxSource.PlayOneShot(
             clip,
-            randomVolume
+            0.4f
         );
 
         // 恢复原来的音高
@@ -209,7 +209,7 @@ public class SFXManager : MonoBehaviour
 
         sfxSource.PlayOneShot(
             clip,
-            randomVolume
+            0.4f
         );
 
         // 恢复原来的音高
@@ -258,7 +258,7 @@ public class SFXManager : MonoBehaviour
 
         sfxSource.PlayOneShot(
             clip,
-            randomVolume
+            0.4f
         );
 
         // 恢复原来的音高

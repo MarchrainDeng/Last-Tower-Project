@@ -5,8 +5,25 @@ using UnityEngine.SceneManagement;
 public class EmergencySceneLoader : MonoBehaviour
 {
     [Header("Scene Settings")]
-    [SerializeField] private string targetSceneName = "Title";
 
+    // 应急返回的场景名称
+    // 緊急時に戻るシーン名
+    [SerializeField] private string titleSceneName = "Title";
+
+    [Header("Emergency Input Settings")]
+
+    // 需要同时长按的时间
+    // 同時長押しに必要な時間
+    [SerializeField] private float holdDuration = 3f;
+
+    // 扳机判定阈值
+    // トリガー入力の判定しきい値
+    [SerializeField] private float triggerThreshold = 0.8f;
+
+    private float holdTimer = 0f;
+
+    // 防止重复触发
+    // 重複発動を防止する
     private bool hasTriggered = false;
 
     private void Update()
@@ -14,48 +31,66 @@ public class EmergencySceneLoader : MonoBehaviour
         if (hasTriggered)
             return;
 
-        if (Keyboard.current == null)
-            return;
-
-        // 检测Ctrl
-        // Ctrlキーを検出する
-        bool ctrlPressed =
-            Keyboard.current.leftCtrlKey.isPressed ||
-            Keyboard.current.rightCtrlKey.isPressed;
-
-        // 检测Alt
-        // Altキーを検出する
-        bool altPressed =
-            Keyboard.current.leftAltKey.isPressed ||
-            Keyboard.current.rightAltKey.isPressed;
-
-        // Esc + Ctrl + Alt
-        // Esc + Ctrl + Alt
-        if (Keyboard.current.escapeKey.isPressed &&
-            ctrlPressed &&
-            altPressed)
+        if (Gamepad.current == null)
         {
-            EmergencyReturn();
+            holdTimer = 0f;
+            return;
+        }
+
+        // 获取LT和RT的输入值
+        // LTとRTの入力値を取得する
+        float leftTrigger =
+            Gamepad.current.leftTrigger.ReadValue();
+
+        float rightTrigger =
+            Gamepad.current.rightTrigger.ReadValue();
+
+        // 判断两个扳机是否同时按下
+        // 両方のトリガーが同時に押されているか判定する
+        bool bothPressed =
+            leftTrigger >= triggerThreshold &&
+            rightTrigger >= triggerThreshold;
+
+        if (bothPressed)
+        {
+            // 使用真实时间，暂停状态下也可以正常计时
+            // ポーズ中でも動作するように実時間を使用する
+            holdTimer += Time.unscaledDeltaTime;
+
+            if (holdTimer >= holdDuration)
+            {
+                EmergencyReturnToTitle();
+            }
+        }
+        else
+        {
+            // 中途松开任意一个按键就重新计时
+            // 途中でどちらかを離した場合はリセットする
+            holdTimer = 0f;
         }
     }
 
     /// <summary>
-    /// 强制返回指定场景
-    /// 指定シーンへ強制的に戻る
+    /// 强制返回标题界面
+    /// タイトル画面へ強制的に戻る
     /// </summary>
-    private void EmergencyReturn()
+    private void EmergencyReturnToTitle()
     {
         if (hasTriggered)
             return;
 
         hasTriggered = true;
 
-        // 防止暂停状态影响返回后的游戏
-        // 一時停止状態が次のシーンに影響しないようにする
+        // 恢复游戏时间
+        // ゲーム時間を元に戻す
         Time.timeScale = 1f;
 
+        // 如果你的项目使用GameStateManager
+        // GameStateManagerを使用している場合
         GameStateManager.SetPaused(false);
 
-        SceneManager.LoadScene(targetSceneName);
+        // 强制返回标题场景
+        // タイトルシーンへ強制的に戻る
+        SceneManager.LoadScene(titleSceneName);
     }
 }

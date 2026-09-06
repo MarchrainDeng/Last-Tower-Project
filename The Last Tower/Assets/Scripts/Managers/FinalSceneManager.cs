@@ -340,7 +340,7 @@ public class FinalSequenceManager : MonoBehaviour
         // 最終結果選択を表示する
         if (finalResultChooser != null)
         {
-            bgmManager.PlayWinBGM();
+            bgmManager.PlayTrueWinBGM();
             finalResultChooser.Show();
         }
     }
