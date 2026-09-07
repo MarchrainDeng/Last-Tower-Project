@@ -709,7 +709,15 @@ public class BossHand : MonoBehaviour
     // ─── 死亡 ─────────────────────────────────────────────────────
     void Die()
     {
+        // 二重実行防止（撃破数の多重カウント防止も兼ねる）
+        if (isDead) return;
+
         isDead = true;
+
+        // 追加：撃破数をカウント（ボスの手も「倒した敵」に含める）
+        if (GameStatsManager.Instance != null)
+            GameStatsManager.Instance.OnEnemyDefeated();
+
         EndCharging();
         OnDefeated?.Invoke();
         Debug.Log($"[BossHand] {gameObject.name} 撃破！");

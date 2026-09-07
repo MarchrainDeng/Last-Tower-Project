@@ -23,6 +23,12 @@ public class EnemyHealth : MonoBehaviour
     // 敵ステータス
     private EnemyStatsHolder statsHolder;
 
+    // すでに死亡処理を実行したか
+    // Destroy(gameObject) は実際には同フレーム末に反映されるため、
+    // ガードが無いと同じフレームの複数ヒットで Die() が複数回走り、
+    // 撃破数が多重にカウントされてしまう
+    private bool isDead = false;
+
     [Header("── 死亡演出 ──────────────────────")]
     public GameObject deathEffectPrefab;
     public float deathEffectDuration = 2f;
@@ -43,6 +49,10 @@ public class EnemyHealth : MonoBehaviour
     public void TakeDamage(float damage)
     {
         if (statsHolder == null)
+            return;
+
+        // すでに死亡処理済みなら何もしない（撃破数の多重カウント防止）
+        if (isDead)
             return;
 
         // 扣除生命值
@@ -68,7 +78,13 @@ public class EnemyHealth : MonoBehaviour
     /// 敵が死亡する
     /// </summary>
     private void Die()
-    {  
+    {
+        // 二重実行防止
+        if (isDead)
+            return;
+
+        isDead = true;
+
         // 追加：撃破数をカウント
         if (GameStatsManager.Instance != null)
             GameStatsManager.Instance.OnEnemyDefeated();

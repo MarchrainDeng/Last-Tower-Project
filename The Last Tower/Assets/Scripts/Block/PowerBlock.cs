@@ -26,6 +26,10 @@ public class PowerBlock : MonoBehaviour
     // すでに通電しているか
     public bool isPowered = false;
 
+    // 「連結したブロックの数」として既にカウント済みか
+    // （再通電による二重カウントを防ぐため、ブロックごとに一度だけ数える）
+    private bool hasCountedConnection = false;
+
     [Header("Vertical Check Settings")]
     // 上下方向检测盒大小
     // 上下方向の判定ボックスサイズ
@@ -309,9 +313,16 @@ public class PowerBlock : MonoBehaviour
 
         if (isPowered)
         {
-            // 追加：連結して充電状態になった回数をカウント
-            if (GameStatsManager.Instance != null)
-                GameStatsManager.Instance.OnBlockConnected();
+            // 追加：連結したブロックの「実数」をカウントする。
+            // 支えを失って一度通電が切れたブロックが再通電しても、
+            // 同じブロックを二重に数えないよう初回のみカウントする。
+            if (!hasCountedConnection)
+            {
+                hasCountedConnection = true;
+
+                if (GameStatsManager.Instance != null)
+                    GameStatsManager.Instance.OnBlockConnected();
+            }
 
             // 修改整个方块的Layer
             // ブロック全体のLayerを変更する

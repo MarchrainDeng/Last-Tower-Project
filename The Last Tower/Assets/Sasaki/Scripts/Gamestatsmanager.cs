@@ -6,10 +6,10 @@ using UnityEngine.SceneManagement;
 /// 一元管理するシングルトン
 ///
 /// 【カウント元】
-/// - 倒した敵     : EnemyHealth.Die() / BossHand.Die()
-/// - 配置ブロック : BlockLanding.Land()
-/// - 落下ブロック : DestroyZone.OnTriggerEnter2D()（"Block"タグ削除時）
-/// - 連結ブロック : PowerBlock.SetPowered(true)（充電状態になった瞬間）
+/// - 倒した敵     : EnemyHealth.Die() / BossHand.Die()（どちらも二重カウント防止済み）
+/// - 配置ブロック : BlockLanding.Land()（isLandedガードで1ピース1回）
+/// - 落下ブロック : DestroyZone.OnTriggerEnter2D()（blockTagのピースが削除された時）
+/// - 連結ブロック : PowerBlock.SetPowered(true)（初回の通電時のみ＝ブロック実数）
 ///
 /// シーン再読み込みで自然にリセットされる想定（DontDestroyOnLoadしない）
 /// </summary>
