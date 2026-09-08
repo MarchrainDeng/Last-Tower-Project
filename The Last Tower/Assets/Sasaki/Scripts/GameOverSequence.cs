@@ -199,12 +199,7 @@ public class GameOverSequence : MonoBehaviour
                 SceneManager.LoadScene(gameSceneName);
                 break;
 
-            case 1: // スタッフロール
-                if (staffRollObject != null)
-                    staffRollObject.SetActive(true);
-                break;
-
-            case 2: // タイトル
+            case 1: // タイトル
                 Time.timeScale = 1f;
                 SceneManager.LoadScene(titleSceneName);
                 break;

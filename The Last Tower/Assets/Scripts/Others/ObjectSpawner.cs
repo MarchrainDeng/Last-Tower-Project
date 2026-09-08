@@ -1,13 +1,13 @@
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 
 /*
 ----------------------------------------
-������ / �C�ܡ�
-��ָ��λ������΁E壬��ƽ���ƶ���Ŀ��E��á�
+｡ｾｹｦﾄﾜ / 僂ﾄﾜ｡ｿ
+ﾔﾚﾖｸｶｨﾎｻﾖﾃﾉ嵭ﾉﾎ・螢ｬｲ｢ﾆｽｻｬﾒﾆｶｯｵｽﾄｿｱ・ｻﾖﾃ｡｣
 
-ָ��λ�ä˥��֥������Ȥ����ɤ���
-Ŀ��λ�äޤǥ���`�����ƁE����E�
+ﾖｸｶｨﾎｻﾖﾃ､ﾋ･ｪ･ﾖ･ｸ･ｧ･ｯ･ﾈ､嵭ﾉ､ｷ｡｢
+ﾄｿ侏ﾎｻﾖﾃ､ﾞ､ﾇ･ｹ･爻`･ｺ､ﾋﾒﾆ・､ｹ､・｣
 
 ----------------------------------------
 */
@@ -16,29 +16,29 @@ public class ObjectSpawner : MonoBehaviour
 {
     [Header("Spawn")]
 
-    // Ҫ���ɵ�Ԥ��́E
-    // ���ɤ���Eץ�Eϥ�
+    // ﾒｪﾉ嵭ﾉｵﾄﾔ､ﾖﾆﾌ・
+    // ﾉ嵭ﾉ､ｹ､・ﾗ･・ﾏ･ﾖ
     [SerializeField]
     private GameObject prefab;
 
-    // ����λ��
-    // ����λ��
+    // ﾉ嵭ﾉﾎｻﾖﾃ
+    // ﾉ嵭ﾉﾎｻﾖﾃ
     [SerializeField]
     private Transform spawnPoint;
 
-    // Ŀ��E���
-    // Ŀ��λ��
+    // ﾄｿｱ・ｻﾖﾃ
+    // ﾄｿ侏ﾎｻﾖﾃ
     [SerializeField]
     private Transform targetPoint;
 
-    // �ƶ��ٶ�
-    // �ƁE�ٶ�
+    // ﾒﾆｶｯﾋﾙｶﾈ
+    // ﾒﾆ・ﾋﾙｶﾈ
     [SerializeField]
     private float moveSpeed = 5f;
 
     /// <summary>
-    /// ���ɲ��ƶ�
-    /// ���ɤ����ƁE����E
+    /// ﾉ嵭ﾉｲ｢ﾒﾆｶｯ
+    /// ﾉ嵭ﾉ､ｷ､ﾆﾒﾆ・､ｹ､・
     /// </summary>
     /*
     public void SpawnAndMove()
@@ -86,17 +86,28 @@ public class ObjectSpawner : MonoBehaviour
     }
 
     /// <summary>
-    /// ƽ���ƶ�
-    /// ����`�����ƁE����E
+    /// ﾆｽｻｬﾒﾆｶｯ
+    /// ･ｹ･爻`･ｺ､ﾋﾒﾆ・､ｹ､・
     /// </summary>
     private IEnumerator MoveCoroutine(
-        Transform target,
-        Vector3 destination)
+    Transform target,
+    Vector3 destination)
     {
-        while (Vector3.Distance(
-                   target.position,
-                   destination) > 0.01f)
+        // 移动过程中持续检查目标是否还存在
+        // 移動中、対象が存在するか確認する
+        while (target != null)
         {
+            // 已经到达目标位置
+            // 目的地に到着した場合
+            if (Vector3.Distance(
+                    target.position,
+                    destination) <= 0.01f)
+            {
+                break;
+            }
+
+            // 平滑向目标位置移动
+            // 目的地へ移動する
             target.position =
                 Vector3.MoveTowards(
                     target.position,
@@ -107,6 +118,15 @@ public class ObjectSpawner : MonoBehaviour
             yield return null;
         }
 
+        // 移动过程中物体被销毁，则直接结束协程
+        // 移動中にオブジェクトが破棄された場合は終了する
+        if (target == null)
+        {
+            yield break;
+        }
+
+        // 确保最终位置准确
+        // 最終位置を正確に設定する
         target.position = destination;
     }
 

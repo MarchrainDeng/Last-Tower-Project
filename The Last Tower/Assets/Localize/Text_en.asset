@@ -64,7 +64,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 3022447267696640
-    m_Localized: '"Three blocks will appear in the upper-right corner.
+    m_Localized: 'Three blocks will appear in the upper-right corner.
 
 
       Use
@@ -103,7 +103,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 3055785571405824
-    m_Localized: '"Power Blocks can transmit power from the base to other blocks.
+    m_Localized: 'Power Blocks can transmit power from the base to other blocks.
 
 
       Drop
@@ -111,7 +111,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 3056052845039616
-    m_Localized: '"Attack Blocks target the nearest enemy when connected to a powered
+    m_Localized: 'Attack Blocks target the nearest enemy when connected to a powered
       Power Block.
 
 
@@ -131,10 +131,10 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 3057075282137088
-    m_Localized: '"That concludes the tutorial.
+    m_Localized: 'That concludes the tutorial.
 
 
-      Now, enjoy the game!"'
+      Now, enjoy the game!'
     m_Metadata:
       m_Items: []
   - m_Id: 4112265082982400
