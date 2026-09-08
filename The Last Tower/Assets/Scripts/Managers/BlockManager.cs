@@ -85,12 +85,12 @@ public class BlockManager : MonoBehaviour
     {
         // 测试：按下方向键摧毁全部方块
         // テスト：下方向キーですべてのブロックを破壊
-        
+        /*
         if (Gamepad.current != null &&
             Gamepad.current.dpad.down.wasPressedThisFrame)
         {
             StartFinalSequence();
-        }
+        }*/
     }
 
     /// <summary>
