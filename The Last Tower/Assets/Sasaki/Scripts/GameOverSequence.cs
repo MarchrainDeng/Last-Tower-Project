@@ -38,7 +38,7 @@ public class GameOverSequence : MonoBehaviour
     [SerializeField] private float selectedScale = 1.2f;
     [SerializeField] private float normalScale = 0.9f;
     [SerializeField] private float scaleLerpSpeed = 10f; // ägëÂèkè¨ÇÃë¨Ç≥
-    [SerializeField] private GamepadButton confirmGamepadButton = GamepadButton.South;
+    [SerializeField] private GamepadButton confirmGamepadButton = GamepadButton.East;
     [SerializeField] private float stickDeadZone = 0.5f;
     [SerializeField] private float navInputCooldown = 0.2f;
 

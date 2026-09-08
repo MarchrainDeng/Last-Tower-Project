@@ -5843,7 +5843,7 @@ MonoBehaviour:
   selectedScale: 3
   normalScale: 2
   scaleLerpSpeed: 10
-  confirmGamepadButton: 6
+  confirmGamepadButton: 5
   stickDeadZone: 0.5
   navInputCooldown: 0.2
   gameSceneName: MainScene
@@ -8977,7 +8977,7 @@ MonoBehaviour:
   selectedScale: 3.2
   normalScale: 2.4
   scaleLerpSpeed: 10
-  confirmGamepadButton: 6
+  confirmGamepadButton: 5
   stickDeadZone: 0.5
   navInputCooldown: 0.2
   gameSceneName: MainScene
@@ -9881,7 +9881,7 @@ MonoBehaviour:
   selectedScale: 1.2
   normalScale: 0.9
   scaleLerpSpeed: 10
-  confirmGamepadButton: 6
+  confirmGamepadButton: 5
   stickDeadZone: 0.5
   navInputCooldown: 0.2
   gameSceneName: 
