@@ -3739,6 +3739,10 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3646576761644650321, guid: 5219adc1bf1c19c488c125d9990883d6, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4297205236006051631, guid: 5219adc1bf1c19c488c125d9990883d6, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
       value: 1
@@ -3756,6 +3760,14 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 4372585248951356332, guid: 5219adc1bf1c19c488c125d9990883d6, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4404793554176344905, guid: 5219adc1bf1c19c488c125d9990883d6, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4426210646633752401, guid: 5219adc1bf1c19c488c125d9990883d6, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
       objectReference: {fileID: 0}
@@ -3843,6 +3855,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5215967439621314890, guid: 5219adc1bf1c19c488c125d9990883d6, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5723643122864733949, guid: 5219adc1bf1c19c488c125d9990883d6, type: 3}
       propertyPath: m_Name
       value: SettingCanvas
@@ -3866,6 +3882,14 @@ PrefabInstance:
     - target: {fileID: 6663594829332400081, guid: 5219adc1bf1c19c488c125d9990883d6, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6881982459345111796, guid: 5219adc1bf1c19c488c125d9990883d6, type: 3}
+      propertyPath: m_margin.x
+      value: -41.102757
+      objectReference: {fileID: 0}
+    - target: {fileID: 6881982459345111796, guid: 5219adc1bf1c19c488c125d9990883d6, type: 3}
+      propertyPath: m_margin.z
+      value: -30.827053
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
