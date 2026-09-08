@@ -75,6 +75,10 @@ public class ObjectSpawner : MonoBehaviour
             Quaternion.identity
         );
 
+        //Debug.Log("已生成最终加农");
+
+        obj.AddComponent<DestroyDebugger>();
+
         //FinalSequenceManager.Instance.SetFinalCannon(obj);
 
         StartCoroutine(
@@ -95,6 +99,7 @@ public class ObjectSpawner : MonoBehaviour
     {
         // 移动过程中持续检查目标是否还存在
         // 移動中、対象が存在するか確認する
+        /*
         while (target != null)
         {
             // 已经到达目标位置
@@ -127,6 +132,16 @@ public class ObjectSpawner : MonoBehaviour
 
         // 确保最终位置准确
         // 最終位置を正確に設定する
+        target.position = destination;
+        */
+
+        while(Vector3.Distance(target.position,destination) > 0.01f)
+        {
+            target.position = Vector3.MoveTowards(target.position, destination, moveSpeed * Time.deltaTime);
+
+            yield return null;
+        }
+
         target.position = destination;
     }
 

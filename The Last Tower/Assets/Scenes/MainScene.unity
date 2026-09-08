@@ -5506,9 +5506,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aabf11c3cb1519a42865bbf3b35e2534, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ObjectSpawner
-  prefab: {fileID: 0}
-  spawnPoint: {fileID: 0}
-  targetPoint: {fileID: 0}
+  prefab: {fileID: 8542555478456451038, guid: 40b118664fae6a745b450e5a8146bb53, type: 3}
+  spawnPoint: {fileID: 1579900533}
+  targetPoint: {fileID: 1579900533}
   moveSpeed: 5
 --- !u!1 &1249509159
 GameObject:

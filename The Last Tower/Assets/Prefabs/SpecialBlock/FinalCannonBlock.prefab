@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3843938822916654368}
   - component: {fileID: 1764386308409883831}
-  m_Layer: 12
+  m_Layer: 9
   m_Name: FinalGunPivot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -65,7 +65,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3130931379575930013}
   - component: {fileID: 5894221702465485623}
-  m_Layer: 12
+  m_Layer: 9
   m_Name: Gun
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -157,7 +157,7 @@ GameObject:
   - component: {fileID: 6371304018393297429}
   - component: {fileID: 3901870626124965611}
   - component: {fileID: 6198094318549763198}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -295,7 +295,7 @@ GameObject:
   - component: {fileID: 3228208435556095798}
   - component: {fileID: 7739609568001572741}
   - component: {fileID: 1388821389771322571}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -396,7 +396,7 @@ GameObject:
   - component: {fileID: 6855588296424463578}
   - component: {fileID: 6318641753849811294}
   - component: {fileID: 5891201348465706183}
-  m_Layer: 12
+  m_Layer: 9
   m_Name: TestChildBlock (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -534,7 +534,7 @@ GameObject:
   - component: {fileID: 3847742341829139776}
   - component: {fileID: 8504422802816789252}
   - component: {fileID: 1095987878304950544}
-  m_Layer: 12
+  m_Layer: 9
   m_Name: TestChildBlock (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -670,7 +670,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9197623012107901541}
-  m_Layer: 12
+  m_Layer: 9
   m_Name: FirePoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -707,9 +707,9 @@ GameObject:
   - component: {fileID: 1247343762496461692}
   - component: {fileID: 4982362234896294695}
   - component: {fileID: 8638032336857887977}
-  m_Layer: 12
+  m_Layer: 9
   m_Name: FinalCannonBlock
-  m_TagString: TowerBlock
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -921,7 +921,7 @@ GameObject:
   - component: {fileID: 4164237735035903405}
   - component: {fileID: 6702282669487518963}
   - component: {fileID: 643869210027783655}
-  m_Layer: 12
+  m_Layer: 9
   m_Name: TestChildBlock
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1059,7 +1059,7 @@ GameObject:
   - component: {fileID: 5208046552201546255}
   - component: {fileID: 2406886420795944929}
   - component: {fileID: 8317708525642328069}
-  m_Layer: 12
+  m_Layer: 9
   m_Name: TestChildBlock (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -90,7 +90,8 @@ public class BlockManager : MonoBehaviour
             Gamepad.current.dpad.down.wasPressedThisFrame)
         {
             StartFinalSequence();
-        }*/
+        }
+        */
     }
 
     /// <summary>
