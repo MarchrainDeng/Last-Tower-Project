@@ -72,47 +72,49 @@ public class SceneFadeManager : MonoBehaviour
     {
         isTransitioning = true;
 
-        // 先渐入黑色
-        // 先に暗転する
+        // 防止重复输入
+        // 重複入力を防止する
+        Debug.Log($"Scene transition start: {sceneName}");
+
+        // 淡出到黑色
+        // 黒へフェードアウト
         yield return Fade(
             fadeCanvasGroup.alpha,
             1f,
             fadeOutDuration
         );
 
-        // 异步加载新场景
-        // 新しいシーンを非同期で読み込む
+        // 确保完全黑
+        // 完全に黒くする
+        fadeCanvasGroup.alpha = 1f;
+
+        // 加载场景
+        // シーンをロードする
         AsyncOperation operation =
             SceneManager.LoadSceneAsync(sceneName);
 
-        // 等待加载完成
-        // 読み込み完了まで待機する
         while (!operation.isDone)
         {
             yield return null;
         }
 
-        // 确保黑屏状态
-        // 黒画面状態を維持する
-        fadeCanvasGroup.alpha = 1f;
-
-        // 再等待一帧，让新场景完成初始化
-        // 新シーンの初期化のため1フレーム待機する
+        // 等待一帧，确保新场景初始化
+        // 新しいシーンの初期化を待つ
         yield return null;
 
-        Debug.Log("开始从黑色渐出");
-
-        // 从黑色渐出
-        // 黒画面からフェードインする
+        // 从黑色淡入
+        // 黒からフェードイン
         yield return Fade(
             1f,
             0f,
             fadeInDuration
         );
 
-        Debug.Log("渐出完成");
+        fadeCanvasGroup.alpha = 0f;
 
         isTransitioning = false;
+
+        Debug.Log("Scene transition finished.");
     }
 
     /// <summary>
