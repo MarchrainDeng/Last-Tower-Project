@@ -177,7 +177,7 @@ public class TitleMenu : MonoBehaviour
                 break;
 
             case MenuAction.Quit:
-                Application.Quit();
+                //Application.Quit();
 #if UNITY_EDITOR
                 Debug.Log("[TitleMenu] Application.Quit()（エディタでは実際には終了しません）");
 #endif
