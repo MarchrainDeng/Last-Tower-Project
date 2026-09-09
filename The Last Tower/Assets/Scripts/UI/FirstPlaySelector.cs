@@ -10,10 +10,27 @@ public class FirstPlaySelector : MonoBehaviour
     [SerializeField]
     private TutorialPageController tutorialPageController;
 
+    [SerializeField] private float inputLockDuration = 0.5f;
+
+    private float inputLockTimer;
+
+    private void Start()
+    {
+        inputLockTimer = inputLockDuration;
+    }
+
     private void Update()
     {
         if (Gamepad.current == null)
             return;
+
+        // 场景开始后的短时间内禁止输入
+        // シーン開始直後の一定時間は入力を禁止する
+        if (inputLockTimer > 0f)
+        {
+            inputLockTimer -= Time.unscaledDeltaTime;
+            return;
+        }
 
         // B键：Yes
         // Bボタン：Yes

@@ -104,11 +104,12 @@ public class SceneFadeManager : MonoBehaviour
 
         // 从黑色淡入
         // 黒からフェードイン
+        /*
         yield return Fade(
             1f,
             0f,
             fadeInDuration
-        );
+        );*/
 
         fadeCanvasGroup.alpha = 0f;
 
