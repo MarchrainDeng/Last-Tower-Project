@@ -15,8 +15,8 @@ MonoBehaviour:
   m_GroupName: Localization-Assets-Japanese (ja)
   m_GUID: ad678dafb1a1c2d428131ef8e23a2d9a
   m_SerializeEntries:
-  - m_GUID: 566f7abf65962eb4eb45688f9db911cb
-    m_Address: MochiyPopOne-Regular SDF
+  - m_GUID: dc85da1e4ced42a42ba0d7b30a81c36e
+    m_Address: LINESeedJP_TTF_Eb SDF
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-ja
