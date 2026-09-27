@@ -435,6 +435,30 @@ public class SettingsMenu : MonoBehaviour
     // （例：中国語は "zh" ではなく "zh-Hans" になっていることが多い）
     void ApplyLocale(string code)
     {
+        // Unity LocalizationはLocaleの読み込みが非同期のため、
+        // 初期化完了前に AvailableLocales へアクセスすると
+        // 「Locales PreloadOperation has not been initialized」エラーになり、
+        // 言語が適用されないまま終わってしまう。
+        // そのため初期化の完了を待ってから適用する。
+        var initOperation = LocalizationSettings.InitializationOperation;
+
+        if (initOperation.IsDone)
+        {
+            ApplyLocaleImmediate(code);
+        }
+        else
+        {
+            // コルーチンではなくコールバックを使う
+            // （GameObjectが非アクティブでも確実に実行されるようにするため）
+            initOperation.Completed += _ => ApplyLocaleImmediate(code);
+        }
+    }
+
+    /// <summary>
+    /// Localizationの初期化完了後に実際のLocale切り替えを行う
+    /// </summary>
+    void ApplyLocaleImmediate(string code)
+    {
         string localeCode = code switch
         {
             "en" => "en",
