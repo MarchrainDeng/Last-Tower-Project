@@ -298,6 +298,11 @@ public class LowHPEffect : MonoBehaviour
         source.loop = true;
         source.spatialBlend = 0f;
         source.volume = 0f;
+        if (AudioManager.Instance != null && AudioManager.Instance.mixer != null)
+        {
+            var groups = AudioManager.Instance.mixer.FindMatchingGroups("SFX");
+            if (groups.Length > 0) source.outputAudioMixerGroup = groups[0];
+        }
         return source;
     }
 }
