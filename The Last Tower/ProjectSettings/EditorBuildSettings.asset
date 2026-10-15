@@ -17,6 +17,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/TutorialScene.unity
     guid: 925df55303a79f846a5336cc3b587942
+  - enabled: 1
+    path: Assets/Scenes/MyTownScene.unity
+    guid: 18f6e1aaac54b7241bfa0825690561d5
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: fbde6b7a8a9b3704287c2caebbfb5125, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
