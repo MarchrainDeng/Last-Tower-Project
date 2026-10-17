@@ -29,17 +29,25 @@ Deng Guangpeng
 2026/08/17：
 追加了设置画面打开时禁止卡牌操作的判定。
 設定画面が開いている間はカード操作を無効化する判定を追加。
+
+2026/10/17：
+修改手柄确认键为A，追加鼠标左键确认。
+ゲームパッドの決定ボタンをAに変更し、
+マウス左ボタンでの決定操作を追加。
 ----------------------------------------
 */
 
 public class CardSelector : MonoBehaviour
 {
     [Header("Cards")]
+
     // 场上显示的卡牌UI
     // 表示されるカードUI
     [SerializeField] private BlockCardUI[] cards;
 
+
     [Header("Spawn")]
+
     // 方块生成位置
     // ブロック生成位置
     [SerializeField] private Transform spawnPoint;
@@ -48,7 +56,9 @@ public class CardSelector : MonoBehaviour
     // ブロック選択フローマネージャー
     [SerializeField] private BlockSelectionFlowManager flowManager;
 
+
     [Header("Input")]
+
     // 摇杆触发阈值
     // スティック入力の判定値
     [SerializeField] private float stickThreshold = 0.5f;
@@ -69,17 +79,19 @@ public class CardSelector : MonoBehaviour
     // カード入力を処理可能か
     private bool inputEnabled;
 
-    // 防止一帧内重复确认生成
-    // 同一フレームでの重複生成を防止する
+    // 防止重复确认生成
+    // 決定操作の重複を防止する
     private bool isConfirming;
 
     private Gamepad gamepad;
 
-    // 顺时针旋转按键
-    // 時計回り回転ボタン
+
+    // 手柄确认按键
+    // ゲームパッドの決定ボタン
     [SerializeField]
     private ConfigurableGamepadButton chooseButton =
-    ConfigurableGamepadButton.East;
+        ConfigurableGamepadButton.South;
+
 
     [SerializeField] private CardEnterController cardEnterController;
 
@@ -88,6 +100,7 @@ public class CardSelector : MonoBehaviour
 
     [SerializeField]
     private AudioClip confirmSound;
+
 
     /// <summary>
     /// 可配置的手柄按键
@@ -111,15 +124,18 @@ public class CardSelector : MonoBehaviour
         DpadRight
     }
 
+
     private void Awake()
     {
         // 自动查找流程管理器
         // フローマネージャーを自動検索する
         if (flowManager == null)
         {
-            flowManager = FindFirstObjectByType<BlockSelectionFlowManager>();
+            flowManager =
+                FindFirstObjectByType<BlockSelectionFlowManager>();
         }
     }
+
 
     private void Update()
     {
@@ -138,12 +154,10 @@ public class CardSelector : MonoBehaviour
         if (!inputEnabled)
             return;
 
-        if (GameStateManager.IsPaused)
-            return;
-
         HandleSelection();
         HandleConfirm();
     }
+
 
     /// <summary>
     /// 设置是否允许卡牌输入
@@ -164,6 +178,7 @@ public class CardSelector : MonoBehaviour
             isConfirming = false;
         }
     }
+
 
     /// <summary>
     /// 根据选择类型刷新全部卡牌
@@ -201,6 +216,7 @@ public class CardSelector : MonoBehaviour
         UpdateCardVisuals();
     }
 
+
     /// <summary>
     /// 查找第一张有效卡牌
     /// 最初の有効なカードを探す
@@ -219,6 +235,7 @@ public class CardSelector : MonoBehaviour
         return 0;
     }
 
+
     /// <summary>
     /// 处理左右选择输入
     /// 左右選択入力を処理する
@@ -234,9 +251,9 @@ public class CardSelector : MonoBehaviour
 
         // 手柄左摇杆输入
         // ゲームパッド左スティック入力
-        if (Gamepad.current != null)
+        if (gamepad != null)
         {
-            stickInput = Gamepad.current.leftStick.x.ReadValue();
+            stickInput = gamepad.leftStick.x.ReadValue();
         }
 
         // 摇杆回到中心后，允许下一次选择
@@ -269,20 +286,31 @@ public class CardSelector : MonoBehaviour
             }
         }
 
-        // 键盘输入
-        // キーボード入力
+        // 键盘A/D控制卡牌选择
+        // キーボードA/Dでカードを選択
         if (Keyboard.current == null)
             return;
 
         if (Keyboard.current.aKey.wasPressedThisFrame)
         {
+            if (SFXManager.Instance != null)
+            {
+                SFXManager.Instance.PlayAttackSFX(selectSound);
+            }
+
             SelectPreviousCard();
         }
         else if (Keyboard.current.dKey.wasPressedThisFrame)
         {
+            if (SFXManager.Instance != null)
+            {
+                SFXManager.Instance.PlayAttackSFX(selectSound);
+            }
+
             SelectNextCard();
         }
     }
+
 
     /// <summary>
     /// 处理确认输入
@@ -295,25 +323,21 @@ public class CardSelector : MonoBehaviour
 
         bool confirmPressed = false;
 
-        ButtonControl chooseCardButton =
-        GetGamepadButton(chooseButton);
-
-        if (chooseCardButton != null &&
-            chooseCardButton.wasPressedThisFrame)
+        // 手柄A键确认
+        // ゲームパッドAボタンで決定
+        if (gamepad != null &&
+            gamepad.buttonSouth.wasPressedThisFrame)
         {
             confirmPressed = true;
         }
 
-        // 手柄A键
-        // ゲームパッドAボタン
-        /*
-        if (Gamepad.current != null &&
-            Gamepad.current.buttonSouth.wasPressedThisFrame)
+        // 鼠标左键确认当前卡牌
+        // マウス左ボタンで現在のカードを決定
+        if (Mouse.current != null &&
+            Mouse.current.leftButton.wasPressedThisFrame)
         {
             confirmPressed = true;
         }
-        */
-
 
         // 键盘Enter或小键盘Enter
         // EnterキーまたはテンキーEnter
@@ -327,20 +351,21 @@ public class CardSelector : MonoBehaviour
         if (!confirmPressed)
             return;
 
+        // 开始确认后立即锁定，防止重复输入
+        // 決定開始時にロックし、重複入力を防止する
+        isConfirming = true;
+
         if (SFXManager.Instance != null)
         {
             SFXManager.Instance.PlayAttackSFX(confirmSound);
         }
 
         StartCoroutine(ConfirmCoroutine());
-
-        //isConfirming = true;
-
     }
+
+
     private IEnumerator ConfirmCoroutine()
     {
-        isConfirming = false;
-
         // 被选择的卡牌先下沉，然后完全飞到上方
         // 選択されたカードを下げてから完全に上へ移動させる
         yield return StartCoroutine(
@@ -354,9 +379,8 @@ public class CardSelector : MonoBehaviour
         yield return StartCoroutine(
             cardEnterController.PlayUnselectedCardsAnimation(currentIndex)
         );
-
-
     }
+
 
     /// <summary>
     /// 生成当前选择的方块
@@ -443,18 +467,6 @@ public class CardSelector : MonoBehaviour
             );
         }
 
-        // 为越界脚本设置流程管理器
-        // 範囲外判定スクリプトにフローマネージャーを設定する
-        /*
-        ActiveBlockOutOfBounds outOfBounds =
-            spawnedBlock.GetComponent<ActiveBlockOutOfBounds>();
-        
-
-        if (outOfBounds != null)
-        {
-            outOfBounds.SetFlowManager(flowManager);
-        }*/
-
         // 本次选择完成
         // 今回の選択を完了する
         if (flowManager != null)
@@ -471,6 +483,7 @@ public class CardSelector : MonoBehaviour
             isConfirming = false;
         }
     }
+
 
     /// <summary>
     /// 选择下一张有效卡牌
@@ -500,6 +513,7 @@ public class CardSelector : MonoBehaviour
         UpdateCardVisuals();
     }
 
+
     /// <summary>
     /// 选择上一张有效卡牌
     /// 前の有効なカードを選択する
@@ -528,6 +542,7 @@ public class CardSelector : MonoBehaviour
         UpdateCardVisuals();
     }
 
+
     /// <summary>
     /// 更新所有卡牌的选中显示
     /// すべてのカードの選択表示を更新する
@@ -545,6 +560,7 @@ public class CardSelector : MonoBehaviour
             cards[i].SetSelected(i == currentIndex);
         }
     }
+
 
     private ButtonControl GetGamepadButton(
         ConfigurableGamepadButton button)
