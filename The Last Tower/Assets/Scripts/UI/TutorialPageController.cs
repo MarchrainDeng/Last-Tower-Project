@@ -11,17 +11,8 @@ public class TutorialPageController : MonoBehaviour
     [SerializeField]
     private GameObject[] tutorialPages;
 
-    [Header("Input")]
-
-    // 下一页按键
-    [SerializeField]
-    private GamepadButton nextButton =
-    GamepadButton.East;
-
-    // 上一页按键
-    [SerializeField]
-    private GamepadButton beforeButton =
-        GamepadButton.West;
+    // 下一页：A键 / 鼠标左键　上一页：B键 / 鼠标右键 / 点击BeforeButton
+    // 次のページ：Aボタン / 左クリック　前のページ：Bボタン / 右クリック / BeforeButtonクリック
 
     // 当前页面编号
     // 現在のページ番号
@@ -53,19 +44,36 @@ public class TutorialPageController : MonoBehaviour
         if (!canAcceptInput)
             return;
 
-        if (Gamepad.current == null)
-            return;
+        bool clickedBefore =
+            MenuInput.LeftClicked() &&
+            MenuInput.IsPointerOver(FindPageButton("BeforeButton"));
 
-        if (Gamepad.current[nextButton].wasPressedThisFrame)
-        {
-            ShowNextPage();
-            return;
-        }
-
-        if (Gamepad.current[beforeButton].wasPressedThisFrame)
+        if (MenuInput.CancelPressed() || clickedBefore)
         {
             ShowPreviousPage();
+            return;
         }
+
+        if (MenuInput.ConfirmPressed() || MenuInput.LeftClicked())
+        {
+            ShowNextPage();
+        }
+    }
+
+    /// <summary>
+    /// 当前页面里指定名字的按钮
+    /// 現在のページ内にある指定名のボタン
+    /// </summary>
+    private RectTransform FindPageButton(string buttonName)
+    {
+        if (currentPageIndex < 0 ||
+            currentPageIndex >= tutorialPages.Length ||
+            tutorialPages[currentPageIndex] == null)
+        {
+            return null;
+        }
+
+        return tutorialPages[currentPageIndex].transform.Find(buttonName) as RectTransform;
     }
 
     /// <summary>

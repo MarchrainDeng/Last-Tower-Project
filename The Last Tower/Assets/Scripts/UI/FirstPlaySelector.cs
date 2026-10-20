@@ -12,18 +12,29 @@ public class FirstPlaySelector : MonoBehaviour
 
     [SerializeField] private float inputLockDuration = 0.5f;
 
+    // 鼠标点击用的按钮（为空时按名字自动查找）
+    // マウスクリック用のボタン（未設定なら子オブジェクトを名前で探す）
+    [SerializeField] private RectTransform yesButton;
+    [SerializeField] private RectTransform noButton;
+
     private float inputLockTimer;
 
-    private void Start()
+    private void Awake()
     {
+        if (yesButton == null)
+            yesButton = transform.Find("YesButton") as RectTransform;
+        if (noButton == null)
+            noButton = transform.Find("NoButton") as RectTransform;
+    }
+
+    private void OnEnable()
+    {
+        // 表示されるたびに入力をロックする（チュートリアルから戻った時の誤入力防止）
         inputLockTimer = inputLockDuration;
     }
 
     private void Update()
     {
-        if (Gamepad.current == null)
-            return;
-
         // 场景开始后的短时间内禁止输入
         // シーン開始直後の一定時間は入力を禁止する
         if (inputLockTimer > 0f)
@@ -32,17 +43,19 @@ public class FirstPlaySelector : MonoBehaviour
             return;
         }
 
-        // B键：Yes
-        // Bボタン：Yes
-        if (Gamepad.current.buttonEast.wasPressedThisFrame)
+        // A键 / 点击Yes：Yes
+        // Aボタン / Yesクリック：Yes
+        if (MenuInput.ConfirmPressed() ||
+            (MenuInput.LeftClicked() && MenuInput.IsPointerOver(yesButton)))
         {
             ConfirmYes();
             return;
         }
 
-        // A键：No
-        // Aボタン：No
-        if (Gamepad.current.buttonSouth.wasPressedThisFrame)
+        // B键 / 点击No：No
+        // Bボタン / Noクリック：No
+        if (MenuInput.CancelPressed() ||
+            (MenuInput.LeftClicked() && MenuInput.IsPointerOver(noButton)))
         {
             ConfirmNo();
         }

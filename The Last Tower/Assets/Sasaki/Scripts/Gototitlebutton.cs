@@ -5,15 +5,12 @@ using UnityEngine.SceneManagement;
 
 /// <summary>
 /// リザルトUIのGameObjectにアタッチする
-/// コントローラーの指定ボタンでタイトルシーンに遷移する
+/// Aボタン / クリックでタイトルシーンに遷移する
 /// </summary>
 public class GoToTitleButton : MonoBehaviour
 {
     [Header("── 遷移先シーン ────────────────")]
     public string titleSceneName = "Title";
-
-    [Header("── 操作 ──────────────────────")]
-    public GamepadButton toggleGamepadButton = GamepadButton.South; // 遷移に使うコントローラーボタン
 
     public BlockManager blockManager;
 
@@ -32,12 +29,14 @@ public class GoToTitleButton : MonoBehaviour
         if (hasStarted)
             return;
 
-        if (Gamepad.current != null && Gamepad.current[toggleGamepadButton].wasPressedThisFrame && isVictory)
+        bool pressed = MenuInput.ConfirmPressed() || MenuInput.LeftClicked();
+
+        if (pressed && isVictory)
         {
             StartSequence();
             return;
         }
-        else if (Gamepad.current != null && Gamepad.current[toggleGamepadButton].wasPressedThisFrame && !isVictory)
+        else if (pressed && !isVictory)
         {
             GoToTitle();
         }

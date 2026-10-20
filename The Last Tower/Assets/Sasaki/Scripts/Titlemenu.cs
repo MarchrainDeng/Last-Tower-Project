@@ -1,68 +1,68 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// ƒ^ƒCƒgƒ‹‰æ–Êƒƒjƒ…[
+/// ã‚¿ã‚¤ãƒˆãƒ«ç”»é¢ãƒ¡ãƒ‹ãƒ¥ãƒ¼
 ///
-/// y‘€ìz
-/// - ƒXƒeƒBƒbƒNã‰º‚Å‘I‘ğ
-/// - Aƒ{ƒ^ƒ“‚ÅŒˆ’è
+/// ã€æ“ä½œã€‘
+/// - ã‚¹ãƒ†ã‚£ãƒƒã‚¯ä¸Šä¸‹ / ãƒã‚¦ã‚¹ãƒ›ãƒãƒ¼ã§é¸æŠ
+/// - Aãƒœã‚¿ãƒ³ / ã‚¯ãƒªãƒƒã‚¯ã§æ±ºå®š
 ///
-/// yInspector‚ÅƒAƒTƒCƒ“‚·‚é‚à‚Ìz
-/// - menuItems : 4€–Ú•ª‚Ìİ’èi‰º‹LMenuItemƒNƒ‰ƒXQÆj
-/// - gameSceneName : ƒQ[ƒ€ŠJn‚Å‘JˆÚ‚·‚éƒV[ƒ“–¼
-/// - settingsMenu  : SettingsMenuƒRƒ“ƒ|[ƒlƒ“ƒg
-/// - staffRollObject : ƒXƒ^ƒbƒtƒ[ƒ‹‚ÌGameObjectiSetActive‚Å•\¦j
+/// ã€Inspectorã§ã‚¢ã‚µã‚¤ãƒ³ã™ã‚‹ã‚‚ã®ã€‘
+/// - menuItems : 4é …ç›®åˆ†ã®è¨­å®šï¼ˆä¸‹è¨˜MenuItemã‚¯ãƒ©ã‚¹å‚ç…§ï¼‰
+/// - gameSceneName : ã‚²ãƒ¼ãƒ é–‹å§‹ã§é·ç§»ã™ã‚‹ã‚·ãƒ¼ãƒ³å
+/// - settingsMenu  : SettingsMenuã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆ
+/// - staffRollObject : ã‚¹ã‚¿ãƒƒãƒ•ãƒ­ãƒ¼ãƒ«ã®GameObjectï¼ˆSetActiveã§è¡¨ç¤ºï¼‰
 /// </summary>
 public class TitleMenu : MonoBehaviour
 {
     public enum MenuAction
     {
-        StartGame,   // ƒQ[ƒ€ƒXƒ^[ƒg
-        OpenSettings,// İ’è
-        StaffRoll,   // ƒXƒ^ƒbƒtƒ[ƒ‹
-        Quit,        // I—¹
+        StartGame,   // ã‚²ãƒ¼ãƒ ã‚¹ã‚¿ãƒ¼ãƒˆ
+        OpenSettings,// è¨­å®š
+        StaffRoll,   // ã‚¹ã‚¿ãƒƒãƒ•ãƒ­ãƒ¼ãƒ«
+        Quit,        // çµ‚äº†
     }
 
     [System.Serializable]
     public class MenuItem
     {
         public MenuAction action;
-        public Image targetImage;   // ‚±‚Ì€–Ú‚ÌImage
-        public Sprite normalSprite;  // ’Êí‚Ì‰æ‘œ
-        public Sprite selectedSprite;// ‘I‘ğ’†‚Ì‰æ‘œ
+        public Image targetImage;   // ã“ã®é …ç›®ã®Image
+        public Sprite normalSprite;  // é€šå¸¸æ™‚ã®ç”»åƒ
+        public Sprite selectedSprite;// é¸æŠä¸­ã®ç”»åƒ
     }
 
-    [Header("„Ÿ„Ÿ ƒƒjƒ…[€–Úiã‚©‚ç‡j „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ")]
+    [Header("â”€â”€ ãƒ¡ãƒ‹ãƒ¥ãƒ¼é …ç›®ï¼ˆä¸Šã‹ã‚‰é †ï¼‰ â”€â”€â”€â”€â”€â”€")]
     public MenuItem[] menuItems = new MenuItem[4];
 
-    [Header("„Ÿ„Ÿ ƒQ[ƒ€ƒXƒ^[ƒg „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ")]
+    [Header("â”€â”€ ã‚²ãƒ¼ãƒ ã‚¹ã‚¿ãƒ¼ãƒˆ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€")]
     public string gameSceneName = "GameScene";
 
-    [Header("„Ÿ„Ÿ ƒXƒ^ƒbƒtƒ[ƒ‹ „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ")]
+    [Header("â”€â”€ ã‚¹ã‚¿ãƒƒãƒ•ãƒ­ãƒ¼ãƒ« â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€")]
     public GameObject staffRollObject;
 
-    [Header("„Ÿ„Ÿ “ü—Íİ’è „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ")]
+    [Header("â”€â”€ å…¥åŠ›è¨­å®š â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€")]
     public float stickDeadZone = 0.5f;
-    public float inputCooldown = 0.2f; // ˜A‘±“ü—Í‚ğ–h‚®ŠÔŠu
+    public float inputCooldown = 0.2f; // é€£ç¶šå…¥åŠ›ã‚’é˜²ãé–“éš”
 
-    [Header("„Ÿ„Ÿ “§–¾“xİ’è „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ")]
-    [Range(0, 255)] public int normalAlpha = 120; // ”ñ‘I‘ğ‚Ì“§–¾“xi0-255j
-    [Range(0, 255)] public int selectedAlpha = 255; // ‘I‘ğ’†‚Ì“§–¾“xi0-255j
+    [Header("â”€â”€ é€æ˜åº¦è¨­å®š â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€")]
+    [Range(0, 255)] public int normalAlpha = 120; // éé¸æŠæ™‚ã®é€æ˜åº¦ï¼ˆ0-255ï¼‰
+    [Range(0, 255)] public int selectedAlpha = 255; // é¸æŠä¸­ã®é€æ˜åº¦ï¼ˆ0-255ï¼‰
 
-    [Header("„Ÿ„Ÿ SE „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ")]
+    [Header("â”€â”€ SE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€")]
     public AudioSource audioSource;
-    public AudioClip moveSE;    // ‘I‘ğ‚ğ•Ï‚¦‚½
-    public AudioClip confirmSE; // ‘I‘ğŠm’è
+    public AudioClip moveSE;    // é¸æŠã‚’å¤‰ãˆãŸæ™‚
+    public AudioClip confirmSE; // é¸æŠç¢ºå®šæ™‚
 
-    [Header("„Ÿ„Ÿ U“®i‘I‘ğ•ÏXj „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ")]
+    [Header("â”€â”€ æŒ¯å‹•ï¼ˆé¸æŠå¤‰æ›´ï¼‰ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€")]
     public float moveVibrationLow = 0.2f;
     public float moveVibrationHigh = 0.2f;
     public float moveVibrationDuration = 0.1f;
 
-    [Header("„Ÿ„Ÿ U“®iŒˆ’èj „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ")]
+    [Header("â”€â”€ æŒ¯å‹•ï¼ˆæ±ºå®šï¼‰ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€")]
     public float confirmVibrationLow = 0.6f;
     public float confirmVibrationHigh = 0.6f;
     public float confirmVibrationDuration = 0.2f;
@@ -72,8 +72,8 @@ public class TitleMenu : MonoBehaviour
 
     void Start()
     {
-        // ƒ^ƒCƒgƒ‹‰æ–Ê‚Å‚ ‚éˆÈãA•K‚¸ƒ|[ƒYó‘Ô‚ğ‰ğœ‚·‚é
-        // iƒŠƒUƒ‹ƒg‰æ–Ê‚â•ÊƒV[ƒ“‚©‚ç‚¿‰z‚³‚ê‚½ŒÃ‚¢ƒ|[ƒYó‘Ô‚ğ–h‚®j
+        // ã‚¿ã‚¤ãƒˆãƒ«ç”»é¢ã§ã‚ã‚‹ä»¥ä¸Šã€å¿…ãšãƒãƒ¼ã‚ºçŠ¶æ…‹ã‚’è§£é™¤ã™ã‚‹
+        // ï¼ˆãƒªã‚¶ãƒ«ãƒˆç”»é¢ã‚„åˆ¥ã‚·ãƒ¼ãƒ³ã‹ã‚‰æŒã¡è¶Šã•ã‚ŒãŸå¤ã„ãƒãƒ¼ã‚ºçŠ¶æ…‹ã‚’é˜²ãï¼‰
         GameStateManager.SetPaused(false);
         Time.timeScale = 1f;
 
@@ -82,22 +82,20 @@ public class TitleMenu : MonoBehaviour
 
     void Update()
     {
-        if (Gamepad.current == null) return;
-
-        // İ’è‰æ–Ê‚ªŠJ‚¢‚Ä‚¢‚éŠÔ‚Í‘€ì‚ğ–³Œø‰»
+        // è¨­å®šç”»é¢ãŒé–‹ã„ã¦ã„ã‚‹é–“ã¯æ“ä½œã‚’ç„¡åŠ¹åŒ–
         if (GameStateManager.IsPaused) return;
 
-        // ƒXƒ^ƒbƒtƒ[ƒ‹•\¦’†‚ÍBƒ{ƒ^ƒ“‚Å•Â‚¶‚é
+        // ã‚¹ã‚¿ãƒƒãƒ•ãƒ­ãƒ¼ãƒ«è¡¨ç¤ºä¸­ã¯Bãƒœã‚¿ãƒ³ / ã‚¯ãƒªãƒƒã‚¯ã§é–‰ã˜ã‚‹
         if (staffRollObject != null && staffRollObject.activeSelf)
         {
-            if (Gamepad.current.buttonEast.wasPressedThisFrame)
+            if (MenuInput.CancelPressed() || MenuInput.ConfirmPressed() || MenuInput.LeftClicked())
                 staffRollObject.SetActive(false);
             return;
         }
 
         inputTimer -= Time.unscaledDeltaTime;
 
-        float vertical = Gamepad.current.leftStick.y.ReadValue();
+        float vertical = Gamepad.current != null ? Gamepad.current.leftStick.y.ReadValue() : 0f;
 
         if (inputTimer <= 0f)
         {
@@ -113,10 +111,41 @@ public class TitleMenu : MonoBehaviour
             }
         }
 
-        if (Gamepad.current.buttonEast.wasPressedThisFrame)
+        // ãƒã‚¦ã‚¹ï¼šãƒ›ãƒãƒ¼ã§é¸æŠã€ã‚¯ãƒªãƒƒã‚¯ã§æ±ºå®š
+        int hovered = GetHoveredIndex();
+        if (hovered >= 0 && MenuInput.PointerMoved())
+            SetSelection(hovered);
+
+        if (hovered >= 0 && MenuInput.LeftClicked())
+        {
+            SetSelection(hovered);
+            ConfirmSelection();
+            return;
+        }
+
+        if (MenuInput.ConfirmPressed())
         {
             ConfirmSelection();
         }
+    }
+
+    int GetHoveredIndex()
+    {
+        for (int i = 0; i < menuItems.Length; i++)
+        {
+            var image = menuItems[i].targetImage;
+            if (image != null && MenuInput.IsPointerOver(image.rectTransform))
+                return i;
+        }
+        return -1;
+    }
+
+    void SetSelection(int index)
+    {
+        if (index == selectedIndex) return;
+        selectedIndex = index;
+        UpdateVisuals();
+        PlaySE(moveSE);
     }
 
     void MoveSelection(int direction)
@@ -168,7 +197,7 @@ public class TitleMenu : MonoBehaviour
                 if (SettingsMenu.Instance != null)
                     SettingsMenu.Instance.Toggle();
                 else
-                    Debug.LogWarning("[TitleMenu] SettingsMenu.Instance ‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ");
+                    Debug.LogWarning("[TitleMenu] SettingsMenu.Instance ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“");
                 break;
 
             case MenuAction.StaffRoll:
@@ -179,13 +208,13 @@ public class TitleMenu : MonoBehaviour
             case MenuAction.Quit:
                 Application.Quit();
 #if UNITY_EDITOR
-                Debug.Log("[TitleMenu] Application.Quit()iƒGƒfƒBƒ^‚Å‚ÍÀÛ‚É‚ÍI—¹‚µ‚Ü‚¹‚ñj");
+                Debug.Log("[TitleMenu] Application.Quit()ï¼ˆã‚¨ãƒ‡ã‚£ã‚¿ã§ã¯å®Ÿéš›ã«ã¯çµ‚äº†ã—ã¾ã›ã‚“ï¼‰");
 #endif
                 break;
         }
     }
 
-    // „Ÿ„Ÿ„Ÿ SEÄ¶ „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ
+    // â”€â”€â”€ SEå†ç”Ÿ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     void PlaySE(AudioClip clip)
     {
         if (audioSource != null && clip != null)

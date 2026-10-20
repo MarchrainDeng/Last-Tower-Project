@@ -286,6 +286,24 @@ public class CardSelector : MonoBehaviour
             }
         }
 
+        // 鼠标悬停选择卡牌
+        // マウスホバーでカードを選択
+        if (MenuInput.PointerMoved())
+        {
+            int hovered = GetHoveredCardIndex();
+
+            if (hovered >= 0 && hovered != currentIndex)
+            {
+                if (SFXManager.Instance != null)
+                {
+                    SFXManager.Instance.PlayAttackSFX(selectSound);
+                }
+
+                currentIndex = hovered;
+                UpdateCardVisuals();
+            }
+        }
+
         // 键盘A/D控制卡牌选择
         // キーボードA/Dでカードを選択
         if (Keyboard.current == null)
@@ -309,6 +327,28 @@ public class CardSelector : MonoBehaviour
 
             SelectNextCard();
         }
+    }
+
+
+    /// <summary>
+    /// 鼠标所在的卡牌编号，没有则返回-1
+    /// マウスが乗っているカード番号、無ければ-1
+    /// </summary>
+    private int GetHoveredCardIndex()
+    {
+        if (cards == null)
+            return -1;
+
+        for (int i = 0; i < cards.Length; i++)
+        {
+            if (cards[i] != null &&
+                MenuInput.IsPointerOver(cards[i].transform as RectTransform))
+            {
+                return i;
+            }
+        }
+
+        return -1;
     }
 
 

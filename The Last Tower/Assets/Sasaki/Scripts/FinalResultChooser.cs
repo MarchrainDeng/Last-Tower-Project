@@ -36,7 +36,6 @@ public class FinalResultChooser : MonoBehaviour
     [SerializeField] private float selectedScale = 1.2f;
     [SerializeField] private float normalScale = 0.9f;
     [SerializeField] private float scaleLerpSpeed = 10f;
-    [SerializeField] private GamepadButton confirmGamepadButton = GamepadButton.East;
     [SerializeField] private float stickDeadZone = 0.5f;
     [SerializeField] private float navInputCooldown = 0.2f;
 
@@ -102,10 +101,8 @@ public class FinalResultChooser : MonoBehaviour
             buttonRects[i].localScale = new Vector3(next, next, 1f);
         }
 
-        if (Gamepad.current == null) return;
-
         navInputTimer -= Time.unscaledDeltaTime;
-        float horizontal = Gamepad.current.leftStick.x.ReadValue();
+        float horizontal = Gamepad.current != null ? Gamepad.current.leftStick.x.ReadValue() : 0f;
 
         if (navInputTimer <= 0f)
         {
@@ -121,7 +118,12 @@ public class FinalResultChooser : MonoBehaviour
             }
         }
 
-        if (Gamepad.current[confirmGamepadButton].wasPressedThisFrame)
+        // マウス：ホバーで選択、クリックで決定
+        int hovered = MenuInput.PointerOverIndex(buttonRects);
+        if (hovered >= 0 && (MenuInput.PointerMoved() || MenuInput.LeftClicked()))
+            buttonFocus = hovered;
+
+        if (MenuInput.ConfirmPressed() || (hovered >= 0 && MenuInput.LeftClicked()))
         {
             ConfirmButton();
         }

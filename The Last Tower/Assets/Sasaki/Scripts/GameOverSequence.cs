@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -7,46 +7,45 @@ using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// ƒQ[ƒ€ƒI[ƒo[‚Ìis‰‰o‚ğ§Œä‚·‚éƒXƒNƒŠƒvƒg
+/// ã‚²ãƒ¼ãƒ ã‚ªãƒ¼ãƒãƒ¼æ™‚ã®é€²è¡Œæ¼”å‡ºã‚’åˆ¶å¾¡ã™ã‚‹ã‚¹ã‚¯ãƒªãƒ—ãƒˆ
 ///
-/// yƒ{ƒ^ƒ“‘€ìz
-/// - buttonGroup•\¦ŒãAƒXƒeƒBƒbƒN¶‰E‚Å ‡BƒŠƒvƒŒƒC/‡CƒXƒ^ƒbƒtƒ[ƒ‹/‡Dƒ^ƒCƒgƒ‹ ‚ğ‘I‘ğ
-/// - Œˆ’èƒ{ƒ^ƒ“‚ÅÀs
+/// ã€ãƒœã‚¿ãƒ³æ“ä½œã€‘
+/// - buttonGroupè¡¨ç¤ºå¾Œã€ã‚¹ãƒ†ã‚£ãƒƒã‚¯å·¦å³ / ãƒã‚¦ã‚¹ãƒ›ãƒãƒ¼ã§ â‘¢ãƒªãƒ—ãƒ¬ã‚¤/â‘£ã‚¹ã‚¿ãƒƒãƒ•ãƒ­ãƒ¼ãƒ«/â‘¤ã‚¿ã‚¤ãƒˆãƒ« ã‚’é¸æŠ
+/// - Aãƒœã‚¿ãƒ³ / ã‚¯ãƒªãƒƒã‚¯ã§å®Ÿè¡Œ
 /// </summary>
 public class GameOverSequence : MonoBehaviour
 {
-    [Header("„Ÿ„Ÿ UIQÆ „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ")]
-    [SerializeField] private CanvasGroup bgPanelGroup;        // ^‚Á•‚È”wŒi—pCanvasGroup
-    [SerializeField] private RectTransform gameOverTextRect;  // uGame Over!vƒeƒLƒXƒg‚ÌRectTransform
-    [SerializeField] private List<GameObject> resultItems;     // ƒQ[ƒ€“à—ei1:“|‚µ‚½“G‚Ì”A2:”z’u‚µ‚½ƒuƒƒbƒN‚Ì”...j
-    [SerializeField] private GameObject buttonGroup;          // ƒ{ƒ^ƒ“ŒQi‡BƒŠƒvƒŒƒC / ‡CƒXƒ^ƒbƒtƒ[ƒ‹ / ‡Dƒ^ƒCƒgƒ‹j
+    [Header("â”€â”€ UIå‚ç…§ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€")]
+    [SerializeField] private CanvasGroup bgPanelGroup;        // çœŸã£é»’ãªèƒŒæ™¯ç”¨CanvasGroup
+    [SerializeField] private RectTransform gameOverTextRect;  // ã€ŒGame Over!ã€ãƒ†ã‚­ã‚¹ãƒˆã®RectTransform
+    [SerializeField] private List<GameObject> resultItems;     // ã‚²ãƒ¼ãƒ å†…å®¹ï¼ˆ1:å€’ã—ãŸæ•µã®æ•°ã€2:é…ç½®ã—ãŸãƒ–ãƒ­ãƒƒã‚¯ã®æ•°...ï¼‰
+    [SerializeField] private GameObject buttonGroup;          // ãƒœã‚¿ãƒ³ç¾¤ï¼ˆâ‘¢ãƒªãƒ—ãƒ¬ã‚¤ / â‘£ã‚¹ã‚¿ãƒƒãƒ•ãƒ­ãƒ¼ãƒ« / â‘¤ã‚¿ã‚¤ãƒˆãƒ«ï¼‰
 
-    [Header("„Ÿ„Ÿ “ŒvƒeƒLƒXƒgiresultItems‚Æ“¯‚¶•À‚Ñ‡j „Ÿ„Ÿ")]
+    [Header("â”€â”€ çµ±è¨ˆãƒ†ã‚­ã‚¹ãƒˆï¼ˆresultItemsã¨åŒã˜ä¸¦ã³é †ï¼‰ â”€â”€")]
     [SerializeField] private TMP_Text enemiesDefeatedText;
     [SerializeField] private TMP_Text blocksPlacedText;
     [SerializeField] private TMP_Text blocksDroppedText;
     [SerializeField] private TMP_Text blocksConnectedText;
 
-    [Header("„Ÿ„Ÿ ‰‰oƒpƒ‰ƒ[ƒ^ „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ")]
-    [SerializeField] private Vector2 textTopPos = new Vector2(0, 250f); // ƒeƒLƒXƒgˆÚ“®Œã‚ÌÀ•W
-    [SerializeField] private float fadeDuration = 0.5f;        // ˆÃ“]‚É‚©‚©‚éŠÔ
-    [SerializeField] private float textMoveDuration = 0.5f;    // ƒeƒLƒXƒgãˆÚ“®‚É‚©‚©‚éŠÔ
-    [SerializeField] private float itemDisplayInterval = 0.8f; // Še€–Ú‚Ì•\¦ŠÔŠui•bj
+    [Header("â”€â”€ æ¼”å‡ºãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€")]
+    [SerializeField] private Vector2 textTopPos = new Vector2(0, 250f); // ãƒ†ã‚­ã‚¹ãƒˆç§»å‹•å¾Œã®åº§æ¨™
+    [SerializeField] private float fadeDuration = 0.5f;        // æš—è»¢ã«ã‹ã‹ã‚‹æ™‚é–“
+    [SerializeField] private float textMoveDuration = 0.5f;    // ãƒ†ã‚­ã‚¹ãƒˆä¸Šç§»å‹•ã«ã‹ã‹ã‚‹æ™‚é–“
+    [SerializeField] private float itemDisplayInterval = 0.8f; // å„é …ç›®ã®è¡¨ç¤ºé–“éš”ï¼ˆç§’ï¼‰
 
-    [Header("„Ÿ„Ÿ ƒ{ƒ^ƒ“‘€ìi‰¡•À‚ÑF‡B‡C‡Dj „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ")]
-    [SerializeField] private RectTransform[] buttonRects = new RectTransform[3]; // 0:ƒŠƒvƒŒƒC 1:ƒXƒ^ƒbƒtƒ[ƒ‹ 2:ƒ^ƒCƒgƒ‹
+    [Header("â”€â”€ ãƒœã‚¿ãƒ³æ“ä½œï¼ˆæ¨ªä¸¦ã³ï¼šâ‘¢â‘£â‘¤ï¼‰ â”€â”€â”€â”€â”€â”€â”€â”€")]
+    [SerializeField] private RectTransform[] buttonRects = new RectTransform[3]; // 0:ãƒªãƒ—ãƒ¬ã‚¤ 1:ã‚¹ã‚¿ãƒƒãƒ•ãƒ­ãƒ¼ãƒ« 2:ã‚¿ã‚¤ãƒˆãƒ«
     [SerializeField] private float selectedScale = 1.2f;
     [SerializeField] private float normalScale = 0.9f;
-    [SerializeField] private float scaleLerpSpeed = 10f; // Šg‘åk¬‚Ì‘¬‚³
-    [SerializeField] private GamepadButton confirmGamepadButton = GamepadButton.East;
+    [SerializeField] private float scaleLerpSpeed = 10f; // æ‹¡å¤§ç¸®å°ã®é€Ÿã•
     [SerializeField] private float stickDeadZone = 0.5f;
     [SerializeField] private float navInputCooldown = 0.2f;
 
-    // Šeƒ{ƒ^ƒ“‚ÌÀs“à—eiInspector‚Å’¼ÚŒÄ‚Ñ‚½‚¢ê‡‚ÍUnityEvent‚É‚µ‚Ä‚à‚æ‚¢j
-    [Header("„Ÿ„Ÿ ƒ{ƒ^ƒ“‚Ì‹““® „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ")]
-    [SerializeField] private string gameSceneName = "GameScene"; // ƒŠƒvƒŒƒC‚ÅÄ“Ç‚İ‚İ‚·‚éƒV[ƒ“
-    [SerializeField] private string titleSceneName = "MainMenu"; // ƒ^ƒCƒgƒ‹‚Ö–ß‚éƒV[ƒ“
-    [SerializeField] private GameObject staffRollObject;         // ƒXƒ^ƒbƒtƒ[ƒ‹‚ÌGameObjectiSetActive‚Å•\¦j
+    // å„ãƒœã‚¿ãƒ³ã®å®Ÿè¡Œå†…å®¹ï¼ˆInspectorã§ç›´æ¥å‘¼ã³ãŸã„å ´åˆã¯UnityEventã«ã—ã¦ã‚‚ã‚ˆã„ï¼‰
+    [Header("â”€â”€ ãƒœã‚¿ãƒ³ã®æŒ™å‹• â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€")]
+    [SerializeField] private string gameSceneName = "GameScene"; // ãƒªãƒ—ãƒ¬ã‚¤ã§å†èª­ã¿è¾¼ã¿ã™ã‚‹ã‚·ãƒ¼ãƒ³
+    [SerializeField] private string titleSceneName = "MainMenu"; // ã‚¿ã‚¤ãƒˆãƒ«ã¸æˆ»ã‚‹ã‚·ãƒ¼ãƒ³
+    [SerializeField] private GameObject staffRollObject;         // ã‚¹ã‚¿ãƒƒãƒ•ãƒ­ãƒ¼ãƒ«ã®GameObjectï¼ˆSetActiveã§è¡¨ç¤ºï¼‰
     int buttonFocus = 0;
     bool buttonInputEnabled = false;
     float navInputTimer = 0f;
@@ -58,7 +57,7 @@ public class GameOverSequence : MonoBehaviour
     [SerializeField] GameObject UI_2;
 
     /// <summary>
-    /// ‰‰o‚ÌŠJn
+    /// æ¼”å‡ºã®é–‹å§‹
     /// </summary>
     public void PlaySequence()
     {
@@ -67,7 +66,7 @@ public class GameOverSequence : MonoBehaviour
 
     private IEnumerator SequenceCoroutine()
     {
-        // „Ÿ„Ÿ„Ÿ “Œv’l‚ğ”½‰f „Ÿ„Ÿ„Ÿ
+        // â”€â”€â”€ çµ±è¨ˆå€¤ã‚’åæ˜  â”€â”€â”€
         if (GameStatsManager.Instance != null)
         {
             if (enemiesDefeatedText != null) enemiesDefeatedText.text = GameStatsManager.Instance.EnemiesDefeated.ToString();
@@ -82,7 +81,7 @@ public class GameOverSequence : MonoBehaviour
         UI_1.SetActive(false);
         UI_2.SetActive(false);
 
-        // „Ÿ„Ÿ„Ÿ ‰Šúó‘Ô‚Ìİ’è „Ÿ„Ÿ„Ÿ
+        // â”€â”€â”€ åˆæœŸçŠ¶æ…‹ã®è¨­å®š â”€â”€â”€
         bgPanelGroup.alpha = 0f;
         gameOverTextRect.gameObject.SetActive(false);
         foreach (var item in resultItems)
@@ -95,7 +94,7 @@ public class GameOverSequence : MonoBehaviour
         }
         buttonInputEnabled = false;
 
-        // 1. ‘Ì—Í‚ª0‚É‚È‚Á‚½‚ç‰æ–Ê‚ª^‚Á•‚É‚È‚éiFade Inj
+        // 1. ä½“åŠ›ãŒ0ã«ãªã£ãŸã‚‰ç”»é¢ãŒçœŸã£é»’ã«ãªã‚‹ï¼ˆFade Inï¼‰
         float timer = 0f;
         while (timer < fadeDuration)
         {
@@ -105,11 +104,11 @@ public class GameOverSequence : MonoBehaviour
         }
         bgPanelGroup.alpha = 1f;
 
-        // 2. ‚È‚Á‚½Œã‚·‚®uGame Over!v‚ğ•\¦
+        // 2. ãªã£ãŸå¾Œã™ãã€ŒGame Over!ã€ã‚’è¡¨ç¤º
         gameOverTextRect.gameObject.SetActive(true);
         yield return new WaitForSecondsRealtime(1.2f);
 
-        // 3. uGame Over!v‚ªã‚ÉˆÚ“®
+        // 3. ã€ŒGame Over!ã€ãŒä¸Šã«ç§»å‹•
         Vector2 startPos = gameOverTextRect.anchoredPosition;
         timer = 0f;
         while (timer < textMoveDuration)
@@ -120,7 +119,7 @@ public class GameOverSequence : MonoBehaviour
         }
         gameOverTextRect.anchoredPosition = textTopPos;
 
-        // 4. ƒQ[ƒ€“à—e‚ğ1€–Ú‚¸‚Â‡”Ô‚É•\¦
+        // 4. ã‚²ãƒ¼ãƒ å†…å®¹ã‚’1é …ç›®ãšã¤é †ç•ªã«è¡¨ç¤º
         foreach (var item in resultItems)
         {
             if (item != null)
@@ -130,14 +129,14 @@ public class GameOverSequence : MonoBehaviour
             }
         }
 
-        // 5. ‘S•”•\¦‚µ‚½ŒãAƒ{ƒ^ƒ“iƒŠƒvƒŒƒCEƒXƒ^ƒbƒtƒ[ƒ‹Eƒ^ƒCƒgƒ‹j‚ğ•\¦
+        // 5. å…¨éƒ¨è¡¨ç¤ºã—ãŸå¾Œã€ãƒœã‚¿ãƒ³ï¼ˆãƒªãƒ—ãƒ¬ã‚¤ãƒ»ã‚¹ã‚¿ãƒƒãƒ•ãƒ­ãƒ¼ãƒ«ãƒ»ã‚¿ã‚¤ãƒˆãƒ«ï¼‰ã‚’è¡¨ç¤º
         yield return new WaitForSecondsRealtime(0.3f);
         if (buttonGroup != null)
         {
             buttonGroup.SetActive(true);
         }
 
-        // ƒ{ƒ^ƒ“‘€ì‚ğ—LŒø‰»
+        // ãƒœã‚¿ãƒ³æ“ä½œã‚’æœ‰åŠ¹åŒ–
         buttonFocus = 0;
         navInputTimer = navInputCooldown;
         buttonInputEnabled = true;
@@ -147,7 +146,7 @@ public class GameOverSequence : MonoBehaviour
     {
         if (!buttonInputEnabled) return;
 
-        // ‘I‘ğ’†‚Ìƒ{ƒ^ƒ“‚¾‚¯Šg‘åA‚»‚êˆÈŠO‚Ík¬i–ˆƒtƒŒ[ƒ€ŠŠ‚ç‚©‚É•âŠÔj
+        // é¸æŠä¸­ã®ãƒœã‚¿ãƒ³ã ã‘æ‹¡å¤§ã€ãã‚Œä»¥å¤–ã¯ç¸®å°ï¼ˆæ¯ãƒ•ãƒ¬ãƒ¼ãƒ æ»‘ã‚‰ã‹ã«è£œé–“ï¼‰
         for (int i = 0; i < buttonRects.Length; i++)
         {
             if (buttonRects[i] == null) continue;
@@ -157,10 +156,8 @@ public class GameOverSequence : MonoBehaviour
             buttonRects[i].localScale = new Vector3(next, next, 1f);
         }
 
-        if (Gamepad.current == null) return;
-
         navInputTimer -= Time.unscaledDeltaTime;
-        float horizontal = Gamepad.current.leftStick.x.ReadValue();
+        float horizontal = Gamepad.current != null ? Gamepad.current.leftStick.x.ReadValue() : 0f;
 
         if (navInputTimer <= 0f)
         {
@@ -176,7 +173,12 @@ public class GameOverSequence : MonoBehaviour
             }
         }
 
-        if (Gamepad.current[confirmGamepadButton].wasPressedThisFrame)
+        // ãƒã‚¦ã‚¹ï¼šãƒ›ãƒãƒ¼ã§é¸æŠã€ã‚¯ãƒªãƒƒã‚¯ã§æ±ºå®š
+        int hovered = MenuInput.PointerOverIndex(buttonRects);
+        if (hovered >= 0 && (MenuInput.PointerMoved() || MenuInput.LeftClicked()))
+            buttonFocus = hovered;
+
+        if (MenuInput.ConfirmPressed() || (hovered >= 0 && MenuInput.LeftClicked()))
         {
             ConfirmButton();
         }
@@ -190,16 +192,16 @@ public class GameOverSequence : MonoBehaviour
 
     void ConfirmButton()
     {
-        buttonInputEnabled = false; // “ñd‰Ÿ‚µ–h~
+        buttonInputEnabled = false; // äºŒé‡æŠ¼ã—é˜²æ­¢
 
         switch (buttonFocus)
         {
-            case 0: // ƒŠƒvƒŒƒC
+            case 0: // ãƒªãƒ—ãƒ¬ã‚¤
                 Time.timeScale = 1f;
                 SceneManager.LoadScene(gameSceneName);
                 break;
 
-            case 1: // ƒ^ƒCƒgƒ‹
+            case 1: // ã‚¿ã‚¤ãƒˆãƒ«
                 Time.timeScale = 1f;
                 SceneManager.LoadScene(titleSceneName);
                 break;

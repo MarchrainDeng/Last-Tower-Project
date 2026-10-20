@@ -5,10 +5,9 @@ using UnityEngine.InputSystem;
 /// ストーリーモードの拠点「マイタウン」
 ///
 /// 【操作】
-/// - マウス  : 場所をクリックでその場所のUIを表示
+/// - マウス  : 場所をクリックでその場所のUIを表示、右クリックで戻る
 /// - キーボード: A/← で左、D/→ で右の場所へ移動、Enter/Space で決定、Esc/Backspace で戻る
-/// - パッド  : Dpad(またはスティック)で移動、決定ボタンで決定、キャンセルボタンで戻る
-///   （決定/キャンセルのボタンはタイトル画面に合わせて East / South）
+/// - パッド  : Dpad(またはスティック)で移動、Aで決定、Bで戻る
 ///
 /// locations は画面の左→右の順に並べる
 /// </summary>
@@ -100,17 +99,15 @@ public class MyTownController : MonoBehaviour
     static bool ConfirmPressed()
     {
         var kb = Keyboard.current;
-        if (kb != null && (kb.enterKey.wasPressedThisFrame || kb.spaceKey.wasPressedThisFrame)) return true;
-        var pad = Gamepad.current;
-        return pad != null && pad.buttonEast.wasPressedThisFrame;
+        if (kb != null && kb.spaceKey.wasPressedThisFrame) return true;
+        return MenuInput.ConfirmPressed();
     }
 
     static bool CancelPressed()
     {
         var kb = Keyboard.current;
-        if (kb != null && (kb.escapeKey.wasPressedThisFrame || kb.backspaceKey.wasPressedThisFrame)) return true;
-        var pad = Gamepad.current;
-        return pad != null && pad.buttonSouth.wasPressedThisFrame;
+        if (kb != null && kb.escapeKey.wasPressedThisFrame) return true;
+        return MenuInput.CancelPressed();
     }
 
     // ─── マウス（MyTownLocationButton から呼ばれる） ─────────────

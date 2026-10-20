@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.Video;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
@@ -6,26 +6,25 @@ using UnityEngine.SceneManagement;
 using System.Collections;
 
 /// <summary>
-/// ‹N“®ê—pƒV[ƒ“‚ÅÄ¶‚·‚éƒI[ƒvƒjƒ“ƒO“®‰æ
-/// Ä¶I—¹A‚Ü‚½‚ÍƒXƒLƒbƒv‚Åw’è‚µ‚½ƒV[ƒ“iƒ^ƒCƒgƒ‹‰æ–Êj‚Ö‘JˆÚ‚·‚é
+/// èµ·å‹•å°‚ç”¨ã‚·ãƒ¼ãƒ³ã§å†ç”Ÿã™ã‚‹ã‚ªãƒ¼ãƒ—ãƒ‹ãƒ³ã‚°å‹•ç”»
+/// å†ç”Ÿçµ‚äº†ã€ã¾ãŸã¯ã‚¹ã‚­ãƒƒãƒ—ã§æŒ‡å®šã—ãŸã‚·ãƒ¼ãƒ³ï¼ˆã‚¿ã‚¤ãƒˆãƒ«ç”»é¢ï¼‰ã¸é·ç§»ã™ã‚‹
 /// </summary>
 public class OpeningMovie : MonoBehaviour
 {
-    [Header("„Ÿ„Ÿ QÆ „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ")]
+    [Header("â”€â”€ å‚ç…§ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€")]
     public VideoPlayer videoPlayer;
-    [Tooltip("”ñ•\¦§Œä—p‚ÌCanvasGroupimovieRoot‚ÉƒAƒ^ƒbƒ`j")]
+    [Tooltip("éè¡¨ç¤ºåˆ¶å¾¡ç”¨ã®CanvasGroupï¼ˆmovieRootã«ã‚¢ã‚¿ãƒƒãƒï¼‰")]
     public CanvasGroup movieCanvasGroup;
 
-    [Header("„Ÿ„Ÿ ‘JˆÚİ’è „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ")]
-    [Tooltip("“®‰æI—¹Œã‚Éƒ[ƒh‚·‚éƒV[ƒ“–¼")]
+    [Header("â”€â”€ é·ç§»è¨­å®š â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€")]
+    [Tooltip("å‹•ç”»çµ‚äº†å¾Œã«ãƒ­ãƒ¼ãƒ‰ã™ã‚‹ã‚·ãƒ¼ãƒ³å")]
     public string titleSceneName = "TitleScene";
 
-    [Header("„Ÿ„Ÿ ƒXƒLƒbƒv „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ")]
-    public GamepadButton skipGamepadButton = GamepadButton.South;
-    public Key skipKey = Key.Space;
+    [Header("â”€â”€ ã‚¹ã‚­ãƒƒãƒ— â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€")]
+    public Key skipKey = Key.Space; // Aãƒœã‚¿ãƒ³ / ã‚¯ãƒªãƒƒã‚¯ã§ã‚‚ã‚¹ã‚­ãƒƒãƒ—
 
     bool isPlaying = false;
-    bool isTransitioning = false; // ƒV[ƒ“‘JˆÚ‚Ì‘½dŒÄ‚Ño‚µ–h~—p
+    bool isTransitioning = false; // ã‚·ãƒ¼ãƒ³é·ç§»ã®å¤šé‡å‘¼ã³å‡ºã—é˜²æ­¢ç”¨
 
     void Awake()
     {
@@ -35,13 +34,13 @@ public class OpeningMovie : MonoBehaviour
             return;
         }
 
-        // ‰f‘œ‚Ì€”õ‚ªI‚í‚é‚Ü‚Å‚Í“§–¾‚É‚µ‚Ä”ñ•\¦iGameObject©‘Ì‚ÍƒAƒNƒeƒBƒu‚ğˆÛj
+        // æ˜ åƒã®æº–å‚™ãŒçµ‚ã‚ã‚‹ã¾ã§ã¯é€æ˜ã«ã—ã¦éè¡¨ç¤ºï¼ˆGameObjectè‡ªä½“ã¯ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ã‚’ç¶­æŒï¼‰
         if (movieCanvasGroup != null)
         {
             movieCanvasGroup.alpha = 0f;
         }
 
-        // Inspector‚ÌPlayOnAwake‚ªON‚¾‚Æ‹£‡‚·‚é‚½‚ßOFF‚Éİ’è
+        // Inspectorã®PlayOnAwakeãŒONã ã¨ç«¶åˆã™ã‚‹ãŸã‚OFFã«è¨­å®š
         videoPlayer.playOnAwake = false;
         videoPlayer.loopPointReached += OnMovieFinished;
     }
@@ -50,10 +49,10 @@ public class OpeningMovie : MonoBehaviour
     {
         isPlaying = true;
 
-        // 1. “®‰æ‚Ì“Ç‚İ‚İ€”õ‚ğŠJniƒAƒNƒeƒBƒuó‘Ô‚Ì‚½‚ß³í‚É“®ìj
+        // 1. å‹•ç”»ã®èª­ã¿è¾¼ã¿æº–å‚™ã‚’é–‹å§‹ï¼ˆã‚¢ã‚¯ãƒ†ã‚£ãƒ–çŠ¶æ…‹ã®ãŸã‚æ­£å¸¸ã«å‹•ä½œï¼‰
         videoPlayer.Prepare();
 
-        // 2. €”õ‚ªŠ®—¹‚·‚é‚Ü‚Å‘Ò‹@
+        // 2. æº–å‚™ãŒå®Œäº†ã™ã‚‹ã¾ã§å¾…æ©Ÿ
         while (!videoPlayer.isPrepared && isPlaying)
         {
             yield return null;
@@ -61,10 +60,10 @@ public class OpeningMovie : MonoBehaviour
 
         if (!isPlaying) yield break;
 
-        // 3. Ä¶ŠJn
+        // 3. å†ç”Ÿé–‹å§‹
         videoPlayer.Play();
 
-        // 4. ‰f‘œ‚ÌƒeƒNƒXƒ`ƒƒ‚ª¶¬‚³‚ê‚é‚Ü‚Å‘Ò‹@i•‰æ–Ê–h~j
+        // 4. æ˜ åƒã®ãƒ†ã‚¯ã‚¹ãƒãƒ£ãŒç”Ÿæˆã•ã‚Œã‚‹ã¾ã§å¾…æ©Ÿï¼ˆé»’ç”»é¢é˜²æ­¢ï¼‰
         while (videoPlayer.texture == null && isPlaying)
         {
             yield return null;
@@ -72,7 +71,7 @@ public class OpeningMovie : MonoBehaviour
 
         if (!isPlaying) yield break;
 
-        // 5. Š®‘S‚É‰f‘œ‚ª•`‰æ‚Å‚«‚éó‘Ô‚É‚È‚Á‚Ä‚©‚ç•\¦
+        // 5. å®Œå…¨ã«æ˜ åƒãŒæç”»ã§ãã‚‹çŠ¶æ…‹ã«ãªã£ã¦ã‹ã‚‰è¡¨ç¤º
         if (movieCanvasGroup != null)
         {
             movieCanvasGroup.alpha = 1f;
@@ -85,7 +84,8 @@ public class OpeningMovie : MonoBehaviour
 
         bool skipPressed =
             (Keyboard.current != null && Keyboard.current[skipKey].wasPressedThisFrame) ||
-            (Gamepad.current != null && Gamepad.current[skipGamepadButton].wasPressedThisFrame);
+            MenuInput.ConfirmPressed() ||
+            MenuInput.LeftClicked();
 
         if (skipPressed)
         {
@@ -111,7 +111,7 @@ public class OpeningMovie : MonoBehaviour
             videoPlayer.Stop();
         }
 
-        // Ÿ‚ÌƒV[ƒ“iƒ^ƒCƒgƒ‹‰æ–Êj‚Ö‘JˆÚ
+        // æ¬¡ã®ã‚·ãƒ¼ãƒ³ï¼ˆã‚¿ã‚¤ãƒˆãƒ«ç”»é¢ï¼‰ã¸é·ç§»
         SceneManager.LoadScene(titleSceneName);
     }
 }

@@ -17,10 +17,11 @@ using UnityEngine.Localization.Settings;
 ///
 /// 【操作】
 /// - スティック左右：セクション切り替え（サウンド⇄ローカライズ）
-/// - 決定ボタン：そのセクションの項目に移動
+/// - Aボタン：そのセクションの項目に移動
 /// - サウンド内：スティック上下でMaster→BGM→SFXを移動、左右で数値調整
-/// - ローカライズ内：スティック上下左右でEN/JA/ZH/KOを移動、決定で確定
-/// - Bボタン：項目選択中ならセクション選択に戻る、セクション選択中なら閉じる
+/// - ローカライズ内：スティック上下左右でEN/JA/ZH/KOを移動、Aで確定
+/// - Bボタン / 右クリック：項目選択中ならセクション選択に戻る、セクション選択中なら閉じる
+/// - マウス：ホバーで選択、クリックで決定、スライダーはドラッグで調整
 ///
 /// 【Inspectorでアサインするもの】
 /// - settingsPanel : 設定UIのルートGameObject
@@ -35,8 +36,6 @@ public class SettingsMenu : MonoBehaviour
     [Header("── 操作 ──────────────────────")]
     public Key toggleKey = Key.Escape;
     public GamepadButton toggleGamepadButton = GamepadButton.Start;
-    public GamepadButton closeGamepadButton = GamepadButton.East; // B
-    public GamepadButton confirmGamepadButton = GamepadButton.South; // 決定
 
     [Header("── UI：全体 ────────────────────")]
     public GameObject settingsPanel;
@@ -108,6 +107,8 @@ public class SettingsMenu : MonoBehaviour
 
     float navInputTimer = 0f;
     bool isOpen = false;
+    int openedFrame = -1;          // 開いたフレーム（開くのに使った決定入力をメニュー内で拾わないため）
+    Slider draggingSlider = null;  // マウスでドラッグ中のスライダー
 
     static readonly string[] LangCodes = { "en", "ja", "zh", "ko" };
 
@@ -178,10 +179,12 @@ public class SettingsMenu : MonoBehaviour
         }
 
         if (!isOpen) return;
+        if (Time.frameCount == openedFrame) return;
 
-        // Bボタン：編集中なら編集モードを抜ける、項目操作中ならセクション選択に戻る、それ以外なら閉じる
-        if (Gamepad.current != null && Gamepad.current[closeGamepadButton].wasPressedThisFrame)
+        // Bボタン / 右クリック：編集中なら編集モードを抜ける、項目操作中ならセクション選択に戻る、それ以外なら閉じる
+        if (MenuInput.CancelPressed())
         {
+            draggingSlider = null;
             if (isEditingSound)
             {
                 isEditingSound = false;
@@ -199,22 +202,139 @@ public class SettingsMenu : MonoBehaviour
             return;
         }
 
+        if (HandleMouseInput()) return;
+
         if (isInsideSection)
             HandleSectionInput();
         else
             HandleSectionSelect();
     }
 
+    float StickX() => Gamepad.current != null ? Gamepad.current.leftStick.x.ReadValue() : 0f;
+    float StickY() => Gamepad.current != null ? Gamepad.current.leftStick.y.ReadValue() : 0f;
+
+    // ─── マウス操作 ─────────────────────────────────────────────────
+    // ホバーで選択、クリックで決定。マウスで操作したフレームは true を返す
+    bool HandleMouseInput()
+    {
+        if (Mouse.current == null) return false;
+
+        // スライダーをドラッグ中は離すまで値を追従させる
+        if (draggingSlider != null)
+        {
+            if (MenuInput.LeftHeld())
+            {
+                SetSliderFromPointer(draggingSlider);
+                return true;
+            }
+            draggingSlider = null;
+        }
+
+        bool moved = MenuInput.PointerMoved();
+        bool clicked = MenuInput.LeftClicked();
+        if (!moved && !clicked) return false;
+
+        // セクションタイトル：ホバーで選択、クリックで決定
+        Section? hoveredSection =
+            IsOver(soundSectionLabel) ? Section.Sound :
+            IsOver(localizeSectionLabel) ? Section.Localize :
+            IsOver(homeSectionLabel) ? Section.Home :
+            (Section?)null;
+        if (hoveredSection.HasValue)
+        {
+            if (clicked)
+            {
+                isInsideSection = false;
+                isEditingSound = false;
+                SetSection(hoveredSection.Value);
+                ConfirmSection();
+            }
+            else if (!isInsideSection)
+            {
+                SetSection(hoveredSection.Value);
+            }
+            return true;
+        }
+
+        // サウンド：ホバーで選択、クリックで編集、スライダーはドラッグで調整
+        SoundItem[] soundItems = { SoundItem.Master, SoundItem.BGM, SoundItem.SFX };
+        Slider[] sliders = { masterSlider, bgmSlider, sfxSlider };
+        TMP_Text[] labels = { masterLabel, bgmLabel, sfxLabel };
+        for (int i = 0; i < soundItems.Length; i++)
+        {
+            bool overSlider = sliders[i] != null && MenuInput.IsPointerOver(sliders[i].GetComponent<RectTransform>());
+            if (!overSlider && !IsOver(labels[i])) continue;
+
+            FocusSoundItem(soundItems[i]);
+            if (clicked)
+            {
+                isEditingSound = true;
+                if (overSlider)
+                {
+                    draggingSlider = sliders[i];
+                    SetSliderFromPointer(draggingSlider);
+                }
+                UpdateHighlight();
+            }
+            return true;
+        }
+
+        // ローカライズ：国旗ホバーで選択、クリックで確定
+        for (int i = 0; i < flagButtons.Length; i++)
+        {
+            if (flagButtons[i] == null || !MenuInput.IsPointerOver(flagButtons[i].rectTransform)) continue;
+
+            FocusFlag(i);
+            if (clicked)
+                ConfirmLanguage();
+            return true;
+        }
+
+        return false;
+    }
+
+    static bool IsOver(TMP_Text label)
+    {
+        return label != null && MenuInput.IsPointerOver(label.rectTransform);
+    }
+
+    void FocusSoundItem(SoundItem item)
+    {
+        if (currentSection == Section.Sound && isInsideSection && soundFocus == item) return;
+
+        if (soundFocus != item) isEditingSound = false;
+        currentSection = Section.Sound;
+        isInsideSection = true;
+        soundFocus = item;
+        PlaySE(moveSE);
+        UpdateHighlight();
+    }
+
+    void FocusFlag(int index)
+    {
+        if (currentSection == Section.Localize && isInsideSection && localizeFocus == index) return;
+
+        currentSection = Section.Localize;
+        isInsideSection = true;
+        isEditingSound = false;
+        localizeFocus = index;
+        PlaySE(moveSE);
+        UpdateHighlight();
+    }
+
+    void SetSliderFromPointer(Slider slider)
+    {
+        slider.normalizedValue = MenuInput.PointerNormalizedX(slider.GetComponent<RectTransform>());
+    }
+
     // ─── セクション選択モード（左右でサウンド⇄ローカライズ） ───────
     void HandleSectionSelect()
     {
-        if (Gamepad.current == null) return;
-
         navInputTimer -= Time.unscaledDeltaTime;
 
-        float stickX = Gamepad.current.leftStick.x.ReadValue();
-        bool dpadRight = Gamepad.current.dpad.right.wasPressedThisFrame;
-        bool dpadLeft = Gamepad.current.dpad.left.wasPressedThisFrame;
+        float stickX = StickX();
+        bool dpadRight = Gamepad.current != null && Gamepad.current.dpad.right.wasPressedThisFrame;
+        bool dpadLeft = Gamepad.current != null && Gamepad.current.dpad.left.wasPressedThisFrame;
 
         if (navInputTimer <= 0f)
         {
@@ -234,21 +354,26 @@ public class SettingsMenu : MonoBehaviour
         }
 
         // 決定
-        if (Gamepad.current[confirmGamepadButton].wasPressedThisFrame)
+        if (MenuInput.ConfirmPressed())
         {
-            if (currentSection == Section.Home)
-            {
-                // Homeは即座に実行（下の項目へは移動しない）
-                PlaySE(confirmSE);
-                GoToTitle();
-            }
-            else
-            {
-                // Sound/Localizeは下の項目にフォーカス移動
-                isInsideSection = true;
-                PlaySE(confirmSE);
-                UpdateHighlight();
-            }
+            ConfirmSection();
+        }
+    }
+
+    void ConfirmSection()
+    {
+        if (currentSection == Section.Home)
+        {
+            // Homeは即座に実行（下の項目へは移動しない）
+            PlaySE(confirmSE);
+            GoToTitle();
+        }
+        else
+        {
+            // Sound/Localizeは下の項目にフォーカス移動
+            isInsideSection = true;
+            PlaySE(confirmSE);
+            UpdateHighlight();
         }
     }
 
@@ -287,8 +412,6 @@ public class SettingsMenu : MonoBehaviour
     // 編集時　：左右で数値調整、Bで編集モードを抜ける
     void HandleSoundInput()
     {
-        if (Gamepad.current == null) return;
-
         if (isEditingSound)
         {
             HandleSoundEditing();
@@ -296,8 +419,8 @@ public class SettingsMenu : MonoBehaviour
         }
 
         navInputTimer -= Time.unscaledDeltaTime;
-        float vertical = Gamepad.current.leftStick.y.ReadValue();
-        float horizontal = Gamepad.current.leftStick.x.ReadValue();
+        float vertical = StickY();
+        float horizontal = StickX();
 
         if (navInputTimer <= 0f)
         {
@@ -326,7 +449,7 @@ public class SettingsMenu : MonoBehaviour
         }
 
         // 決定：編集モードに入る
-        if (Gamepad.current[confirmGamepadButton].wasPressedThisFrame)
+        if (MenuInput.ConfirmPressed())
         {
             isEditingSound = true;
             PlaySE(confirmSE);
@@ -338,7 +461,7 @@ public class SettingsMenu : MonoBehaviour
     void HandleSoundEditing()
     {
         navInputTimer -= Time.unscaledDeltaTime;
-        float horizontal = Gamepad.current.leftStick.x.ReadValue();
+        float horizontal = StickX();
 
         if (navInputTimer <= 0f)
         {
@@ -376,11 +499,9 @@ public class SettingsMenu : MonoBehaviour
     // ─── ローカライズ項目操作（2x2を上下左右で移動、決定で確定） ────
     void HandleLocalizeInput()
     {
-        if (Gamepad.current == null) return;
-
         navInputTimer -= Time.unscaledDeltaTime;
-        float vertical = Gamepad.current.leftStick.y.ReadValue();
-        float horizontal = Gamepad.current.leftStick.x.ReadValue();
+        float vertical = StickY();
+        float horizontal = StickX();
 
         if (navInputTimer <= 0f)
         {
@@ -407,7 +528,7 @@ public class SettingsMenu : MonoBehaviour
             }
         }
 
-        if (Gamepad.current[confirmGamepadButton].wasPressedThisFrame)
+        if (MenuInput.ConfirmPressed())
         {
             ConfirmLanguage();
         }
@@ -620,6 +741,8 @@ public class SettingsMenu : MonoBehaviour
     IEnumerator OpenWithAnimation()
     {
         isOpen = true;
+        openedFrame = Time.frameCount;
+        draggingSlider = null;
         settingsPanel.SetActive(true);
         Time.timeScale = 0f;
         GameStateManager.SetPaused(true);

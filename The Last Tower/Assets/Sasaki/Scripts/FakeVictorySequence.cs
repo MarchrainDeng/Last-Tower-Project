@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -7,45 +7,45 @@ using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// ‹UŸ—˜iƒ{ƒXíŸ—˜Œã‚Ì‹UƒGƒ“ƒfƒBƒ“ƒOj‰‰o‚ğ§Œä‚·‚éƒXƒNƒŠƒvƒg
+/// å½å‹åˆ©ï¼ˆãƒœã‚¹æˆ¦å‹åˆ©å¾Œã®å½ã‚¨ãƒ³ãƒ‡ã‚£ãƒ³ã‚°ï¼‰æ¼”å‡ºã‚’åˆ¶å¾¡ã™ã‚‹ã‚¹ã‚¯ãƒªãƒ—ãƒˆ
 ///
-/// y—¬‚êz
-/// 1. ƒ{ƒXHP0 ¨ ‰æ–Ê‚ª1•b‚©‚¯‚ÄŠ®‘S‚É•‚­‚È‚é
-/// 2. ‰æ–Ê’†‰›‚ÉuŸ—˜Iv•\¦
-/// 3. 2•bŒãAuŸ—˜Iv‚ªã‚É0.5•b‚ÅˆÚ“®AƒQ[ƒ€“à—e‚ğ1•b‚²‚Æ‚É1€–Ú•\¦
-/// 4. 3‚Â–Ú‚Ì€–Ú•\¦‚ÉƒJƒƒ‰ƒVƒFƒCƒN{ƒRƒ“ƒgƒ[ƒ‰[U“®‚ª1‰ñ”­¶
-/// 5. 1•bŒãA‰æ–Ê‚ª3•bŠÔ‘å‚«‚­—h‚êAUI‘S‘Ì‚ª3•b‚©‚¯‚Ä•ö‰ói—‰º{‰ñ“]j
-/// 6. •ö‰óŠ®—¹ŒãAƒ{ƒX‚Ì‹©‚Ñ‚Åƒ^ƒ[‚à”j‰ó‚µAƒgƒEsceneiÅIƒuƒƒbƒN\’zƒtƒF[ƒYj‚ÖˆÚs
-///    ¦transitionToTouSceneOnCollapse ‚ğ false ‚É‚·‚é‚Æ‹Œd—li‡B‡C‡Dƒ{ƒ^ƒ“•\¦j‚É–ß‚¹‚é
+/// ã€æµã‚Œã€‘
+/// 1. ãƒœã‚¹HP0 â†’ ç”»é¢ãŒ1ç§’ã‹ã‘ã¦å®Œå…¨ã«é»’ããªã‚‹
+/// 2. ç”»é¢ä¸­å¤®ã«ã€Œå‹åˆ©ï¼ã€è¡¨ç¤º
+/// 3. 2ç§’å¾Œã€ã€Œå‹åˆ©ï¼ã€ãŒä¸Šã«0.5ç§’ã§ç§»å‹•ã€ã‚²ãƒ¼ãƒ å†…å®¹ã‚’1ç§’ã”ã¨ã«1é …ç›®è¡¨ç¤º
+/// 4. 3ã¤ç›®ã®é …ç›®è¡¨ç¤ºæ™‚ã«ã‚«ãƒ¡ãƒ©ã‚·ã‚§ã‚¤ã‚¯ï¼‹ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼æŒ¯å‹•ãŒ1å›ç™ºç”Ÿ
+/// 5. 1ç§’å¾Œã€ç”»é¢ãŒ3ç§’é–“å¤§ããæºã‚Œã€UIå…¨ä½“ãŒ3ç§’ã‹ã‘ã¦å´©å£Šï¼ˆè½ä¸‹ï¼‹å›è»¢ï¼‰
+/// 6. å´©å£Šå®Œäº†å¾Œã€ãƒœã‚¹ã®å«ã³ã§ã‚¿ãƒ¯ãƒ¼ã‚‚ç ´å£Šã—ã€ãƒˆã‚¦sceneï¼ˆæœ€çµ‚ãƒ–ãƒ­ãƒƒã‚¯æ§‹ç¯‰ãƒ•ã‚§ãƒ¼ã‚ºï¼‰ã¸ç§»è¡Œ
+///    â€»transitionToTouSceneOnCollapse ã‚’ false ã«ã™ã‚‹ã¨æ—§ä»•æ§˜ï¼ˆâ‘¢â‘£â‘¤ãƒœã‚¿ãƒ³è¡¨ç¤ºï¼‰ã«æˆ»ã›ã‚‹
 /// </summary>
 public class FakeVictorySequence : MonoBehaviour
 {
-    [Header("„Ÿ„Ÿ UIQÆ „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ")]
-    [SerializeField] private CanvasGroup bgPanelGroup;         // ^‚Á•‚È”wŒi—pCanvasGroup
-    [SerializeField] private RectTransform victoryTextRect;    // uŸ—˜IvƒeƒLƒXƒg‚ÌRectTransform
-    [SerializeField] private List<GameObject> resultItems;     // ƒQ[ƒ€“à—ei1:“|‚µ‚½“G‚Ì”A2:”z’u‚µ‚½ƒuƒƒbƒN‚Ì”...j
+    [Header("â”€â”€ UIå‚ç…§ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€")]
+    [SerializeField] private CanvasGroup bgPanelGroup;         // çœŸã£é»’ãªèƒŒæ™¯ç”¨CanvasGroup
+    [SerializeField] private RectTransform victoryTextRect;    // ã€Œå‹åˆ©ï¼ã€ãƒ†ã‚­ã‚¹ãƒˆã®RectTransform
+    [SerializeField] private List<GameObject> resultItems;     // ã‚²ãƒ¼ãƒ å†…å®¹ï¼ˆ1:å€’ã—ãŸæ•µã®æ•°ã€2:é…ç½®ã—ãŸãƒ–ãƒ­ãƒƒã‚¯ã®æ•°...ï¼‰
 
-    [Header("„Ÿ„Ÿ “ŒvƒeƒLƒXƒgiresultItems‚Æ“¯‚¶•À‚Ñ‡j „Ÿ„Ÿ")]
+    [Header("â”€â”€ çµ±è¨ˆãƒ†ã‚­ã‚¹ãƒˆï¼ˆresultItemsã¨åŒã˜ä¸¦ã³é †ï¼‰ â”€â”€")]
     [SerializeField] private TMP_Text enemiesDefeatedText;
     [SerializeField] private TMP_Text blocksPlacedText;
     [SerializeField] private TMP_Text blocksDroppedText;
     [SerializeField] private TMP_Text blocksConnectedText;
-    [SerializeField] private GameObject buttonGroup;           // ƒ{ƒ^ƒ“ŒQi‡BƒŠƒvƒŒƒC / ‡CƒXƒ^ƒbƒtƒ[ƒ‹ / ‡Dƒ^ƒCƒgƒ‹j
-    [SerializeField] private RectTransform uiRoot;             // •ö‰ó‚³‚¹‚éUI‘S‘Ì‚Ìƒ‹[ƒg
+    [SerializeField] private GameObject buttonGroup;           // ãƒœã‚¿ãƒ³ç¾¤ï¼ˆâ‘¢ãƒªãƒ—ãƒ¬ã‚¤ / â‘£ã‚¹ã‚¿ãƒƒãƒ•ãƒ­ãƒ¼ãƒ« / â‘¤ã‚¿ã‚¤ãƒˆãƒ«ï¼‰
+    [SerializeField] private RectTransform uiRoot;             // å´©å£Šã•ã›ã‚‹UIå…¨ä½“ã®ãƒ«ãƒ¼ãƒˆ
 
-    [Header("„Ÿ„Ÿ ‰‰oƒpƒ‰ƒ[ƒ^ „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ")]
-    [SerializeField] private Vector2 textTopPos = new Vector2(0, 250f); // ƒeƒLƒXƒgˆÚ“®Œã‚ÌÀ•W
-    [SerializeField] private float fadeDuration = 1f;           // ˆÃ“]‚É‚©‚©‚éŠÔ
-    [SerializeField] private float textMoveDuration = 0.5f;     // ƒeƒLƒXƒgãˆÚ“®‚É‚©‚©‚éŠÔ
-    [SerializeField] private float itemDisplayInterval = 1f;    // Še€–Ú‚Ì•\¦ŠÔŠui•bj
-    [SerializeField] private int shakeOnItemIndex = 2;          // ‰½ŒÂ–Ú‚Ì€–Ú•\¦‚É—h‚ê‚é‚©i0n‚Ü‚èA3‚Â–Ú=2j
+    [Header("â”€â”€ æ¼”å‡ºãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€")]
+    [SerializeField] private Vector2 textTopPos = new Vector2(0, 250f); // ãƒ†ã‚­ã‚¹ãƒˆç§»å‹•å¾Œã®åº§æ¨™
+    [SerializeField] private float fadeDuration = 1f;           // æš—è»¢ã«ã‹ã‹ã‚‹æ™‚é–“
+    [SerializeField] private float textMoveDuration = 0.5f;     // ãƒ†ã‚­ã‚¹ãƒˆä¸Šç§»å‹•ã«ã‹ã‹ã‚‹æ™‚é–“
+    [SerializeField] private float itemDisplayInterval = 1f;    // å„é …ç›®ã®è¡¨ç¤ºé–“éš”ï¼ˆç§’ï¼‰
+    [SerializeField] private int shakeOnItemIndex = 2;          // ä½•å€‹ç›®ã®é …ç›®è¡¨ç¤ºæ™‚ã«æºã‚Œã‚‹ã‹ï¼ˆ0å§‹ã¾ã‚Šã€3ã¤ç›®=2ï¼‰
 
-    [Header("„Ÿ„Ÿ •ö‰ó‘O‚Ì—h‚ê „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ")]
-    [SerializeField] private float preCollapseDelay = 1f;       // €–Ú•\¦ŒãA•ö‰ó‚ªn‚Ü‚é‚Ü‚Å‚Ì‘Ò‹@
-    [SerializeField] private float collapseShakeDuration = 3f;  // ‰æ–Ê‚ª‘å‚«‚­—h‚ê‚éŠÔ
-    [SerializeField] private float collapseDuration = 3f;       // UI‚ª•ö‰ó‚·‚é‚Ü‚Å‚ÌŠÔ
+    [Header("â”€â”€ å´©å£Šå‰ã®æºã‚Œ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€")]
+    [SerializeField] private float preCollapseDelay = 1f;       // é …ç›®è¡¨ç¤ºå¾Œã€å´©å£ŠãŒå§‹ã¾ã‚‹ã¾ã§ã®å¾…æ©Ÿ
+    [SerializeField] private float collapseShakeDuration = 3f;  // ç”»é¢ãŒå¤§ããæºã‚Œã‚‹æ™‚é–“
+    [SerializeField] private float collapseDuration = 3f;       // UIãŒå´©å£Šã™ã‚‹ã¾ã§ã®æ™‚é–“
 
-    [Header("„Ÿ„Ÿ ƒJƒƒ‰ƒVƒFƒCƒNEU“® „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ")]
+    [Header("â”€â”€ ã‚«ãƒ¡ãƒ©ã‚·ã‚§ã‚¤ã‚¯ãƒ»æŒ¯å‹• â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€")]
     [SerializeField] private CameraShake cameraShake;
     [SerializeField] private float itemShakeVibeLow = 0.3f;
     [SerializeField] private float itemShakeVibeHigh = 0.5f;
@@ -53,20 +53,19 @@ public class FakeVictorySequence : MonoBehaviour
     [SerializeField] private float collapseVibeLow = 0.6f;
     [SerializeField] private float collapseVibeHigh = 0.9f;
 
-    [Header("„Ÿ„Ÿ ƒgƒEsceneˆÚsiVd—lj „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ")]
-    [Tooltip("true: •ö‰óŠ®—¹ŒãAƒ{ƒX‚Ì‹©‚Ñ‚Åƒ^ƒ[‚à”j‰ó‚µ‚ÄƒgƒEscene(ÅIƒuƒƒbƒN\’zƒtƒF[ƒY)‚ÖˆÚs‚·‚éBfalse: ‹Œd—l‚Ç‚¨‚è‚»‚Ìê‚ÅƒŠƒUƒ‹ƒgƒ{ƒ^ƒ“‚ğ•\¦‚·‚é")]
+    [Header("â”€â”€ ãƒˆã‚¦sceneç§»è¡Œï¼ˆæ–°ä»•æ§˜ï¼‰ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€")]
+    [Tooltip("true: å´©å£Šå®Œäº†å¾Œã€ãƒœã‚¹ã®å«ã³ã§ã‚¿ãƒ¯ãƒ¼ã‚‚ç ´å£Šã—ã¦ãƒˆã‚¦scene(æœ€çµ‚ãƒ–ãƒ­ãƒƒã‚¯æ§‹ç¯‰ãƒ•ã‚§ãƒ¼ã‚º)ã¸ç§»è¡Œã™ã‚‹ã€‚false: æ—§ä»•æ§˜ã©ãŠã‚Šãã®å ´ã§ãƒªã‚¶ãƒ«ãƒˆãƒœã‚¿ãƒ³ã‚’è¡¨ç¤ºã™ã‚‹")]
     [SerializeField] private bool transitionToTouSceneOnCollapse = true;
 
-    [Header("„Ÿ„Ÿ ƒ{ƒ^ƒ“‘€ìi‰¡•À‚ÑF‡B‡C‡Dj „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ")]
-    [SerializeField] private RectTransform[] buttonRects = new RectTransform[3]; // 0:ƒŠƒvƒŒƒC 1:ƒXƒ^ƒbƒtƒ[ƒ‹ 2:ƒ^ƒCƒgƒ‹
+    [Header("â”€â”€ ãƒœã‚¿ãƒ³æ“ä½œï¼ˆæ¨ªä¸¦ã³ï¼šâ‘¢â‘£â‘¤ï¼‰ â”€â”€â”€â”€â”€â”€â”€â”€")]
+    [SerializeField] private RectTransform[] buttonRects = new RectTransform[3]; // 0:ãƒªãƒ—ãƒ¬ã‚¤ 1:ã‚¹ã‚¿ãƒƒãƒ•ãƒ­ãƒ¼ãƒ« 2:ã‚¿ã‚¤ãƒˆãƒ«
     [SerializeField] private float selectedScale = 1.2f;
     [SerializeField] private float normalScale = 0.9f;
     [SerializeField] private float scaleLerpSpeed = 10f;
-    [SerializeField] private GamepadButton confirmGamepadButton = GamepadButton.East;
     [SerializeField] private float stickDeadZone = 0.5f;
     [SerializeField] private float navInputCooldown = 0.2f;
 
-    [Header("„Ÿ„Ÿ ƒ{ƒ^ƒ“‚Ì‹““® „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ")]
+    [Header("â”€â”€ ãƒœã‚¿ãƒ³ã®æŒ™å‹• â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€")]
     [SerializeField] private string gameSceneName = "GameScene";
     [SerializeField] private string titleSceneName = "MainMenu";
     [SerializeField] private GameObject staffRollObject;
@@ -81,7 +80,7 @@ public class FakeVictorySequence : MonoBehaviour
     [SerializeField] BossFlyAway bossFlyAway;
 
     /// <summary>
-    /// ‰‰o‚ÌŠJn
+    /// æ¼”å‡ºã®é–‹å§‹
     /// </summary>
     public void PlaySequence()
     {
@@ -90,7 +89,7 @@ public class FakeVictorySequence : MonoBehaviour
 
     private IEnumerator SequenceCoroutine()
     {
-        // „Ÿ„Ÿ„Ÿ “Œv’l‚ğ”½‰f „Ÿ„Ÿ„Ÿ
+        // â”€â”€â”€ çµ±è¨ˆå€¤ã‚’åæ˜  â”€â”€â”€
         if (GameStatsManager.Instance != null)
         {
             if (enemiesDefeatedText != null) enemiesDefeatedText.text = GameStatsManager.Instance.EnemiesDefeated.ToString();
@@ -99,7 +98,7 @@ public class FakeVictorySequence : MonoBehaviour
             if (blocksConnectedText != null) blocksConnectedText.text = GameStatsManager.Instance.BlocksConnected.ToString();
         }
 
-        // „Ÿ„Ÿ„Ÿ ‰Šúó‘Ô‚Ìİ’è „Ÿ„Ÿ„Ÿ
+        // â”€â”€â”€ åˆæœŸçŠ¶æ…‹ã®è¨­å®š â”€â”€â”€
         bgPanelGroup.alpha = 0f;
         victoryTextRect.gameObject.SetActive(false);
         foreach (var item in resultItems)
@@ -110,7 +109,7 @@ public class FakeVictorySequence : MonoBehaviour
             buttonGroup.SetActive(false);
         buttonInputEnabled = false;
 
-        // 1. ƒ{ƒXHP0 ¨ ‰æ–Ê‚ª1•b‚©‚¯‚ÄŠ®‘S‚É•‚­‚È‚é
+        // 1. ãƒœã‚¹HP0 â†’ ç”»é¢ãŒ1ç§’ã‹ã‘ã¦å®Œå…¨ã«é»’ããªã‚‹
         float timer = 0f;
         while (timer < fadeDuration)
         {
@@ -120,11 +119,11 @@ public class FakeVictorySequence : MonoBehaviour
         }
         bgPanelGroup.alpha = 1f;
 
-        // 2. ‰æ–Ê’†‰›‚ÉuŸ—˜Iv•\¦
+        // 2. ç”»é¢ä¸­å¤®ã«ã€Œå‹åˆ©ï¼ã€è¡¨ç¤º
         victoryTextRect.gameObject.SetActive(true);
         yield return new WaitForSecondsRealtime(2f);
 
-        // 3. uŸ—˜Iv‚ªã‚ÉˆÚ“®
+        // 3. ã€Œå‹åˆ©ï¼ã€ãŒä¸Šã«ç§»å‹•
         Vector2 startPos = victoryTextRect.anchoredPosition;
         timer = 0f;
         while (timer < textMoveDuration)
@@ -135,13 +134,13 @@ public class FakeVictorySequence : MonoBehaviour
         }
         victoryTextRect.anchoredPosition = textTopPos;
 
-        // ƒQ[ƒ€“à—e‚ğ1•b‚²‚Æ‚É1€–Ú‚¸‚Â•\¦
+        // ã‚²ãƒ¼ãƒ å†…å®¹ã‚’1ç§’ã”ã¨ã«1é …ç›®ãšã¤è¡¨ç¤º
         for (int i = 0; i < resultItems.Count; i++)
         {
             if (resultItems[i] != null)
                 resultItems[i].SetActive(true);
 
-            // 4. w’è‚µ‚½€–Úi3‚Â–Új•\¦‚Éˆê‰ñ—h‚ê‚é
+            // 4. æŒ‡å®šã—ãŸé …ç›®ï¼ˆ3ã¤ç›®ï¼‰è¡¨ç¤ºæ™‚ã«ä¸€å›æºã‚Œã‚‹
             if (i == shakeOnItemIndex)
             {
                 if (cameraShake != null)
@@ -152,7 +151,7 @@ public class FakeVictorySequence : MonoBehaviour
             yield return new WaitForSecondsRealtime(itemDisplayInterval);
         }
 
-        // 5. 1•bŒãA‰æ–Ê‚ª3•bŠÔ‘å‚«‚­—h‚ê‚ÄAUI‚ª3•b‚©‚¯‚Ä•ö‰ó
+        // 5. 1ç§’å¾Œã€ç”»é¢ãŒ3ç§’é–“å¤§ããæºã‚Œã¦ã€UIãŒ3ç§’ã‹ã‘ã¦å´©å£Š
         yield return new WaitForSecondsRealtime(preCollapseDelay);
 
         SFXManager.Instance.PlaySFX(fakeVicSound);
@@ -160,27 +159,27 @@ public class FakeVictorySequence : MonoBehaviour
         StartCoroutine(CollapseShakeRoutine());
         yield return StartCoroutine(CollapseUIRoutine());
 
-        // 6. •ö‰óŠ®—¹Œã
-        Debug.Log("[FakeVictorySequence] •ö‰ó‰‰oŠ®—¹BtransitionToTouSceneOnCollapse=" + transitionToTouSceneOnCollapse);
+        // 6. å´©å£Šå®Œäº†å¾Œ
+        Debug.Log("[FakeVictorySequence] å´©å£Šæ¼”å‡ºå®Œäº†ã€‚transitionToTouSceneOnCollapse=" + transitionToTouSceneOnCollapse);
         if (transitionToTouSceneOnCollapse)
         {
             bossFlyAway.PlayFlyAway();
 
-            // ƒ{ƒX‚Ì‹©‚Ñ‚Åƒ^ƒ[‚à”j‰ó‚µAƒgƒEscene(ÅIƒuƒƒbƒN\’zƒtƒF[ƒY)‚ÖˆÚs‚·‚é
-            // BlockManager.StartFinalSequence() ‚ªŠù‘¶‚Ìƒ^ƒ[”j‰ó/ƒJƒƒ‰ˆÚ“®/ÅIƒuƒƒbƒN‘I‘ğ‚ÌŠJnˆ—‚ğ‚Á‚Ä‚¢‚é
+            // ãƒœã‚¹ã®å«ã³ã§ã‚¿ãƒ¯ãƒ¼ã‚‚ç ´å£Šã—ã€ãƒˆã‚¦scene(æœ€çµ‚ãƒ–ãƒ­ãƒƒã‚¯æ§‹ç¯‰ãƒ•ã‚§ãƒ¼ã‚º)ã¸ç§»è¡Œã™ã‚‹
+            // BlockManager.StartFinalSequence() ãŒæ—¢å­˜ã®ã‚¿ãƒ¯ãƒ¼ç ´å£Š/ã‚«ãƒ¡ãƒ©ç§»å‹•/æœ€çµ‚ãƒ–ãƒ­ãƒƒã‚¯é¸æŠã®é–‹å§‹å‡¦ç†ã‚’æŒã£ã¦ã„ã‚‹
             if (BlockManager.Instance != null)
             {
-                Debug.Log("[FakeVictorySequence] BlockManager.Instance.StartFinalSequence() ‚ğŒÄ‚Ño‚µ‚Ü‚·");
+                Debug.Log("[FakeVictorySequence] BlockManager.Instance.StartFinalSequence() ã‚’å‘¼ã³å‡ºã—ã¾ã™");
                 BlockManager.Instance.StartFinalSequence();
             }
             else
             {
-                Debug.LogWarning("[FakeVictorySequence] BlockManager.Instance ‚ªŒ©‚Â‚©‚ç‚È‚¢‚½‚ßAƒgƒEscene‚ÖˆÚs‚Å‚«‚Ü‚¹‚ñ‚Å‚µ‚½");
+                Debug.LogWarning("[FakeVictorySequence] BlockManager.Instance ãŒè¦‹ã¤ã‹ã‚‰ãªã„ãŸã‚ã€ãƒˆã‚¦sceneã¸ç§»è¡Œã§ãã¾ã›ã‚“ã§ã—ãŸ");
             }
         }
         else
         {
-            // (‹Œd—l) ‚»‚Ìê‚ÅƒŠƒUƒ‹ƒgƒ{ƒ^ƒ“‚ğ•\¦‚·‚é
+            // (æ—§ä»•æ§˜) ãã®å ´ã§ãƒªã‚¶ãƒ«ãƒˆãƒœã‚¿ãƒ³ã‚’è¡¨ç¤ºã™ã‚‹
             if (buttonGroup != null)
                 buttonGroup.SetActive(true);
 
@@ -190,7 +189,7 @@ public class FakeVictorySequence : MonoBehaviour
         }
     }
 
-    // „Ÿ„Ÿ„Ÿ ‰æ–Ê‚ª‘å‚«‚­—h‚ê‘±‚¯‚éiƒJƒƒ‰{ƒRƒ“ƒgƒ[ƒ‰[j „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ
+    // â”€â”€â”€ ç”»é¢ãŒå¤§ããæºã‚Œç¶šã‘ã‚‹ï¼ˆã‚«ãƒ¡ãƒ©ï¼‹ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼ï¼‰ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     IEnumerator CollapseShakeRoutine()
     {
         if (cameraShake == null) yield break;
@@ -205,12 +204,12 @@ public class FakeVictorySequence : MonoBehaviour
         }
     }
 
-    // „Ÿ„Ÿ„Ÿ UI‘S‘Ì‚ª‰º‚É—‰º‚µ‚È‚ª‚ç‰ñ“]‚µ‚Ä•ö‰ó‚·‚é „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ
+    // â”€â”€â”€ UIå…¨ä½“ãŒä¸‹ã«è½ä¸‹ã—ãªãŒã‚‰å›è»¢ã—ã¦å´©å£Šã™ã‚‹ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     IEnumerator CollapseUIRoutine()
     {
         if (uiRoot == null) yield break;
 
-        // uiRoot’¼‰º‚Ìq—v‘f‚»‚ê‚¼‚ê‚ğŒÂ•Ê‚É•ö‰ó‚³‚¹‚é
+        // uiRootç›´ä¸‹ã®å­è¦ç´ ãã‚Œãã‚Œã‚’å€‹åˆ¥ã«å´©å£Šã•ã›ã‚‹
         List<RectTransform> pieces = new List<RectTransform>();
         foreach (Transform child in uiRoot)
         {
@@ -218,7 +217,7 @@ public class FakeVictorySequence : MonoBehaviour
             if (rt != null) pieces.Add(rt);
         }
 
-        // Še—v‘f‚²‚Æ‚Éƒ‰ƒ“ƒ_ƒ€‚È‰ñ“]•ûŒüE—‰º‘¬“xE’x‰„‚ğİ’è
+        // å„è¦ç´ ã”ã¨ã«ãƒ©ãƒ³ãƒ€ãƒ ãªå›è»¢æ–¹å‘ãƒ»è½ä¸‹é€Ÿåº¦ãƒ»é…å»¶ã‚’è¨­å®š
         var startPositions = new Vector2[pieces.Count];
         var startRotations = new float[pieces.Count];
         var fallDistances = new float[pieces.Count];
@@ -247,14 +246,14 @@ public class FakeVictorySequence : MonoBehaviour
                 float duration = Mathf.Max(0.01f, collapseDuration - delays[i]);
                 float t = Mathf.Clamp01(localTime / duration);
 
-                // d—Í‚Á‚Û‚­‰Á‘¬‚µ‚È‚ª‚ç—‰ºiƒC[ƒYƒCƒ“j
+                // é‡åŠ›ã£ã½ãåŠ é€Ÿã—ãªãŒã‚‰è½ä¸‹ï¼ˆã‚¤ãƒ¼ã‚ºã‚¤ãƒ³ï¼‰
                 float fallT = t * t;
                 float y = startPositions[i].y - fallDistances[i] * fallT;
 
                 pieces[i].anchoredPosition = new Vector2(startPositions[i].x, y);
                 pieces[i].eulerAngles = new Vector3(0f, 0f, startRotations[i] + rotateSpeeds[i] * t);
 
-                // —‰º‚µ‚È‚ª‚ç™X‚É”–‚­‚·‚é
+                // è½ä¸‹ã—ãªãŒã‚‰å¾ã€…ã«è–„ãã™ã‚‹
                 var canvasGroup = pieces[i].GetComponent<CanvasGroup>();
                 if (canvasGroup != null)
                     canvasGroup.alpha = 1f - t;
@@ -263,7 +262,7 @@ public class FakeVictorySequence : MonoBehaviour
             yield return null;
         }
 
-        // •ö‰óI—¹ŒãAUI—v‘f‚Í”ñ•\¦‚É‚µ‚Ä‚¨‚­
+        // å´©å£Šçµ‚äº†å¾Œã€UIè¦ç´ ã¯éè¡¨ç¤ºã«ã—ã¦ãŠã
         if (uiRoot != null)
             uiRoot.gameObject.SetActive(false);
     }
@@ -272,7 +271,7 @@ public class FakeVictorySequence : MonoBehaviour
     {
         if (!buttonInputEnabled) return;
 
-        // ‘I‘ğ’†‚Ìƒ{ƒ^ƒ“‚¾‚¯Šg‘åA‚»‚êˆÈŠO‚Ík¬
+        // é¸æŠä¸­ã®ãƒœã‚¿ãƒ³ã ã‘æ‹¡å¤§ã€ãã‚Œä»¥å¤–ã¯ç¸®å°
         for (int i = 0; i < buttonRects.Length; i++)
         {
             if (buttonRects[i] == null) continue;
@@ -282,10 +281,8 @@ public class FakeVictorySequence : MonoBehaviour
             buttonRects[i].localScale = new Vector3(next, next, 1f);
         }
 
-        if (Gamepad.current == null) return;
-
         navInputTimer -= Time.unscaledDeltaTime;
-        float horizontal = Gamepad.current.leftStick.x.ReadValue();
+        float horizontal = Gamepad.current != null ? Gamepad.current.leftStick.x.ReadValue() : 0f;
 
         if (navInputTimer <= 0f)
         {
@@ -301,7 +298,12 @@ public class FakeVictorySequence : MonoBehaviour
             }
         }
 
-        if (Gamepad.current[confirmGamepadButton].wasPressedThisFrame)
+        // ãƒã‚¦ã‚¹ï¼šãƒ›ãƒãƒ¼ã§é¸æŠã€ã‚¯ãƒªãƒƒã‚¯ã§æ±ºå®š
+        int hovered = MenuInput.PointerOverIndex(buttonRects);
+        if (hovered >= 0 && (MenuInput.PointerMoved() || MenuInput.LeftClicked()))
+            buttonFocus = hovered;
+
+        if (MenuInput.ConfirmPressed() || (hovered >= 0 && MenuInput.LeftClicked()))
         {
             ConfirmButton();
         }
@@ -319,17 +321,17 @@ public class FakeVictorySequence : MonoBehaviour
 
         switch (buttonFocus)
         {
-            case 0: // ƒŠƒvƒŒƒC
+            case 0: // ãƒªãƒ—ãƒ¬ã‚¤
                 Time.timeScale = 1f;
                 SceneManager.LoadScene(gameSceneName);
                 break;
 
-            case 1: // ƒXƒ^ƒbƒtƒ[ƒ‹
+            case 1: // ã‚¹ã‚¿ãƒƒãƒ•ãƒ­ãƒ¼ãƒ«
                 if (staffRollObject != null)
                     staffRollObject.SetActive(true);
                 break;
 
-            case 2: // ƒ^ƒCƒgƒ‹
+            case 2: // ã‚¿ã‚¤ãƒˆãƒ«
                 Time.timeScale = 1f;
                 SceneManager.LoadScene(titleSceneName);
                 break;
