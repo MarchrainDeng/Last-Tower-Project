@@ -61,20 +61,19 @@ public static class MyTownSceneBuilder
         scaler.matchWidthOrHeight = 0.5f;
         var canvasRect = canvasGo.GetComponent<RectTransform>();
 
-        // 2.5D 背景（奥ほど動きが小さい）。画像なしなので色の帯で奥行きを出す
-        var backdrop = Layer(canvasRect, "Layer_Sky", new Color(0.10f, 0.12f, 0.22f), 0f, 1f, 2400f);
-        var hills = Layer(canvasRect, "Layer_Hills", new Color(0.07f, 0.09f, 0.16f), 0f, 0.45f, 2400f);
-        var town = Layer(canvasRect, "Layer_Town", new Color(0.04f, 0.05f, 0.09f), 0f, 0.28f, 2400f);
-        var ground = Layer(canvasRect, "Layer_Ground", new Color(0.02f, 0.02f, 0.04f), 0f, 0.12f, 2400f);
+        // 背景（カメラ固定なので動かない）。画像なしなので色の帯で奥行きを出す
+        Layer(canvasRect, "Layer_Sky", new Color(0.10f, 0.12f, 0.22f), 0f, 1f, 2400f);
+        Layer(canvasRect, "Layer_Hills", new Color(0.07f, 0.09f, 0.16f), 0f, 0.45f, 2400f);
+        Layer(canvasRect, "Layer_Town", new Color(0.04f, 0.05f, 0.09f), 0f, 0.28f, 2400f);
+        Layer(canvasRect, "Layer_Ground", new Color(0.02f, 0.02f, 0.04f), 0f, 0.12f, 2400f);
 
         // 場所ボタン
         var buttons = new MyTownLocationButton[Spots.Length];
         for (int i = 0; i < Spots.Length; i++)
             buttons[i] = MakeLocation(canvasRect, Spots[i], font);
 
-        // 起動時と同じく、左端の場所を選択状態にしてシーン上に見せる
-        buttons[0].background.color = buttons[0].selectedColor;
-        buttons[0].transform.localScale = Vector3.one * buttons[0].selectedScale;
+        // プレイヤー（紫の四角）。場所より手前、場所UIより奥に描く
+        var player = MakePlayer(canvasRect);
 
         // 場所UI（半透明の黒）
         var panelGo = new GameObject("LocationPanel", typeof(RectTransform), typeof(Image), typeof(MyTownLocationPanel));
@@ -92,8 +91,7 @@ public static class MyTownSceneBuilder
         var ctrl = ctrlGo.GetComponent<MyTownController>();
         ctrl.locations = buttons;
         ctrl.panel = panelGo.GetComponent<MyTownLocationPanel>();
-        ctrl.parallaxLayers = new[] { backdrop, hills, town, ground };
-        ctrl.parallaxStrength = new[] { 20f, 45f, 80f, 130f };
+        ctrl.player = player;
         ctrl.audioSource = ctrlGo.GetComponent<AudioSource>();
         ctrl.audioSource.playOnAwake = false;
         UnityEventTools.AddPersistentListener(backButton.onClick, ctrl.ClosePanel);
@@ -141,6 +139,20 @@ public static class MyTownSceneBuilder
         // 実行しなくてもシーン上で見えるよう、通常時の色を焼き込む
         btn.background.color = btn.normalColor;
         return btn;
+    }
+
+    static MyTownPlayer MakePlayer(RectTransform parent)
+    {
+        var go = new GameObject("Player", typeof(RectTransform), typeof(Image), typeof(MyTownPlayer));
+        var rt = go.GetComponent<RectTransform>();
+        rt.SetParent(parent, false);
+        rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+        rt.sizeDelta = new Vector2(70, 70);
+        rt.anchoredPosition = Vector2.zero;
+        var img = go.GetComponent<Image>();
+        img.color = new Color(0.62f, 0.30f, 0.85f, 1f);
+        img.raycastTarget = false;
+        return go.GetComponent<MyTownPlayer>();
     }
 
     static Button MakeBackButton(RectTransform parent, TMP_FontAsset font)

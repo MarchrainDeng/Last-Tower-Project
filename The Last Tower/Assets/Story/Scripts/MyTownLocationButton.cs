@@ -5,9 +5,9 @@ using UnityEngine.UI;
 
 /// <summary>
 /// マイタウンの場所ボタン1つ分
-/// マウスのクリック/ホバーをコントローラーへ中継し、選択状態の見た目を更新する
+/// マウスのクリックをコントローラーへ中継し、選択状態の見た目を更新する
 /// </summary>
-public class MyTownLocationButton : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler
+public class MyTownLocationButton : MonoBehaviour, IPointerClickHandler
 {
     [Header("── 場所 ──────────────────────")]
     public string locationId;
@@ -42,11 +42,6 @@ public class MyTownLocationButton : MonoBehaviour, IPointerEnterHandler, IPointe
         if (background != null)
             background.color = !IsUnlocked ? lockedColor : (selected ? selectedColor : normalColor);
         transform.localScale = Vector3.one * (selected && IsUnlocked ? selectedScale : 1f);
-    }
-
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        if (controller != null) controller.HoverLocation(index);
     }
 
     public void OnPointerClick(PointerEventData eventData)
