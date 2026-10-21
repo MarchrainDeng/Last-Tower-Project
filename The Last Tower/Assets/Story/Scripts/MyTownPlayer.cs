@@ -2,22 +2,24 @@ using System;
 using UnityEngine;
 
 /// <summary>
-/// マイタウンを歩き回るプレイヤー（今は紫の四角）
+/// マイタウンを歩き回るプレイヤー（今は仮の人型シルエット）
 /// 入力は MyTownController が読み、ここでは移動・自動移動・登場演出だけを行う
-/// 座標は親（Canvas）のローカル座標。奥行きはなく普通のトップダウン
+/// 座標は親（MyTownWorld）のローカル座標で、pivotは足元。奥ほど小さく・遅くなる
 /// </summary>
 [RequireComponent(typeof(RectTransform))]
 public class MyTownPlayer : MonoBehaviour
 {
     [Header("── 移動 ──────────────────────")]
-    public float moveSpeed = 600f;     // 1秒あたりの移動量（Canvas座標）
-    public float areaMargin = 20f;     // 画面端からの余白
+    public float moveSpeed = 600f;     // 一番手前での1秒あたりの移動量（Canvas座標）
+    [Tooltip("奥に行くと上下の移動が遅く見えるよう、縦の速さにかける倍率")]
+    public float verticalSpeedRate = 0.7f;
 
     [Header("── 登場演出 ────────────────────")]
+    public Vector2 startPosition = new Vector2(0f, -180f); // 登場位置（画面の真ん中あたりの地面）
     public float appearDuration = 0.4f;
 
     RectTransform rect;
-    RectTransform area;
+    MyTownWorld world;
     float appearTimer;
 
     // クリックした場所まで自動で歩く
@@ -26,11 +28,12 @@ public class MyTownPlayer : MonoBehaviour
 
     public Vector2 Position => rect.localPosition;
     public bool IsAppearing => appearTimer < appearDuration;
+    public float DepthScale => world != null ? world.ScaleAt(Position.y) : 1f;
 
     void Awake()
     {
         rect = GetComponent<RectTransform>();
-        area = rect.parent as RectTransform;
+        world = GetComponentInParent<MyTownWorld>();
     }
 
     /// <summary>
@@ -38,7 +41,7 @@ public class MyTownPlayer : MonoBehaviour
     /// </summary>
     public void Appear()
     {
-        rect.localPosition = Vector3.zero;
+        rect.localPosition = ClampToArea(startPosition);
         appearTimer = 0f;
         rect.localScale = Vector3.zero;
         walkTarget = null;
@@ -46,13 +49,15 @@ public class MyTownPlayer : MonoBehaviour
 
     void Update()
     {
-        if (!IsAppearing) return;
-
-        appearTimer += Time.unscaledDeltaTime;
-        float t = Mathf.Clamp01(appearTimer / appearDuration);
-        // 少し大きくなってから戻る（イーズアウトバック）
-        float s = 1f + 2.7f * Mathf.Pow(t - 1f, 3f) + 1.7f * Mathf.Pow(t - 1f, 2f);
-        rect.localScale = Vector3.one * s;
+        float pop = 1f;
+        if (IsAppearing)
+        {
+            appearTimer += Time.unscaledDeltaTime;
+            float t = Mathf.Clamp01(appearTimer / appearDuration);
+            // 少し大きくなってから戻る（イーズアウトバック）
+            pop = 1f + 2.7f * Mathf.Pow(t - 1f, 3f) + 1.7f * Mathf.Pow(t - 1f, 2f);
+        }
+        rect.localScale = Vector3.one * DepthScale * pop;
     }
 
     /// <summary>
@@ -60,16 +65,19 @@ public class MyTownPlayer : MonoBehaviour
     /// </summary>
     public void Move(Vector2 direction)
     {
+        float speed = moveSpeed * DepthScale * Time.unscaledDeltaTime;
+
         if (direction != Vector2.zero)
         {
             walkTarget = null;
-            SetPosition(Position + direction * moveSpeed * Time.unscaledDeltaTime);
+            direction.y *= verticalSpeedRate;
+            SetPosition(Position + direction * speed);
             return;
         }
 
         if (walkTarget.HasValue)
         {
-            Vector2 next = Vector2.MoveTowards(Position, walkTarget.Value, moveSpeed * Time.unscaledDeltaTime);
+            Vector2 next = Vector2.MoveTowards(Position, walkTarget.Value, speed);
             SetPosition(next);
 
             if ((next - walkTarget.Value).sqrMagnitude < 1f)
@@ -104,12 +112,6 @@ public class MyTownPlayer : MonoBehaviour
 
     Vector2 ClampToArea(Vector2 position)
     {
-        if (area == null) return position;
-
-        Rect r = area.rect;
-        Vector2 half = rect.rect.size * 0.5f + Vector2.one * areaMargin;
-        position.x = Mathf.Clamp(position.x, r.xMin + half.x, r.xMax - half.x);
-        position.y = Mathf.Clamp(position.y, r.yMin + half.y, r.yMax - half.y);
-        return position;
+        return world != null ? world.Clamp(position) : position;
     }
 }

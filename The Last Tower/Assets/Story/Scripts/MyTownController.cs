@@ -6,6 +6,7 @@ using UnityEngine.InputSystem;
 ///
 /// プレイヤーはマップを自由に移動でき、利用できる場所の前で決定を押すとその場所のUIを表示する
 /// カメラは固定。最初はプレイヤーが画面の真ん中から登場する
+/// 奥行き（奥ほど小さく・遅く・霧がかる）は MyTownWorld が管理する
 ///
 /// 【操作】
 /// - キーボード: WASD / 矢印キーで移動、Enter/Space で決定、Esc/Backspace で戻る
@@ -34,10 +35,12 @@ public class MyTownController : MonoBehaviour
     public AudioClip confirmSE;
 
     int selectedIndex = -1;
+    MyTownWorld world;
 
     void Start()
     {
         Time.timeScale = 1f;
+        if (player != null) world = player.GetComponentInParent<MyTownWorld>();
 
         for (int i = 0; i < locations.Length; i++)
             locations[i].Init(this, i);
@@ -124,7 +127,7 @@ public class MyTownController : MonoBehaviour
         }
 
         Rect r = GetLocalRect(locations[index]);
-        Vector2 front = new Vector2(r.center.x, r.yMin - frontOffset);
+        Vector2 front = new Vector2(r.center.x, r.yMin - frontOffset * DepthScaleAt(r.yMin));
         player.WalkTo(front, () =>
         {
             Select(index);
@@ -143,19 +146,26 @@ public class MyTownController : MonoBehaviour
     int FindNearestLocation()
     {
         int best = -1;
-        float bestDistance = interactDistance;
+        float bestDistance = float.MaxValue;
         for (int i = 0; i < locations.Length; i++)
         {
             if (!locations[i].IsUnlocked) continue;
 
-            float d = DistanceToRect(player.Position, GetLocalRect(locations[i]));
-            if (d <= bestDistance)
+            Rect r = GetLocalRect(locations[i]);
+            // 奥の建物は小さく見えるので、入れる距離も奥行きに合わせて縮める
+            float d = DistanceToRect(player.Position, r);
+            if (d <= interactDistance * DepthScaleAt(r.yMin) && d < bestDistance)
             {
                 best = i;
                 bestDistance = d;
             }
         }
         return best;
+    }
+
+    float DepthScaleAt(float y)
+    {
+        return world != null ? world.ScaleAt(y) : 1f;
     }
 
     // 場所の範囲をプレイヤーの親（Canvas）の座標で取得
