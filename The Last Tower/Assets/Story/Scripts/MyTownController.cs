@@ -26,6 +26,15 @@ public class MyTownController : MonoBehaviour
     [Tooltip("クリックで歩いていく時、場所の下端からどれだけ手前で止まるか")]
     public float frontOffset = 50f;
 
+    [Header("── 釣り ───────────────────────")]
+    public MyTownFishing fishing;
+    [Tooltip("池の前に来た時にプレイヤーの頭上に出す案内")]
+    public GameObject pondPrompt;
+    [Tooltip("一番手前の地面からこの距離以内なら池の前とみなす（Canvas座標）")]
+    public float pondReach = 50f;
+    [Tooltip("池の横幅の半分（Canvas座標）")]
+    public float pondHalfWidth = 500f;
+
     [Header("── 入力 ───────────────────────")]
     public float stickDeadZone = 0.5f;
 
@@ -46,12 +55,16 @@ public class MyTownController : MonoBehaviour
             locations[i].Init(this, i);
 
         if (panel != null) panel.Hide();
+        if (pondPrompt != null) pondPrompt.SetActive(false);
 
         if (player != null) player.Appear();
     }
 
     void Update()
     {
+        // 釣り中は釣り画面に操作を任せる
+        if (fishing != null && fishing.IsActive) return;
+
         if (panel != null && panel.IsOpen)
         {
             if (CancelPressed() || ConfirmPressed()) ClosePanel();
@@ -69,7 +82,15 @@ public class MyTownController : MonoBehaviour
             if (nearest >= 0) PlaySE(moveSE);
         }
 
-        if (ConfirmPressed()) OpenSelected();
+        // 建物の前でなければ、池の前で釣りができる
+        bool nearPond = selectedIndex < 0 && IsNearPond();
+        if (pondPrompt != null && pondPrompt.activeSelf != nearPond) pondPrompt.SetActive(nearPond);
+
+        if (ConfirmPressed())
+        {
+            if (selectedIndex >= 0) OpenSelected();
+            else if (nearPond) StartFishing();
+        }
     }
 
     // ─── 入力 ───────────────────────────────────────────────────
@@ -139,6 +160,41 @@ public class MyTownController : MonoBehaviour
     public void ClosePanel()
     {
         if (panel != null) panel.Hide();
+    }
+
+    // ─── 釣り ───────────────────────────────────────────────────
+    // 池をクリックしたら、岸のクリックした位置まで歩いて釣りを始める（MyTownPond から呼ばれる）
+    public void ClickPond(Vector2 screenPosition)
+    {
+        if (panel != null && panel.IsOpen) return;
+        if (fishing == null || fishing.IsActive) return;
+
+        if (player == null)
+        {
+            StartFishing();
+            return;
+        }
+
+        var space = (RectTransform)player.transform.parent;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(space, screenPosition, null, out var local);
+        float shoreY = world != null ? world.nearY : player.Position.y;
+        player.WalkTo(new Vector2(Mathf.Clamp(local.x, -pondHalfWidth, pondHalfWidth), shoreY), StartFishing);
+    }
+
+    bool IsNearPond()
+    {
+        if (fishing == null || player == null || world == null) return false;
+        return player.Position.y <= world.nearY + pondReach && Mathf.Abs(player.Position.x) <= pondHalfWidth;
+    }
+
+    void StartFishing()
+    {
+        if (fishing == null || fishing.IsActive) return;
+        if (player != null) player.StopWalking();
+        if (pondPrompt != null) pondPrompt.SetActive(false);
+        Select(-1);
+        PlaySE(confirmSE);
+        fishing.Begin(null);
     }
 
     // ─── 選択 ───────────────────────────────────────────────────

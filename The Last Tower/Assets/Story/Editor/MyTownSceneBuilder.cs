@@ -17,7 +17,7 @@ using UnityEngine.UI;
 /// - 奥（上）ほど建物が小さく、霧で青白くかすむ
 /// - 地平線の奥に城と屋根のシルエット、手前ほど暗い地面、奥へ細くなる道
 /// </summary>
-public static class MyTownSceneBuilder
+public static partial class MyTownSceneBuilder
 {
     const string ScenePath = "Assets/Scenes/MyTownScene.unity";
     const string FontPath = "Assets/Sasaki/JA_KO SDF.asset";
@@ -77,26 +77,31 @@ public static class MyTownSceneBuilder
         scaler.matchWidthOrHeight = 0.5f;
         var canvasRect = canvasGo.GetComponent<RectTransform>();
 
+        // 町全体（釣りを始める時にこれごと池へ寄せる）
+        var townView = Group(canvasRect, "TownView");
+
         // 背景（カメラ固定なので動かない）
-        var backdrop = Group(canvasRect, "Backdrop");
+        var backdrop = Group(townView, "Backdrop");
         BuildSky(backdrop);
         BuildFarTown(backdrop);
         BuildGround(backdrop);
 
         // 奥行きのある世界（建物とプレイヤー。足元のYで前後が並び替わる）
-        var worldGroup = Group(canvasRect, "World");
+        var worldGroup = Group(townView, "World");
         var world = worldGroup.gameObject.AddComponent<MyTownWorld>();
         BuildRoad(backdrop, world);
+        var pond = BuildPond(backdrop);
 
         var buttons = new MyTownLocationButton[Spots.Length];
         for (int i = 0; i < Spots.Length; i++)
             buttons[i] = MakeLocation(worldGroup, Spots[i], font, world);
 
         var player = MakePlayer(worldGroup, world);
+        var pondPrompt = MakePondPrompt((RectTransform)player.transform, font);
         world.SortByDepth();
 
         // 手前を暗くして、画面の端を締める
-        BuildVignette(canvasRect);
+        BuildVignette(townView);
 
         // 場所UI（半透明の黒）
         var panelGo = new GameObject("LocationPanel", typeof(RectTransform), typeof(Image), typeof(MyTownLocationPanel));
@@ -118,6 +123,11 @@ public static class MyTownSceneBuilder
         ctrl.audioSource = ctrlGo.GetComponent<AudioSource>();
         ctrl.audioSource.playOnAwake = false;
         UnityEventTools.AddPersistentListener(backButton.onClick, ctrl.ClosePanel);
+
+        // 釣り（池・釣り画面）
+        ctrl.fishing = BuildFishing(canvasRect, townView, font);
+        ctrl.pondPrompt = pondPrompt;
+        pond.controller = ctrl;
 
         EditorSceneManager.SaveScene(scene, ScenePath);
         AddToBuildSettings();
