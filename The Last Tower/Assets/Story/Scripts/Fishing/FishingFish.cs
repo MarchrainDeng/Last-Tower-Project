@@ -8,14 +8,22 @@ using UnityEngine.UI;
 /// 【流れ】
 /// Wander（うろうろ）→ 餌に気づくと Approach（そっと近づく）→ Nibble（つつく＝フェイント）
 /// → Bite（本アタリ。この間に合わせる）→ Hooked（ファイト中。動きは MyTownFishing が決める）
+/// 本アタリは3種類（BiteKind）。種類ごとに猶予と、餌（ウキ）の動き方が違う
 /// 餌を速く動かしたり、早合わせしたり、合わせ損ねると Flee（逃げる）→ Gone（消える）
 ///
 /// 見た目は全部コードで作る（楕円の影＋しっぽ。スキャン中は光と名札を出す）
-/// 座標は釣り画面のカメラ（MyTownFishing.content）のローカル座標
+/// 座標は池の座標（真上から見た図）。画面に映すのは FishingBackView で、
+/// ここでは「どう見えるか」（影の濃さ・光・名札）を ShadowAlpha などで渡す
 /// </summary>
 public class FishingFish : MonoBehaviour
 {
     public enum State { Wander, Approach, Nibble, Bite, Hooked, Flee, Gone }
+
+    /// <summary>
+    /// 本アタリの出方
+    /// Sudden: 消し込み（一気に沈む）/ Hold: 居食い（少し沈んで止まる）/ Lift: 食い上げ（浮いて横に流れる）
+    /// </summary>
+    public enum BiteKind { Sudden, Hold, Lift }
 
     const float BaseAlpha = 0.45f;
     const float RevealedAlpha = 0.8f;
@@ -24,6 +32,17 @@ public class FishingFish : MonoBehaviour
     public float SizeCm { get; private set; }
     public State Current { get; private set; }
     public Vector2 Position { get; private set; }
+    public BiteKind CurrentBite { get; private set; }
+    // 本アタリが始まってからの経過（0〜1）。待つほど深く食い込む
+    public float BiteProgress => biteDuration > 0f ? Mathf.Clamp01(1f - stateTimer / biteDuration) : 0f;
+
+    // 見た目（FishingBackView が使う）
+    public float Heading => heading;
+    public float ShadowAlpha { get; private set; }
+    public float GlowAlpha { get; private set; }
+    public Color GlowColor { get; private set; }
+    public string LabelText { get; private set; }     // サーチで光っている間だけ。それ以外は null
+    public float LabelAlpha { get; private set; }
 
     MyTownFishing pond;
     RectTransform rect, body, tail;
@@ -39,6 +58,8 @@ public class FishingFish : MonoBehaviour
     bool darting;           // つつく瞬間の突進中
     float revealDelay, revealTimer;
     float thrash, tired;    // ファイト中の見た目（暴れ具合・疲れ具合）
+    float biteDuration;
+    bool hidden;            // エラ洗いで水面から飛び出している間は影を消す
 
     float Length => Species.shadowLength;
     float ContactDistance => Length * 0.5f + 8f;
@@ -148,6 +169,13 @@ public class FishingFish : MonoBehaviour
     {
         Current = State.Hooked;
         velocity = Vector2.zero;
+        hidden = false;
+    }
+
+    public void SetHidden(bool value)
+    {
+        hidden = value;
+        Apply(0f);
     }
 
     /// <summary>
@@ -293,7 +321,10 @@ public class FishingFish : MonoBehaviour
                 else
                 {
                     Current = State.Bite;
-                    stateTimer = Species.biteWindow * pond.biteWindowScale;
+                    CurrentBite = PickBite();
+                    // 居食いは気づきにくい分、猶予を長く
+                    float rate = CurrentBite == BiteKind.Hold ? 1.8f : CurrentBite == BiteKind.Lift ? 1.3f : 1f;
+                    biteDuration = stateTimer = Species.biteWindow * pond.biteWindowScale * rate;
                     pond.OnBite(this);
                 }
             }
@@ -309,11 +340,22 @@ public class FishingFish : MonoBehaviour
         }
     }
 
+    BiteKind PickBite()
+    {
+        float total = Species.suddenBite + Species.holdBite + Species.liftBite;
+        if (total <= 0f) return BiteKind.Sudden;
+        float r = Random.value * total;
+        if ((r -= Species.suddenBite) < 0f) return BiteKind.Sudden;
+        if ((r -= Species.holdBite) < 0f) return BiteKind.Hold;
+        return BiteKind.Lift;
+    }
+
     void Bite(float dt)
     {
-        // 餌をくわえたまま少し引き込む
+        // 消し込みは餌をくわえて引き込み、居食いはその場でじっと、食い上げは餌をくわえたまま岸の方へ上がってくる
         Vector2 dir = (pond.BaitPosition - Position).normalized;
-        SwimToward(pond.BaitPosition - dir * (ContactDistance - 12f), Species.swimSpeed, dt);
+        float speed = CurrentBite == BiteKind.Hold ? Species.swimSpeed * 0.3f : Species.swimSpeed;
+        SwimToward(pond.BaitPosition - dir * (ContactDistance - 12f), speed, dt);
 
         stateTimer -= dt;
         if (stateTimer <= 0f)
@@ -375,11 +417,12 @@ public class FishingFish : MonoBehaviour
         bool hooked = Current == State.Hooked;
 
         // 暴れている魚は水面近くに上がってくるので、影が濃く大きく見える
-        float alpha = (revealed || hooked ? RevealedAlpha : BaseAlpha) * fade;
+        float alpha = (revealed || hooked ? RevealedAlpha : BaseAlpha) * fade * (hidden ? 0f : 1f);
         alpha = Mathf.Lerp(alpha, 0.95f * fade, thrash);
         alpha *= 1f - tired * 0.25f;
         var shadowColor = new Color(0.02f, 0.04f, 0.07f, alpha);
         shadow.color = tailImage.color = shadowColor;
+        ShadowAlpha = alpha;
         body.localScale = Vector3.one * (1f + thrash * 0.12f + Mathf.Sin(tailPhase * 0.5f) * thrash * 0.05f);
 
         float glowAlpha = 0f;
@@ -393,13 +436,17 @@ public class FishingFish : MonoBehaviour
         if (Species.glows) glowAlpha = Mathf.Max(glowAlpha, 0.18f + 0.08f * Mathf.Sin(Time.unscaledTime * 2.3f));
         glowColor.a = glowAlpha * fade;
         glow.color = glowColor;
+        GlowAlpha = glowColor.a;
+        GlowColor = glowColor;
 
         nameTag.gameObject.SetActive(revealed && !hooked);
-        if (revealed)
+        LabelText = null;
+        if (revealed && !hooked)
         {
             string name = FishingRecord.IsCaught(Species.id) ? Species.displayName : "？？？";
-            nameTag.text = name + "  <size=20>" + FishSpecies.SizeClass(Species.shadowLength) + "</size>";
-            nameTag.color = new Color(0.9f, 0.95f, 1f, Mathf.Clamp01(revealTimer) * fade);
+            nameTag.text = LabelText = name + "  <size=70%>" + FishSpecies.SizeClass(Species.shadowLength) + "</size>";
+            LabelAlpha = Mathf.Clamp01(revealTimer) * fade;
+            nameTag.color = new Color(0.9f, 0.95f, 1f, LabelAlpha);
         }
     }
 }

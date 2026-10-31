@@ -8,12 +8,14 @@ using UnityEngine.UI;
 /// マイタウンの釣り部分（町の手前の池と、釣り画面）を組み立てる
 /// MyTownSceneBuilder.Build から呼ばれる
 ///
-/// 釣り画面は池を真上から見た図。下に桟橋とプレイヤー・お助けロボ、上が池の奥
-/// 中身はすべて「Camera」の子にして、FishingCameraRig がそれを拡大・移動して寄り引きを作る
+/// 画面に映すのは、プレイヤーの後ろから池を見る構図（BackView）
+/// 池を真上から見た図（Camera 以下）は計算用に残しているだけで、透明にして隠しておく
 /// </summary>
 public static partial class MyTownSceneBuilder
 {
     const string SoundFolder = "Assets/Sound/";
+    const string FishSidePath = "Assets/Sprites/Fishing/fish_side.png";
+    const string FishTopPath = "Assets/Sprites/Fishing/fish_top.png";
 
     // ─── 町の池 ───────────────────────────────────────────────────
     // 道の突き当たり（画面の一番手前）にある池と桟橋。プレイヤーは岸に立って釣りを始める
@@ -75,6 +77,11 @@ public static partial class MyTownSceneBuilder
         var content = Center(view, "Camera", Vector2.zero, Vector2.zero, Color.clear, null);
         Object.DestroyImmediate(content.GetComponent<Image>());
         fishing.content = content;
+        // 真上から見た図は計算用。画面には出さない
+        var contentGroup = content.gameObject.AddComponent<CanvasGroup>();
+        contentGroup.alpha = 0f;
+        contentGroup.blocksRaycasts = false;
+        contentGroup.interactable = false;
         fishing.rig.root = content;
 
         BuildPondView(content, fishing);
@@ -105,14 +112,8 @@ public static partial class MyTownSceneBuilder
         scan.gameObject.SetActive(false);
 
         // 釣り上げた魚（跳ねる）
-        var catchFish = Center(content, "CatchFish", fishing.landingPoint, Vector2.zero, Color.clear, null);
-        Object.DestroyImmediate(catchFish.GetComponent<Image>());
-        fishing.catchFish = catchFish;
-        fishing.catchFishTail = Center(catchFish, "Tail", new Vector2(-50f, 0f), new Vector2(40f, 30f), Color.white, circle).GetComponent<Image>();
-        fishing.catchFishBody = Center(catchFish, "Body", Vector2.zero, new Vector2(120f, 45f), Color.white, circle).GetComponent<Image>();
-        var eye = Center(fishing.catchFishBody.rectTransform, "Eye", Vector2.zero, new Vector2(10f, 10f), Color.black, circle);
-        eye.anchorMin = eye.anchorMax = new Vector2(0.8f, 0.58f);
-        catchFish.gameObject.SetActive(false);
+        // 後ろから見た画面（演出UIの下）
+        fishing.backView = BuildBackView(view, fishing, font);
 
         // ─── 画面に固定のUI ───
         var flash = new GameObject("Flash", typeof(RectTransform), typeof(Image)).GetComponent<RectTransform>();
@@ -158,12 +159,18 @@ public static partial class MyTownSceneBuilder
         fishing.hintText.color = new Color(0.85f, 0.88f, 0.95f);
         fishing.hintText.raycastTarget = false;
 
-        // SE（無いものは空のまま）
-        fishing.castSE = LoadSound("UI Move.mp3");
-        fishing.splashSE = LoadSound("drop.mp3");
-        fishing.nibbleSE = LoadSound("UI Move.mp3");
-        fishing.biteSE = LoadSound("UI Decis.mp3");
-        fishing.hookSE = LoadSound("UI Decis.mp3");
+        // SE（Assets/Sound/Fishing の仮SE。無いものは空のまま）
+        fishing.castSE = LoadSound("Fishing/fish_cast.wav");
+        fishing.splashSE = LoadSound("Fishing/fish_splash.wav");
+        fishing.nibbleSE = LoadSound("Fishing/fish_plop.wav");
+        fishing.biteSE = LoadSound("Fishing/fish_bite.wav");
+        fishing.hookSE = LoadSound("Fishing/fish_hook.wav");
+        fishing.catchSE = LoadSound("Fishing/fish_catch.wav");
+        fishing.failSE = LoadSound("Fishing/fish_fail.wav");
+        fishing.snapSE = LoadSound("Fishing/fish_snap.wav");
+        fishing.jumpSE = LoadSound("Fishing/fish_jump.wav");
+        fishing.reelSE = LoadSound("Fishing/fish_reel.wav");
+        fishing.dragSE = LoadSound("Fishing/fish_drag.wav");
 
         viewGo.SetActive(false);
         return fishing;
@@ -246,8 +253,8 @@ public static partial class MyTownSceneBuilder
             if (img != null) img.raycastTarget = false;
         }
 
-        // 吹き出し
-        var bubble = Center(robotRoot, "Bubble", new Vector2(0f, 150f), new Vector2(520f, 76f), new Color(0.95f, 0.96f, 0.98f, 0.95f), null);
+        // 吹き出しはロボより内側（プレイヤーの頭上）に出して、寄った時に画面の右へはみ出さないようにする
+        var bubble = Center(robotRoot, "Bubble", new Vector2(-170f, 150f), new Vector2(520f, 76f), new Color(0.95f, 0.96f, 0.98f, 0.95f), null);
         bubble.GetComponent<Image>().raycastTarget = false;
         var bubbleText = MakeText(bubble, "Text", "", font, 28f, new Vector2(0.5f, 0.5f), new Vector2(500f, 70f));
         bubbleText.color = new Color(0.1f, 0.12f, 0.18f);
@@ -258,6 +265,186 @@ public static partial class MyTownSceneBuilder
         robot.bubble = bubble;
         robot.bubbleText = bubbleText;
         bubble.gameObject.SetActive(false);
+    }
+
+    // ─── 後ろから見た画面 ─────────────────────────────────────────
+    // プレイヤーの後ろから池を見る構図。手前右下から竿が大きく伸び、奥へ水面が横長に広がる
+    static FishingBackView BuildBackView(RectTransform view, MyTownFishing fishing, TMP_FontAsset font)
+    {
+        var go = new GameObject("BackView", typeof(RectTransform), typeof(FishingCameraRig), typeof(FishingBackView));
+        var root = go.GetComponent<RectTransform>();
+        root.SetParent(view, false);
+        Stretch(root);
+        var fv = go.GetComponent<FishingBackView>();
+        fv.font = font;
+        fv.fishTop = LoadSprite(FishTopPath);
+        fv.fishSide = LoadSprite(FishSidePath);
+        fishing.fishSide = fv.fishSide;
+        fv.rig = go.GetComponent<FishingCameraRig>();
+        fv.rig.maxShake = 30f;
+        fv.circle = circle;
+
+        var bg = new GameObject("Background", typeof(RectTransform), typeof(Image)).GetComponent<RectTransform>();
+        bg.SetParent(root, false);
+        Stretch(bg);
+        bg.GetComponent<Image>().color = new Color(0.05f, 0.07f, 0.12f);
+        bg.GetComponent<Image>().raycastTarget = false;
+
+        var cam = Layer(root, "Camera");
+        fv.rig.root = cam;
+        fv.world = cam;
+
+        // 夜空と月
+        Center(cam, "Sky", new Vector2(0f, 420f), new Vector2(2800f, 640f), new Color(0.07f, 0.09f, 0.16f), null);
+        Center(cam, "MoonGlow", new Vector2(560f, 360f), new Vector2(300f, 300f), new Color(0.8f, 0.85f, 0.9f, 0.1f), circle);
+        Center(cam, "Moon", new Vector2(560f, 360f), new Vector2(110f, 110f), new Color(0.88f, 0.9f, 0.82f), circle);
+
+        // 水面：奥（地平線）ほど明るく、手前ほど暗い帯を重ねる
+        const float horizon = 130f;
+        Color far = new Color(0.17f, 0.25f, 0.38f), near = new Color(0.04f, 0.09f, 0.16f);
+        const int bands = 10;
+        for (int i = 0; i < bands; i++)
+        {
+            float t0 = i / (float)bands, t1 = (i + 1) / (float)bands;
+            float top = Mathf.Lerp(horizon, -700f, t0 * t0);
+            float bottom = Mathf.Lerp(horizon, -700f, t1 * t1);
+            Box(cam, "Water_" + i, new Vector2(0f, bottom), new Vector2(2800f, top - bottom + 1f), Color.Lerp(far, near, t0));
+        }
+        // 水面に映る月（地平線から手前へ伸びる光の帯）
+        for (int i = 0; i < 7; i++)
+        {
+            float y = horizon - 20f - i * i * 9f;
+            Center(cam, "MoonStreak_" + i, new Vector2(520f - i * 6f, y), new Vector2(120f + i * 30f, 10f + i * 2f), new Color(0.88f, 0.9f, 0.82f, 0.22f - i * 0.025f), circle);
+        }
+        // 向こう岸と木のシルエット
+        var bank = new Color(0.04f, 0.05f, 0.08f);
+        Box(cam, "FarBank", new Vector2(0f, horizon - 6f), new Vector2(2800f, 40f), bank);
+        for (int i = 0; i < 14; i++)
+        {
+            float x = -1300f + i * 200f + (i * 53 % 90);
+            float s = 120f + (i * 37 % 110);
+            Center(cam, "Tree_" + i, new Vector2(x, horizon + s * 0.35f), new Vector2(s * 1.2f, s), bank, circle);
+        }
+
+        // 水面の小物：水中の魚の影・波紋・サーチの波・狙いの的
+        fv.shadowLayer = Layer(cam, "Shadows");
+        fv.rippleLayer = Layer(cam, "Ripples");
+        var scan = Center(cam, "ScanRing", Vector2.zero, Vector2.zero, new Color(0.4f, 0.9f, 1f, 0f), circle);
+        fv.scanRing = scan.GetComponent<Image>();
+        scan.gameObject.SetActive(false);
+        fv.reticle = Center(cam, "Reticle", Vector2.zero, new Vector2(150f, 44f), new Color(1f, 1f, 1f, 0.22f), circle);
+        Center(fv.reticle, "Dot", Vector2.zero, new Vector2(18f, 7f), new Color(1f, 1f, 1f, 0.9f), circle).anchorMin =
+            new Vector2(0.5f, 0.5f);
+
+        // ファイト中の魚（水面に出た背中・背びれ・引き波）
+        var fish = Layer(cam, "Fish");
+        fv.fish = fish;
+        fv.wake = Center(fish, "Wake", Vector2.zero, new Vector2(100f, 30f), new Color(1f, 1f, 1f, 0f), circle).GetComponent<Image>();
+        var fin = Box(fish, "Fin", Vector2.zero, new Vector2(30f, 30f), new Color(0.05f, 0.08f, 0.12f, 0.9f));
+        fin.pivot = new Vector2(0.5f, 0.5f);
+        fin.localRotation = Quaternion.Euler(0f, 0f, 45f);
+        fv.fishFin = fin;
+        var backSquash = Layer(fish, "BackSquash");
+        backSquash.localScale = new Vector3(1f, 0.45f, 1f);
+        fv.fishBack = Center(backSquash, "Back", Vector2.zero, new Vector2(100f, 44f), fv.backColor, fv.fishTop).GetComponent<Image>();
+
+        // 水から飛び出した魚（エラ洗い・釣り上げ）
+        var air = Layer(cam, "AirFish");
+        fv.airFish = air;
+        fv.airTail = Center(air, "Tail", new Vector2(-50f, 0f), new Vector2(40f, 30f), Color.white, circle).GetComponent<Image>();
+        fv.airBody = Center(air, "Body", Vector2.zero, new Vector2(120f, 45f), Color.white, circle).GetComponent<Image>();
+        var eye = Center(fv.airBody.rectTransform, "Eye", Vector2.zero, new Vector2(10f, 10f), Color.black, circle);
+        eye.anchorMin = eye.anchorMax = new Vector2(0.8f, 0.58f);
+        air.gameObject.SetActive(false);
+
+        fv.sprayLayer = Layer(cam, "Spray");
+
+        // 糸と竿（どちらも原点に置き、頂点はカメラ座標で描く）
+        fv.line = MakeCurve(cam, "Line", 3f, new Color(0.92f, 0.94f, 1f, 0.9f));
+
+        // ウキ（原点が水面。上半分が赤、下が白、上に細い棒）
+        var bobber = Layer(cam, "Bobber");
+        fv.bobber = bobber;
+        Center(bobber, "Bottom", new Vector2(0f, 6f), new Vector2(22f, 16f), Color.white, circle);
+        fv.bobberImage = Center(bobber, "Top", new Vector2(0f, 16f), new Vector2(24f, 22f), new Color(0.92f, 0.25f, 0.2f), circle).GetComponent<Image>();
+        Box(bobber, "Stick", new Vector2(0f, 24f), new Vector2(4f, 18f), new Color(0.92f, 0.25f, 0.2f));
+
+        fv.rod = MakeCurve(cam, "Rod", 18f, new Color(0.55f, 0.40f, 0.24f));
+
+        // プレイヤーの手とリール（竿の根元。下の案内バーに隠れない高さ）
+        var purple = new Color(0.62f, 0.30f, 0.85f);
+        Center(cam, "Sleeve", new Vector2(440f, -520f), new Vector2(260f, 190f), purple * 0.8f + new Color(0f, 0f, 0f, 0.2f), circle);
+        fv.reel = Center(cam, "Reel", new Vector2(250f, -390f), new Vector2(84f, 84f), new Color(0.72f, 0.75f, 0.8f), circle);
+        var handle = Box(fv.reel, "Handle", Vector2.zero, new Vector2(12f, 56f), new Color(0.3f, 0.3f, 0.35f));
+        handle.anchoredPosition = Vector2.zero;
+        Center(fv.reel, "Knob", new Vector2(0f, 54f), new Vector2(26f, 26f), new Color(0.95f, 0.75f, 0.3f), circle);
+        Center(cam, "Hand", new Vector2(330f, -430f), new Vector2(110f, 90f), new Color(0.75f, 0.50f, 0.95f), circle);
+
+        // 合図の記号（横走りの向き・エラ洗いの予兆・竿を倒す向き）
+        fv.runArrow = MakeText(cam, "RunArrow", "≫", font, 110f, new Vector2(0.5f, 0.5f), new Vector2(220f, 140f));
+        fv.runArrow.color = new Color(0.9f, 0.97f, 1f);
+        fv.runArrow.fontStyle = FontStyles.Bold;
+        fv.jumpMark = MakeText(cam, "JumpMark", "！", font, 150f, new Vector2(0.5f, 0.5f), new Vector2(200f, 200f));
+        fv.jumpMark.color = new Color(1f, 0.82f, 0.25f);
+        fv.jumpMark.fontStyle = FontStyles.Bold;
+        fv.tiltHint = MakeText(cam, "TiltHint", "竿を右へ ▶", font, 44f, new Vector2(0.5f, 0.5f), new Vector2(420f, 70f));
+        fv.tiltHint.color = new Color(1f, 0.82f, 0.25f);
+        fv.tiltHint.fontStyle = FontStyles.Bold;
+        foreach (var t in new[] { fv.runArrow, fv.jumpMark, fv.tiltHint })
+        {
+            t.raycastTarget = false;
+            t.gameObject.SetActive(false);
+        }
+
+        // ロボ（左下。クリックでサーチ／アシスト）
+        var face = new GameObject("Robot", typeof(RectTransform), typeof(Image), typeof(Button)).GetComponent<RectTransform>();
+        face.SetParent(root, false);
+        face.anchorMin = face.anchorMax = new Vector2(0f, 0f);
+        face.sizeDelta = new Vector2(150f, 130f);
+        face.anchoredPosition = new Vector2(150f, 290f);
+        fv.robot = face;
+        // 体（頭の下）
+        Box(face, "Body", new Vector2(0f, -150f), new Vector2(100f, 90f), new Color(0.62f, 0.66f, 0.72f)).GetComponent<Image>().raycastTarget = false;
+        var faceImage = face.GetComponent<Image>();
+        faceImage.sprite = circle;
+        faceImage.color = new Color(0.72f, 0.76f, 0.82f);
+        UnityEventTools.AddPersistentListener(face.GetComponent<Button>().onClick, fishing.RobotAction);
+        Center(face, "Visor", new Vector2(0f, 2f), new Vector2(104f, 56f), new Color(0.08f, 0.10f, 0.14f), circle).GetComponent<Image>().raycastTarget = false;
+        fv.robotEye = Center(face, "Eye", new Vector2(0f, 2f), new Vector2(42f, 26f), fv.eyeNormal, circle).GetComponent<Image>();
+        fv.robotEye.raycastTarget = false;
+        Box(face, "Antenna", new Vector2(0f, 60f), new Vector2(6f, 30f), new Color(0.62f, 0.66f, 0.72f));
+        Center(face, "AntennaTip", new Vector2(0f, 96f), new Vector2(18f, 18f), new Color(0.95f, 0.75f, 0.3f), circle);
+
+        var bubble = Center(root, "Bubble", Vector2.zero, new Vector2(560f, 84f), new Color(0.95f, 0.96f, 0.98f, 0.95f), null);
+        bubble.anchorMin = bubble.anchorMax = new Vector2(0f, 0f);
+        bubble.pivot = new Vector2(0f, 0.5f);
+        bubble.anchoredPosition = new Vector2(250f, 320f);
+        bubble.GetComponent<Image>().raycastTarget = false;
+        var bubbleText = MakeText(bubble, "Text", "", font, 32f, new Vector2(0.5f, 0.5f), new Vector2(540f, 78f));
+        bubbleText.color = new Color(0.1f, 0.12f, 0.18f);
+        bubbleText.enableAutoSizing = true;
+        bubbleText.fontSizeMin = 18f;
+        bubbleText.fontSizeMax = 32f;
+        bubbleText.raycastTarget = false;
+        fv.bubble = bubble;
+        fv.bubbleText = bubbleText;
+        bubble.gameObject.SetActive(false);
+
+        foreach (var img in cam.GetComponentsInChildren<Image>(true)) img.raycastTarget = false;
+        return fv;
+    }
+
+    static FishingLineGraphic MakeCurve(RectTransform parent, string name, float thickness, Color color)
+    {
+        var go = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(FishingLineGraphic));
+        var rt = go.GetComponent<RectTransform>();
+        rt.SetParent(parent, false);
+        rt.sizeDelta = Vector2.zero;
+        var curve = go.GetComponent<FishingLineGraphic>();
+        curve.thickness = thickness;
+        curve.color = color;
+        curve.raycastTarget = false;
+        return curve;
     }
 
     // 釣果カード
@@ -271,7 +458,7 @@ public static partial class MyTownSceneBuilder
 
         fishing.resultBadge = MakeText(panel, "Badge", "", font, 40f, new Vector2(0.5f, 0.9f), new Vector2(700f, 60f));
         fishing.resultBadge.color = new Color(1f, 0.8f, 0.3f);
-        fishing.resultFish = Center(panel, "Fish", new Vector2(0f, 90f), new Vector2(240f, 84f), Color.white, circle).GetComponent<Image>();
+        fishing.resultFish = Center(panel, "Fish", new Vector2(0f, 90f), new Vector2(220f, 110f), Color.white, LoadSprite(FishSidePath)).GetComponent<Image>();
         fishing.resultName = MakeText(panel, "Name", "", font, 64f, new Vector2(0.5f, 0.5f), new Vector2(700f, 90f));
         fishing.resultName.rectTransform.anchoredPosition = new Vector2(0f, -10f);
         fishing.resultSize = MakeText(panel, "Size", "", font, 44f, new Vector2(0.5f, 0.5f), new Vector2(700f, 60f));
@@ -300,6 +487,7 @@ public static partial class MyTownSceneBuilder
         log.grid = Layer(panel, "Grid");
         log.grid.anchoredPosition = new Vector2(0f, -20f);
         log.circle = circle;
+        log.fishSprite = LoadSprite(FishSidePath);
         log.font = font;
 
         panelGo.SetActive(false);
@@ -327,6 +515,21 @@ public static partial class MyTownSceneBuilder
         rt.anchorMin = rt.anchorMax = rt.pivot = new Vector2(0.5f, 0.5f);
         rt.sizeDelta = Vector2.zero;
         return rt;
+    }
+
+    // 魚の形の画像を、UI で使えるスプライトとして読み込む（取り込み設定もここで直す）
+    static Sprite LoadSprite(string path)
+    {
+        var importer = AssetImporter.GetAtPath(path) as TextureImporter;
+        if (importer != null && importer.textureType != TextureImporterType.Sprite)
+        {
+            importer.textureType = TextureImporterType.Sprite;
+            importer.spriteImportMode = SpriteImportMode.Single;
+            importer.alphaIsTransparency = true;
+            importer.mipmapEnabled = false;
+            importer.SaveAndReimport();
+        }
+        return AssetDatabase.LoadAssetAtPath<Sprite>(path);
     }
 
     static AudioClip LoadSound(string file)

@@ -12,6 +12,8 @@ public class FishingLogPanel : MonoBehaviour
     public TMP_Text title;
     public RectTransform grid;
     public Sprite circle;
+    [Tooltip("横から見た魚の形。頭が右向き")]
+    public Sprite fishSprite;
     public TMP_FontAsset font;
 
     public int columns = 5;
@@ -52,12 +54,12 @@ public class FishingLogPanel : MonoBehaviour
 
         var card = Image(grid, "Card_" + s.id, null, position, cardSize, new Color(0.10f, 0.12f, 0.18f, 0.95f));
 
-        // 魚の絵（楕円＋しっぽ）。知らない魚はシルエット
+        // 魚の絵（横から見た形）。知らない魚はシルエット。細長い魚は細く
         Color fishColor = known ? s.color : new Color(0.05f, 0.05f, 0.08f);
-        float len = Mathf.Lerp(90f, 230f, Mathf.InverseLerp(60f, 220f, s.shadowLength));
-        Image(card, "Tail", circle, new Vector2(-len * 0.45f, 70f), new Vector2(len * 0.3f, len * s.shadowWidthRate * 0.8f), fishColor);
-        Image(card, "Fish", circle, new Vector2(0f, 70f), new Vector2(len, len * s.shadowWidthRate), fishColor);
-        if (known) Image(card, "Eye", circle, new Vector2(len * 0.32f, 74f), new Vector2(8f, 8f), Color.black);
+        float len = Mathf.Lerp(110f, 250f, Mathf.InverseLerp(60f, 220f, s.shadowLength));
+        float height = len * 0.5f * Mathf.Clamp(s.shadowWidthRate / 0.38f, 0.45f, 1.1f);
+        Image(card, "Fish", fishSprite != null ? fishSprite : circle, new Vector2(0f, 70f), new Vector2(len, height), fishColor);
+        if (known) Image(card, "Eye", circle, new Vector2(len * 0.33f, 70f + height * 0.06f), new Vector2(9f, 9f), Color.black);
 
         Text(card, "No", "No." + number.ToString("00"), new Vector2(-cardSize.x * 0.5f + 50f, cardSize.y * 0.5f - 26f), 22f, new Color(0.6f, 0.65f, 0.75f));
         Text(card, "Name", known ? s.displayName : "？？？", new Vector2(0f, -10f), 36f, Color.white);

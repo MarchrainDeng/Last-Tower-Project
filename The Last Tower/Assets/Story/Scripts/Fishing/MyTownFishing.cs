@@ -12,26 +12,36 @@ using UnityEngine.UI;
 /// 町の池の前で決定 → カメラが池に寄って釣り画面へ（Entering）
 /// Aim     : 投げる場所を狙う
 /// Casting : 餌が飛んでいく
-/// Lure    : 餌を自分で動かして魚を誘う。速く動かすと逃げる。本アタリ（ウキが沈む）で合わせる
+/// Lure    : 餌を自分で動かして魚を誘う。速く動かすと逃げる。
+///           本アタリは 消し込み／居食い／食い上げ の3種類。合わせるタイミングで掛かり具合（浅い・しっかり・深い）が決まり、
+///           待つほど深く食い込む（送り込み）。待ちすぎると餌だけ取られる。つつき中の早合わせでもたまに浅く掛かる
 /// Fight   : マウスをぐるぐる回してリールを巻く。魚が暴れている時に強く巻くと糸が切れ、
-///           巻かずに放っておくとバレる。ゲージは出さず、魚の影の動き・水しぶき・糸の張り・カメラで伝える
+///           巻かずに放っておくとバレる。魚が横に走ったら竿を逆に倒す（竿さばき）と寄せやすく、糸の負担も減る。
+///           跳ねる魚はエラ洗いをする。跳んでいる間に巻くと外れる。浅掛かりは外れやすい
+///           ファイト中はプレイヤーの後ろから見た画面（FishingBackView）に切り替わり、竿のしなりと魚の走りを大きく見せる。
+///           ゲージは出さず、魚の動き・しぶき・糸の張り・竿のしなり・振動・ドラグ音・カメラで伝え、
+///           横走りの向き（≫）とエラ洗いの予兆（！）だけ小さな記号を添える。最初の数回はロボが一瞬スローにして教える
 /// Landing : 魚が跳ねて釣り上げる演出 → Result（図鑑に記録）
 ///
 /// お助けロボット（FishingRobot）は サーチ（魚を光らせる）/ アタリの合図 / ファイト中のアシスト（1回）をしてくれる
 ///
 /// 【操作】
-/// - マウス  : カーソルで狙う、クリックで投げる・合わせる、左ドラッグで餌を動かす、ぐるぐる回して巻く、右クリックで戻る
-/// - パッド  : 左スティックで狙う・餌を動かす、Aで投げる・合わせる、スティックを回して巻く、Yでロボ、Viewで図鑑、Bで戻る
+/// - マウス  : カーソルで狙う、クリックで投げる・合わせる、左ドラッグで餌を動かす、ぐるぐる回して巻く、
+///             右ドラッグ中だけ左右で竿を倒す、右クリックで戻る
+/// - パッド  : 左スティックで狙う・餌を動かす、Aで投げる・合わせる、左スティックを回して巻く、右スティック左右で竿を倒す、
+///             Yでロボ、Viewで図鑑、Bで戻る（ファイト中は引きに合わせて振動する）
 /// - キーボード: WASD/矢印で狙う・餌を動かす（Shiftでゆっくり）、Space/Enterで投げる・合わせる、Space長押しで巻く、
-///              Qでロボ、Tabで図鑑、Esc/Backspaceで戻る
+///              ファイト中は A/D で竿を倒す、Qでロボ、Tabで図鑑、Esc/Backspaceで戻る
 ///
-/// 座標は釣り画面のカメラ（content）のローカル座標。下が桟橋、上が池の奥
+/// 計算は池の座標（真上から見た図。下が桟橋、上が池の奥）で行い、画面にはプレイヤーの後ろから見た構図で映す（FishingBackView）
+/// 真上から見た図（content 以下）は計算用に残しているだけで、画面には出さない
 /// 時間は unscaledDeltaTime に FishingCameraRig のスロー倍率を掛けて進める（町と同じく timeScale は触らない）
 /// </summary>
 public class MyTownFishing : MonoBehaviour
 {
     enum Phase { Hidden, Entering, Aim, Casting, Lure, ReelIn, Fight, Landing, Result, Lost, Log, Exiting }
-    enum FightPhase { Calm, Warn, Thrash }
+    enum FightPhase { Calm, Warn, Thrash, JumpWarn, Jump }
+    enum HookDepth { Shallow, Solid, Deep }
 
     [Header("── 町からの切り替え ────────────────")]
     [Tooltip("町の背景と建物をまとめた親。釣り開始時にこれを池へ向けて拡大する")]
@@ -44,6 +54,8 @@ public class MyTownFishing : MonoBehaviour
     [Header("── 釣り画面 ──────────────────────")]
     public CanvasGroup view;
     public FishingCameraRig rig;
+    [Tooltip("プレイヤーの後ろから池を見る画面（実際に映すのはこちら）")]
+    public FishingBackView backView;
     public RectTransform content;
     public RectTransform fishLayer;
     public RectTransform rippleLayer;
@@ -54,8 +66,6 @@ public class MyTownFishing : MonoBehaviour
     public Rect water = new Rect(-1000f, -260f, 2000f, 1120f);
     [Tooltip("魚をここまで寄せたら釣り上げ")]
     public Vector2 landingPoint = new Vector2(0f, -230f);
-    [Tooltip("いつものカメラの注目点")]
-    public Vector2 homeFocus = new Vector2(0f, 40f);
     public float castRange = 1000f;
     public int fishCount = 5;
     public FishSpecies[] species = FishSpecies.Defaults();
@@ -68,9 +78,6 @@ public class MyTownFishing : MonoBehaviour
     public Image bobberImage;
     public FishingLineGraphic line;
     public RectTransform reticle;
-    public RectTransform catchFish;      // 釣り上げた時に跳ねる魚
-    public Image catchFishBody;
-    public Image catchFishTail;
     public FishingRobot robot;
 
     [Header("── 操作 ──────────────────────")]
@@ -78,14 +85,40 @@ public class MyTownFishing : MonoBehaviour
     public float baitSpeed = 170f;
     public float slowBaitSpeed = 60f;
     public float stickDeadZone = 0.25f;
+    [Tooltip("右ドラッグ1pxで竿が倒れる量（-1〜1）")]
+    public float mouseTiltSensitivity = 0.005f;
+    [Tooltip("操作していない時に竿がまっすぐに戻る速さ")]
+    public float tiltReturnSpeed = 1.5f;
 
     [Header("── ファイト ────────────────────")]
     [Tooltip("ふつうの速さ（1秒に1回転）で巻いた時に寄ってくる速さ")]
-    public float reelPull = 190f;
+    public float reelPull = 150f;
+    [Tooltip("ファイトの長さ。魚の体力にかける倍率（大きいほど疲れにくく、暴れる・休むを何度も繰り返す）")]
+    public float fightStaminaScale = 1f;
+    [Tooltip("魚の体力の最低値（秒）。小さい魚でもすぐには疲れないようにする")]
+    public float staminaFloor = 15f;
+    [Tooltip("これより元気なまま足元まで寄せると、最後のひと暴れで沖へ走り出す（0で無効）")]
+    [Range(0f, 1f)] public float landingStamina = 0.55f;
+    [Tooltip("足元とみなす距離（池の座標）")]
+    public float nearPierDistance = 260f;
+    [Tooltip("最後のひと暴れで沖へ走る最低の速さ（小さい魚でもしっかり走る）")]
+    public float lastRunMinPull = 260f;
     [Tooltip("暴れていない時にこれだけ巻かずにいるとバレる（秒）")]
     public float slackLimit = 2.5f;
     public float assistDuration = 2.5f;
     public float scanCooldown = 5f;
+    [Tooltip("つついているだけの時に合わせて、浅く掛かる確率")]
+    [Range(0f, 1f)] public float nibbleHookChance = 0.25f;
+    [Tooltip("跳ねる魚が、暴れ出す時にエラ洗いをする確率")]
+    [Range(0f, 1f)] public float jumpChance = 0.35f;
+    [Tooltip("浅掛かりの時、暴れ出すたびに外れる確率")]
+    [Range(0f, 1f)] public float shallowHookOutChance = 0.12f;
+    [Tooltip("エラ洗いの予兆（水面が泡立ってから跳ぶまで）の時間")]
+    public float jumpWarnTime = 0.8f;
+    [Tooltip("横走り・エラ洗いを、最初の何回までロボがスローにして教えるか")]
+    public int coachCount = 2;
+    [Tooltip("パッドの振動の強さ（0で無効）")]
+    [Range(0f, 1f)] public float rumbleScale = 1f;
 
     [Header("── 難しさ ──────────────────────")]
     [Tooltip("本アタリの猶予にかける倍率（小さいほどシビア）")]
@@ -117,6 +150,8 @@ public class MyTownFishing : MonoBehaviour
     public Image resultFish;
     public FishingLogPanel logPanel;
     public RectTransform logButton;
+    [Tooltip("横から見た魚の形（結果カード）")]
+    public Sprite fishSide;
 
     [Header("── SE ────────────────────────")]
     public AudioSource audioSource;
@@ -127,6 +162,10 @@ public class MyTownFishing : MonoBehaviour
     public AudioClip hookSE;
     public AudioClip catchSE;
     public AudioClip failSE;
+    public AudioClip snapSE;             // 糸が切れた
+    public AudioClip jumpSE;             // エラ洗い
+    public AudioClip reelSE;             // リールのカチッ
+    public AudioClip dragSE;             // ドラグのジジジ（ループ）
 
     Phase phase = Phase.Hidden;
     Action onExit;
@@ -140,7 +179,7 @@ public class MyTownFishing : MonoBehaviour
     Vector2 reticlePos = new Vector2(0f, 350f);
     bool aimWithMouse;
     Vector2 castFrom, castTo;
-    float castDuration;
+    float castDuration, castProgress;
     float bobberDip;
     bool bobberSunk;
     int nibbleCount;
@@ -154,9 +193,27 @@ public class MyTownFishing : MonoBehaviour
     float stamina, tension, slack;
     float swayDir;
     float assistTimer;
-    bool assistUsed, warnedTension, warnedSlack;
+    bool assistUsed, warnedTension, warnedSlack, warnedLastRun;
+    bool lastRun;                        // 足元での最後のひと暴れ中
     float splashTimer;
     float thrashVisual;
+    HookDepth hookDepth;
+    float hookHold;                      // 掛かりの深さ（浅 0.45 / しっかり 1 / 深 1.4）
+    float rodTilt;                       // 竿の倒し具合 -1（左）〜 1（右）
+    int tiltCoachLeft = -1, jumpCoachLeft = -1, praiseLeft = -1;   // -1 = まだ数えていない
+    bool tiltHintThisThrash;             // この暴れでは「竿をこっちへ」の案内を出す
+    float goodTimer;                     // 逆に倒し続けている時間
+    bool turnedThisThrash;               // この暴れで魚の向きを変えさせた
+    bool lineSnapped;
+    Vector2 jumpOrigin;
+    float jumpMaxReel;
+    float lastReelClickAngle;
+    FishingFish.BiteKind biteKind;
+
+    // 振動・ドラグ音
+    AudioSource dragSource;
+    float rumbleLow, rumbleHigh;
+    float pulseTimer, pulseLow, pulseHigh;
 
     // 釣果
     float robotAlertTimer;
@@ -164,16 +221,8 @@ public class MyTownFishing : MonoBehaviour
     float resultSizeCm;
     FishSpecies resultSpecies;
 
-    readonly List<Ripple> ripples = new List<Ripple>();
     float bigTimer;
     float rodAngle;
-
-    class Ripple
-    {
-        public RectTransform rect;
-        public Image image;
-        public float time, duration, size, alpha;
-    }
 
     // ─── 魚から参照される ──────────────────────────────────────
     public bool IsActive => phase != Phase.Hidden;
@@ -183,8 +232,8 @@ public class MyTownFishing : MonoBehaviour
     public FishingFish EngagedFish { get; private set; }
     public Vector2 LandingPoint => landingPoint;
 
-    // 釣り上げた魚が落ちる場所（桟橋の先、プレイヤーとロボの間）
-    static readonly Vector2 CatchRestOffset = new Vector2(40f, -45f);
+    // 演出をかけるカメラ（後ろから見た画面のカメラ）
+    FishingCameraRig Cam => backView.rig;
 
     Vector2 RodBase => rod.anchoredPosition;
     Vector2 RodTip => RodBase + (Vector2)(Quaternion.Euler(0f, 0f, rodAngle) * Vector3.up * rodLength);
@@ -192,6 +241,18 @@ public class MyTownFishing : MonoBehaviour
     void Awake()
     {
         if (view != null) view.gameObject.SetActive(false);
+
+        // ドラグ音はファイト中ずっと鳴らして音量で強弱をつけるので、専用のループ再生口を持つ
+        dragSource = gameObject.AddComponent<AudioSource>();
+        dragSource.clip = dragSE;
+        dragSource.loop = true;
+        dragSource.playOnAwake = false;
+        dragSource.volume = 0f;
+    }
+
+    void OnDisable()
+    {
+        StopFightFeedback();
     }
 
     // ─── 開始・終了 ────────────────────────────────────────────
@@ -207,7 +268,6 @@ public class MyTownFishing : MonoBehaviour
         view.alpha = 0f;
         if (resultPanel != null) resultPanel.SetActive(false);
         if (logPanel != null) logPanel.Close();
-        if (catchFish != null) catchFish.gameObject.SetActive(false);
         if (reel != null) reel.gameObject.SetActive(false);
         if (bigText != null) bigText.text = "";
         if (flash != null) flash.color = new Color(1f, 1f, 1f, 0f);
@@ -219,6 +279,8 @@ public class MyTownFishing : MonoBehaviour
         EngagedFish = null;
         fightFish = null;
         scanTimer = 0f;
+        backView.Open(landingPoint);
+        if (tiltCoachLeft < 0) tiltCoachLeft = jumpCoachLeft = praiseLeft = coachCount;
         timer = 0f;
         viewStarted = false;
         phase = Phase.Entering;
@@ -227,9 +289,11 @@ public class MyTownFishing : MonoBehaviour
 
     void Exit()
     {
+        StopFightFeedback();
+        backView.Close();
         if (EngagedFish != null) EngagedFish.Flee();
         BaitInWater = false;
-        robot.HideBubble();
+        backView.HideBubble();
         timer = 0f;
         phase = Phase.Exiting;
         SetHint("");
@@ -241,8 +305,9 @@ public class MyTownFishing : MonoBehaviour
         if (phase == Phase.Hidden) return;
 
         float dt = Time.unscaledDeltaTime;
-        float simDt = dt * rig.TimeScale;
-        reelInput.Update(dt);
+        float simDt = dt * Cam.TimeScale;
+        // 右ドラッグ中は竿を倒す操作なので、マウスの動きをリールとして数えない
+        reelInput.Update(dt, RightHeld());
         if (scanTimer > 0f) scanTimer -= dt;
 
         switch (phase)
@@ -262,9 +327,10 @@ public class MyTownFishing : MonoBehaviour
         if (phase == Phase.Hidden) return;
 
         UpdateFish(simDt);
-        UpdateRipples(simDt);
         UpdateTackle(dt);
+        UpdateBackView();
         UpdateEffects(dt);
+        UpdateRumble(dt);
     }
 
     // ─── 町 ⇔ 釣り画面 ─────────────────────────────────────────
@@ -280,8 +346,6 @@ public class MyTownFishing : MonoBehaviour
         {
             // 釣り画面も寄った状態から始めて、池全体が見えるまで引く（町からカメラが続いているように見せる）
             viewStarted = true;
-            rig.Snap(landingPoint + new Vector2(0f, 60f), 2.2f);
-            rig.Look(homeFocus, 1f, 0.7f);
         }
         if (p >= 1f) EnterAim();
     }
@@ -293,7 +357,6 @@ public class MyTownFishing : MonoBehaviour
         view.alpha = 1f - Mathf.InverseLerp(0f, 0.4f, p);
         float e = 1f - Mathf.Pow(1f - p, 3f);
         SetTownZoom(Mathf.Lerp(townZoom, 1f, e));
-        rig.Look(landingPoint, 1.8f, 0.4f);
 
         if (p >= 1f)
         {
@@ -328,7 +391,9 @@ public class MyTownFishing : MonoBehaviour
         reticle.gameObject.SetActive(true);
         bobber.gameObject.SetActive(true);
         if (reel != null) reel.gameObject.SetActive(false);
-        rig.Look(homeFocus, 1f, 0.6f);
+        if (backView.InFight) backView.EndFight();
+        backView.HideAirFish();
+        backView.SetFocus(landingPoint + new Vector2(0f, 300f), 1f, 0.6f);
         SetHint("<b>狙う</b> マウス / 左スティック　<b>投げる</b> クリック / A\n" +
                 "<b>サーチ</b> ロボをクリック / Q / Y　<b>図鑑</b> Tab / View　<b>町に戻る</b> 右クリック / B");
     }
@@ -339,13 +404,13 @@ public class MyTownFishing : MonoBehaviour
         if (MenuInput.PointerMoved()) aimWithMouse = true;
         if (move != Vector2.zero) aimWithMouse = false;
 
-        if (aimWithMouse) reticlePos = ScreenToContent(MenuInput.PointerPosition());
+        if (aimWithMouse) reticlePos = backView.ScreenToPond(MenuInput.PointerPosition());
         else reticlePos += move * aimSpeed * dt;
         reticlePos = ClampCast(reticlePos);
         reticle.anchoredPosition = reticlePos;
         reticle.localScale = Vector3.one * (1f + Mathf.Sin(Time.unscaledTime * 5f) * 0.06f);
 
-        rig.Look(homeFocus + (reticlePos - homeFocus) * 0.2f, 1f);
+        backView.SetFocus(Vector2.Lerp(landingPoint + new Vector2(0f, 300f), reticlePos, 0.3f), 1f, 0.5f);
 
         if (LogPressed()) { OpenLog(); return; }
         if (RobotPressed()) RobotAction();
@@ -372,9 +437,10 @@ public class MyTownFishing : MonoBehaviour
         timer = 0f;
         phase = Phase.Casting;
         reticle.gameObject.SetActive(false);
-        robot.HideBubble();
+        backView.HideBubble();
         PlaySE(castSE);
-        rig.Look(Vector2.Lerp(homeFocus, castTo, 0.6f), 1.05f, 0.5f);
+        castProgress = 0f;
+        backView.SetFocus(castTo, 1.05f, 0.5f);
         SetHint("");
     }
 
@@ -382,6 +448,7 @@ public class MyTownFishing : MonoBehaviour
     {
         timer += dt;
         float p = Mathf.Clamp01(timer / castDuration);
+        castProgress = p;
         float e = 1f - (1f - p) * (1f - p);
         // 上から見ているので、高く飛んでいる間は大きく見せる
         bobber.anchoredPosition = Vector2.Lerp(castFrom, castTo, e);
@@ -401,7 +468,8 @@ public class MyTownFishing : MonoBehaviour
         SpawnRipple(BaitPosition, 150f, 0.9f, 0.5f);
         SpawnRipple(BaitPosition, 70f, 0.5f, 0.6f);
         PlaySE(splashSE);
-        rig.Shake(0.15f);
+        Cam.Shake(0.15f);
+        backView.Spray(BaitPosition, 0.6f, 10);
         foreach (var f in fishes) f.OnSplash(BaitPosition);
 
         SetHint("<b>餌を動かす</b> 左ドラッグ / スティック / WASD（Shiftでゆっくり）　<b>合わせる・誘う</b> クリック / A\n" +
@@ -431,7 +499,7 @@ public class MyTownFishing : MonoBehaviour
         else if (MenuInput.LeftHeld() && !clicked && !PointerOnButtons())
         {
             // カーソルに向かって引っぱる。近いほどゆっくり動くので、そっと誘える
-            Vector2 target = ScreenToContent(MenuInput.PointerPosition());
+            Vector2 target = backView.ScreenToPond(MenuInput.PointerPosition());
             float d = Vector2.Distance(next, target);
             next = Vector2.MoveTowards(next, target, Mathf.Min(d * 2.5f, baitSpeed) * dt);
         }
@@ -442,33 +510,54 @@ public class MyTownFishing : MonoBehaviour
         if (measured > 1f) bobberDip = Mathf.Max(bobberDip, 0.15f);
         BaitPosition = next;
 
-        if (EngagedFish == null) bobberSunk = false;
+        if (EngagedFish == null || EngagedFish.Current != FishingFish.State.Bite) bobberSunk = false;
 
-        // ロボは少し遅れて本アタリを知らせる
+        // ロボは少し遅れて本アタリを知らせる。アタリの出方で言い方が変わる
         if (robotAlertTimer > 0f)
         {
             robotAlertTimer -= dt;
-            if (robotAlertTimer <= 0f && EngagedFish != null && EngagedFish.Current == FishingFish.State.Bite)
+            if (robotAlertTimer <= 0f && bobberSunk)
             {
                 PlaySE(biteSE);
-                robot.Alert("いまだ!!");
+                backView.Alert(biteKind == FishingFish.BiteKind.Sudden ? "いまだ!!" : biteKind == FishingFish.BiteKind.Hold ? "…食ってる？" : "浮いた！");
             }
         }
         if (bobberSunk)
         {
+            // 食い上げ：魚が餌をくわえたまま上がってくるので、ウキが岸の方へ流れる
+            if (biteKind == FishingFish.BiteKind.Lift)
+            {
+                Vector2 toRod = (RodTip - BaitPosition).normalized;
+                BaitPosition = ClampCast(BaitPosition + (toRod * 0.7f + new Vector2(-toRod.y, toRod.x) * 0.5f) * 35f * dt);
+            }
+
             splashTimer -= dt;
             if (splashTimer <= 0f)
             {
-                splashTimer = 0.15f;
-                SpawnRipple(BaitPosition + UnityEngine.Random.insideUnitCircle * 10f, 90f, 0.5f, 0.45f);
+                switch (biteKind)
+                {
+                    case FishingFish.BiteKind.Sudden:
+                        splashTimer = 0.15f;
+                        SpawnRipple(BaitPosition + UnityEngine.Random.insideUnitCircle * 10f, 90f, 0.5f, 0.45f);
+                        break;
+                    case FishingFish.BiteKind.Hold:
+                        splashTimer = 0.7f;
+                        SpawnRipple(BaitPosition, 40f, 0.6f, 0.25f);
+                        break;
+                    default:
+                        splashTimer = 0.35f;
+                        SpawnRipple(BaitPosition, 55f, 0.5f, 0.3f);
+                        break;
+                }
             }
         }
 
         // 魚が近づくほどカメラがじわっと寄って、緊張感を出す
         var fish = EngagedFish;
-        if (fish == null) rig.Look(Vector2.Lerp(homeFocus, BaitPosition, 0.6f), 1.1f, 0.6f);
-        else if (fish.Current == FishingFish.State.Approach) rig.Look(Vector2.Lerp(homeFocus, BaitPosition, 0.85f), 1.3f, 1.2f);
-        else rig.Look(Vector2.Lerp(homeFocus, BaitPosition, 0.9f), 1.45f, 0.9f);
+        float far = Mathf.InverseLerp(landingPoint.y, water.yMax, BaitPosition.y);
+        if (fish == null) backView.SetFocus(BaitPosition, 1.1f + 0.15f * far, 0.6f);
+        else if (fish.Current == FishingFish.State.Approach) backView.SetFocus(BaitPosition, 1.35f + 0.25f * far, 1.2f);
+        else backView.SetFocus(BaitPosition, 1.55f + 0.35f * far, 0.9f);
     }
 
     void TryHook()
@@ -476,7 +565,14 @@ public class MyTownFishing : MonoBehaviour
         var fish = EngagedFish;
         if (fish != null && fish.Current == FishingFish.State.Bite)
         {
-            StartFight(fish);
+            StartFight(fish, HookDepthFor(fish.CurrentBite, fish.BiteProgress));
+            return;
+        }
+
+        // つついている最中の早合わせでも、たまに口の端に浅く掛かる
+        if (fish != null && fish.Current == FishingFish.State.Nibble && UnityEngine.Random.value < nibbleHookChance)
+        {
+            StartFight(fish, HookDepth.Shallow);
             return;
         }
 
@@ -486,7 +582,7 @@ public class MyTownFishing : MonoBehaviour
             fish.Flee();
             SpawnRipple(BaitPosition, 80f, 0.4f, 0.5f);
             ShowBig("早すぎた…", new Color(0.7f, 0.75f, 0.85f));
-            robot.Say("あわてないで…");
+            Say("あわてないで…");
             return;
         }
 
@@ -495,6 +591,20 @@ public class MyTownFishing : MonoBehaviour
         BaitSpeed = 120f;
         bobberDip = 0.5f;
         SpawnRipple(BaitPosition, 60f, 0.4f, 0.35f);
+    }
+
+    // 合わせたタイミングで掛かり具合が決まる。待つほど深く食い込む（送り込み）
+    static HookDepth HookDepthFor(FishingFish.BiteKind kind, float progress)
+    {
+        switch (kind)
+        {
+            case FishingFish.BiteKind.Sudden:
+                return progress < 0.65f ? HookDepth.Solid : HookDepth.Deep;
+            case FishingFish.BiteKind.Hold:
+                return progress < 0.3f ? HookDepth.Shallow : progress < 0.75f ? HookDepth.Solid : HookDepth.Deep;
+            default:
+                return progress < 0.35f ? HookDepth.Shallow : progress < 0.85f ? HookDepth.Solid : HookDepth.Deep;
+        }
     }
 
     void StartReelIn()
@@ -511,6 +621,7 @@ public class MyTownFishing : MonoBehaviour
     {
         timer += dt;
         float p = Mathf.Clamp01(timer / 0.4f);
+        castProgress = p;
         bobber.anchoredPosition = Vector2.Lerp(castFrom, HangingBobber(), p * p);
         if (p >= 1f) EnterAim();
     }
@@ -535,40 +646,69 @@ public class MyTownFishing : MonoBehaviour
         bobberDip = 0.7f;
         SpawnRipple(BaitPosition, 70f, 0.5f, 0.4f);
         PlaySE(nibbleSE, 0.6f);
-        rig.Shake(0.1f);
-        rig.Punch(0.02f);
+        Cam.Shake(0.1f);
+        Cam.Punch(0.02f);
+        Pulse(0.25f, 0.1f, 0.08f);
         // ロボは本アタリかどうか見分けて教えてくれる
-        if (nibbleCount == 1) robot.Say("…まだだよ", 0.7f);
+        if (nibbleCount == 1) Say("…まだだよ", 0.7f);
     }
 
     public void OnBite(FishingFish fish)
     {
         bobberSunk = true;
+        biteKind = fish.CurrentBite;
         splashTimer = 0f;
-        // 本アタリの合図はウキが沈むことだけ。音とロボの声は少し遅れる
-        SpawnRipple(BaitPosition, 140f, 0.6f, 0.5f);
-        rig.Shake(0.12f);
+        // 本アタリの合図はウキの動きだけ。音とロボの声は少し遅れる
+        switch (biteKind)
+        {
+            case FishingFish.BiteKind.Sudden:
+                SpawnRipple(BaitPosition, 140f, 0.6f, 0.5f);
+                Cam.Shake(0.12f);
+                Pulse(0.6f, 0.3f, 0.25f);
+                break;
+            case FishingFish.BiteKind.Hold:
+                // 居食いはほとんど何も起きない。ウキがわずかに沈むだけ
+                SpawnRipple(BaitPosition, 45f, 0.5f, 0.3f);
+                Pulse(0.15f, 0f, 0.12f);
+                break;
+            default:
+                SpawnRipple(BaitPosition, 70f, 0.5f, 0.35f);
+                Pulse(0.3f, 0.1f, 0.15f);
+                break;
+        }
         robotAlertTimer = robotReactionTime;
     }
 
     public void OnBiteMissed(FishingFish fish)
     {
         bobberSunk = false;
-        ShowBig("逃げられた…", new Color(0.7f, 0.75f, 0.85f));
-        robot.Say("おしい！");
+        string message = biteKind == FishingFish.BiteKind.Hold ? "餌だけ取られた…"
+                       : biteKind == FishingFish.BiteKind.Lift ? "吐き出された…" : "逃げられた…";
+        ShowBig(message, new Color(0.7f, 0.75f, 0.85f));
+        Say(biteKind == FishingFish.BiteKind.Hold ? "ウキ、ちょっと沈んでたかも…" : "おしい！");
     }
 
     public void OnSpooked(FishingFish fish)
     {
         if (EngagedFish != fish) return;
-        robot.Say("驚いて逃げちゃった…");
+        Say("驚いて逃げちゃった…");
         Release(fish);
     }
 
     // ─── ファイト ──────────────────────────────────────────────
-    void StartFight(FishingFish fish)
+    void StartFight(FishingFish fish, HookDepth depth)
     {
         fightFish = fish;
+        hookDepth = depth;
+        hookHold = depth == HookDepth.Shallow ? 0.45f : depth == HookDepth.Deep ? 1.4f : 1f;
+        rodTilt = 0f;
+        goodTimer = 0f;
+        turnedThisThrash = false;
+        tiltHintThisThrash = false;
+        lineSnapped = false;
+        lastReelClickAngle = reelInput.Angle;
+        // ここからはプレイヤーの後ろから見た画面で戦う
+        if (backView != null) backView.StartFight(fish.Species, fish.Position);
         fish.Hook();
         EngagedFish = null;
         BaitInWater = false;
@@ -580,7 +720,7 @@ public class MyTownFishing : MonoBehaviour
         tension = 0.3f;
         slack = 0f;
         assistTimer = 0f;
-        assistUsed = warnedTension = warnedSlack = false;
+        assistUsed = warnedTension = warnedSlack = warnedLastRun = lastRun = false;
         swayDir = UnityEngine.Random.value < 0.5f ? -1f : 1f;
         fightClock = 0f;
         // かかった瞬間は必ず一暴れする
@@ -589,18 +729,28 @@ public class MyTownFishing : MonoBehaviour
         reelInput.Reset();
         phase = Phase.Fight;
 
-        // かかった瞬間：スロー＋グッと寄る＋フラッシュ
-        ShowBig("HIT!", new Color(1f, 0.85f, 0.3f));
+        // かかった瞬間：スロー＋グッと寄る＋フラッシュ。浅い時は控えめ、深い時は派手に
+        // 画面の文字は釣りを知らない人にも分かる言葉にする
+        string depthLabel = depth == HookDepth.Shallow ? "かかりが浅い" : depth == HookDepth.Deep ? "がっちり！" : "";
+        ShowBig(depthLabel == "" ? "HIT!" : "HIT!\n<size=45%>" + depthLabel + "</size>", new Color(1f, 0.85f, 0.3f));
         PlaySE(hookSE);
-        rig.SlowMo(0.25f, 0.4f);
-        rig.Punch(0.2f);
-        rig.Shake(0.5f);
+        Cam.SlowMo(0.25f, 0.4f);
+        Cam.Punch(depth == HookDepth.Shallow ? 0.12f : 0.2f);
+        Cam.Shake(depth == HookDepth.Deep ? 0.65f : 0.5f);
         Flash(0.35f);
         SpawnRipple(fish.Position, 220f, 0.8f, 0.7f);
-        robot.Say("かかった！");
+        Pulse(1f, 0.7f, 0.35f);
+        Say(depth == HookDepth.Shallow ? "浅いかも…慎重に！" : depth == HookDepth.Deep ? "がっちり掛かった！" : "かかった！");
 
-        SetHint("<b>リールを巻く</b> マウスをぐるぐる回す / スティックを回す / Space長押し\n" +
-                "魚が暴れたら巻くのをゆるめよう　<b>ロボの助け（1回）</b> ロボをクリック / Q / Y");
+        if (dragSource != null && dragSE != null)
+        {
+            dragSource.clip = dragSE;
+            dragSource.volume = 0f;
+            dragSource.Play();
+        }
+
+        SetHint("<b>巻く</b> マウスをぐるぐる / 左スティックを回す / Space長押し　<b>竿を倒す</b> 右ドラッグで左右 / 右スティック / A・D\n" +
+                "暴れたらゆるめる・横に走ったら逆へ倒す・跳ねたら巻かない　<b>ロボ（1回）</b> Q / Y");
     }
 
     void UpdateFight(float dt)
@@ -614,8 +764,10 @@ public class MyTownFishing : MonoBehaviour
         if (assisting)
         {
             assistTimer -= dt;
-            if (assistTimer <= 0f) robot.SetAssist(false);
+            if (assistTimer <= 0f) backView.SetAssist(false);
         }
+
+        UpdateRodTilt(dt);
 
         float reelPower = Mathf.Clamp(reelInput.Speed / FishingReelInput.NormalSpeed, 0f, 2.5f);
         Vector2 pos = fightFish.Position;
@@ -625,6 +777,11 @@ public class MyTownFishing : MonoBehaviour
         Vector2 side = new Vector2(-dir.y, dir.x) * swayDir;
         // 疲れるほど暴れる力が弱くなる
         float power = Mathf.Lerp(0.35f, 1f, stamina);
+
+        // 竿さばき：魚が横に走る向きと逆に竿を倒せているか（good）、同じ側に倒しているか（bad）
+        float runX = Mathf.Abs(side.x) > 0.2f ? Mathf.Sign(side.x) : 0f;
+        float good = Mathf.Max(0f, -rodTilt * runX);
+        float bad = Mathf.Max(0f, rodTilt * runX);
         Vector2 velocity;
 
         fightTimer -= dt;
@@ -632,24 +789,37 @@ public class MyTownFishing : MonoBehaviour
         {
             case FightPhase.Calm:
             {
-                // おとなしい時：巻いた分だけ寄ってくる。魚はゆっくり横へ逃げようとする
-                velocity = -dir * s.strength * 0.12f * power + side * s.swimSpeed * 0.35f;
-                velocity += dir * reelPull * reelPower * (assisting ? 1.4f : 1f);
+                // おとなしい時：巻いた分だけ寄ってくる。魚はゆっくり横へ逃げようとする（逆に倒すと止まる）
+                velocity = -dir * s.strength * 0.12f * power + side * s.swimSpeed * 0.35f * (1f - 0.7f * good);
+                velocity += dir * reelPull * (reelPower * (assisting ? 1.4f : 1f) + 0.15f * good);
                 // 巻きすぎていると張りが戻らず、次に暴れた時に切れやすい
                 tension = Mathf.MoveTowards(tension, 0.1f + 0.3f * reelPower, dt * tensionRecovery);
 
-                // 巻かずに放っておくと糸がたるんでバレる
+                // 巻かずに放っておくと糸がたるんでバレる。浅掛かりほど早い
+                float limit = slackLimit * (hookDepth == HookDepth.Shallow ? 0.5f : hookDepth == HookDepth.Deep ? 1.25f : 1f);
                 if (reelPower < 0.15f) slack += dt;
                 else slack = Mathf.Max(0f, slack - dt * 2f);
-                if (slack > slackLimit * 0.55f && !warnedSlack)
+                if (slack > limit * 0.55f && !warnedSlack)
                 {
                     warnedSlack = true;
-                    robot.Say("糸がたるんでる！巻いて！");
+                    Say("糸がたるんでる！巻いて！");
                 }
-                if (slack > slackLimit) { Lose("バレた…", false); return; }
+                if (slack > limit) { Lose("バレた…", false, "巻くのを止めすぎたかも…"); return; }
 
-                stamina -= dt / s.stamina * 0.35f;
+                stamina -= dt / FightStamina(s) * 0.35f;
                 thrashVisual = Mathf.MoveTowards(thrashVisual, 0f, dt * 3f);
+
+                // まだ元気なうちに足元まで寄せると、最後のひと暴れで沖へ走り出す
+                if (distance < nearPierDistance && stamina > landingStamina && fightTimer > 0f)
+                {
+                    fightTimer = 0f;
+                    lastRun = true;
+                    if (!warnedLastRun)
+                    {
+                        warnedLastRun = true;
+                        Say("まだ元気だ！もうひと暴れくるよ！");
+                    }
+                }
 
                 if (fightTimer <= 0f)
                 {
@@ -665,45 +835,122 @@ public class MyTownFishing : MonoBehaviour
                 thrashVisual = Mathf.MoveTowards(thrashVisual, 0.4f, dt * 4f);
                 if (fightTimer <= 0f)
                 {
-                    fightPhase = FightPhase.Thrash;
-                    fightTimer = Mathf.Lerp(1.0f, 2.6f, s.aggression) * (0.6f + 0.4f * stamina) * UnityEngine.Random.Range(0.8f, 1.2f);
+                    // 浅掛かりは暴れ出した拍子に外れることがある
+                    if (hookDepth == HookDepth.Shallow && UnityEngine.Random.value < shallowHookOutChance)
+                    {
+                        Lose("外れた…", false, "かかりが浅かったみたい…");
+                        return;
+                    }
+
                     swayDir = -swayDir;
-                    SpawnRipple(pos, 200f, 0.6f, 0.6f);
-                    rig.Punch(0.04f);
+                    if (s.jumps && distance < 750f && UnityEngine.Random.value < jumpChance)
+                    {
+                        // エラ洗い：水面が泡立って「！」が出たあとに跳ぶ
+                        fightPhase = FightPhase.JumpWarn;
+                        fightTimer = jumpWarnTime;
+                        Pulse(0.4f, 0.4f, 0.2f);
+                        if (jumpCoachLeft > 0)
+                        {
+                            jumpCoachLeft--;
+                            Cam.SlowMo(0.4f, 0.7f);
+                            Say("跳ぶよ！巻くのを止めて！", 1.6f);
+                        }
+                    }
+                    else
+                    {
+                        fightPhase = FightPhase.Thrash;
+                        fightTimer = Mathf.Lerp(1.0f, 2.6f, s.aggression) * (0.6f + 0.4f * stamina) * UnityEngine.Random.Range(0.8f, 1.2f);
+                        goodTimer = 0f;
+                        turnedThisThrash = false;
+                        tiltHintThisThrash = false;
+                        SpawnRipple(pos, 200f, 0.6f, 0.6f);
+                        if (backView != null) backView.Spray(pos, 1.3f, 16);
+                        Cam.Punch(0.04f);
+                        Pulse(0.8f, 0.3f, 0.15f);
+
+                        // 最初の数回は、一瞬スローにして竿の倒し方を教える
+                        float newRunX = Mathf.Sign((new Vector2(-dir.y, dir.x) * swayDir).x);
+                        if (tiltCoachLeft > 0)
+                        {
+                            tiltCoachLeft--;
+                            tiltHintThisThrash = true;
+                            Cam.SlowMo(0.4f, 0.6f);
+                            Say(newRunX < 0f ? "左に走る！竿を右へ倒して！" : "右に走る！竿を左へ倒して！", 1.8f);
+                        }
+                    }
                 }
+                break;
+            }
+            case FightPhase.JumpWarn:
+            {
+                // 水面近くに浮いてきて、しぶきが立つ
+                velocity = -dir * s.strength * 0.2f;
+                thrashVisual = Mathf.MoveTowards(thrashVisual, 1f, dt * 6f);
+                splashTimer = Mathf.Min(splashTimer, 0.05f);
+                if (fightTimer <= 0f) StartJump(pos);
+                break;
+            }
+            case FightPhase.Jump:
+            {
+                // 跳んでいる間に巻くと針が外れる
+                velocity = Vector2.zero;
+                jumpMaxReel = Mathf.Max(jumpMaxReel, reelPower);
+                if (fightTimer <= 0f && !EndJump(s)) return;
                 break;
             }
             default:
             {
-                // 暴れている時：奥へジグザグに走る。強く巻くほど糸に負担がかかる
+                // 暴れている時：奥へ、横へと走る。強く巻くほど糸に負担がかかる。逆に竿を倒すと横走りを止められる
                 float zig = Mathf.Sin(fightClock * Mathf.Lerp(5f, 11f, s.aggression));
-                velocity = -dir * s.strength * thrashPullRate * power + side * zig * s.strength * 0.6f * power;
-                velocity += dir * reelPull * reelPower * (assisting ? 0.7f : 0.35f);
+                float run = lastRun ? Mathf.Max(s.strength, lastRunMinPull) : s.strength;
+                velocity = -dir * run * thrashPullRate * power
+                         + side * s.strength * 0.5f * power * (1f - 0.75f * good)
+                         + side * zig * s.strength * 0.2f * power;
+                velocity += dir * reelPull * (reelPower * (assisting ? 0.7f : 0.35f) + 0.35f * good);
 
                 float strain = 1.25f * Mathf.Lerp(0.8f, 1.3f, Mathf.InverseLerp(120f, 420f, s.strength));
-                float gain = reelPower * strain * power * (assisting ? 0.35f : 1f);
-                tension += (gain - tensionTolerance) * dt;
+                float gain = reelPower * strain * power * (assisting ? 0.35f : 1f) * (1f - 0.45f * good);
+                tension += (gain - tensionTolerance + 0.4f * bad) * dt;
                 if (pos.y >= water.yMax - 80f) tension += 0.25f * dt;   // 池の奥まで走られると糸が出切る
                 tension = Mathf.Max(tension, 0.25f);
                 slack = 0f;
 
                 // 走らせてあげた方が早く疲れる
-                stamina -= dt / s.stamina * (reelPower < 0.5f ? 2f : 1.2f);
+                stamina -= dt / FightStamina(s) * (reelPower < 0.5f ? 2f : 1.2f);
                 thrashVisual = Mathf.MoveTowards(thrashVisual, power, dt * 6f);
-                rig.Shake(dt * 1.1f * power);
+                Cam.Shake(dt * 1.1f * power);
+
+                // 逆に倒し続けると、魚がグイッと向きを変える（うまくいった手応え）
+                goodTimer = good > 0.6f ? goodTimer + dt : 0f;
+                if (goodTimer > 0.35f && !turnedThisThrash)
+                {
+                    turnedThisThrash = true;
+                    tension = Mathf.Max(0.25f, tension - 0.12f);
+                    if (backView != null) backView.Spray(pos, 1.5f, 20);
+                    SpawnRipple(pos, 180f, 0.5f, 0.6f);
+                    PlaySE(splashSE, 0.7f);
+                    Cam.Punch(0.06f);
+                    Pulse(0.7f, 0.2f, 0.15f);
+                    if (praiseLeft > 0)
+                    {
+                        praiseLeft--;
+                        Say("いいね！向きが変わった！");
+                    }
+                }
 
                 if (tension > 0.8f && !warnedTension)
                 {
                     warnedTension = true;
-                    robot.Say("切れちゃう！ゆるめて！");
+                    Say("切れちゃう！ゆるめて！");
                 }
-                if (tension >= 1f) { Lose("糸が切れた！", true); return; }
+                if (tension >= 1f) { Lose("糸が切れた！", true, "ドンマイ…次は暴れてる時にゆるめよう"); return; }
 
                 if (fightTimer <= 0f)
                 {
                     fightPhase = FightPhase.Calm;
                     fightTimer = Mathf.Lerp(2.2f, 0.7f, s.aggression) * UnityEngine.Random.Range(0.7f, 1.3f) + (1f - stamina) * 1.2f;
                     warnedTension = false;
+                    lastRun = false;
                 }
                 break;
             }
@@ -715,50 +962,227 @@ public class MyTownFishing : MonoBehaviour
         pos.y = Mathf.Clamp(pos.y, landingPoint.y - 20f, water.yMax - 40f);
         fightFish.SetHooked(pos, landingPoint, thrashVisual, 1f - stamina, dt);
 
-        if (tension > 0.75f) rig.Shake(dt * 0.6f);
+        if (tension > 0.75f) Cam.Shake(dt * 0.6f);
 
-        // 水しぶき：暴れている時は激しく、おとなしい時は時々
-        splashTimer -= dt;
-        if (splashTimer <= 0f)
+        UpdateFightFeedback(velocity, dir, power, dt);
+
+        if (backView != null)
         {
-            bool thrashing = fightPhase == FightPhase.Thrash;
+            backView.TickFight(new FishingBackView.FightState
+            {
+                fishPos = pos,
+                fishVelocity = velocity,
+                fishLength = s.shadowLength,
+                fishHeading = fightFish.Heading,
+                thrash = thrashVisual,
+                tired = 1f - stamina,
+                tension = tension,
+                rodTilt = rodTilt,
+                reelAngle = reelInput.Angle,
+                runDir = fightPhase == FightPhase.Thrash || fightPhase == FightPhase.Calm ? (int)runX : 0,
+                jumpWarn = fightPhase == FightPhase.JumpWarn,
+                airborne = fightPhase == FightPhase.Jump,
+                airProgress = fightPhase == FightPhase.Jump ? 1f - Mathf.Clamp01(fightTimer / JumpTime) : 0f,
+                tiltHint = tiltHintThisThrash,
+                countering = good > 0.4f,
+                assisting = assistTimer > 0f,
+            }, dt);
+        }
+
+        // 水しぶき：暴れている時は激しく、おとなしい時は時々（跳んでいる間は出さない）
+        splashTimer -= dt;
+        if (splashTimer <= 0f && fightPhase != FightPhase.Jump)
+        {
+            bool thrashing = fightPhase == FightPhase.Thrash || fightPhase == FightPhase.JumpWarn;
             splashTimer = thrashing ? 0.07f : 0.5f;
             float size = (thrashing ? 130f : 60f) * Mathf.Lerp(0.8f, 1.4f, Mathf.InverseLerp(60f, 220f, s.shadowLength));
             SpawnRipple(pos + UnityEngine.Random.insideUnitCircle * s.shadowLength * 0.3f, size, 0.5f, thrashing ? 0.55f : 0.25f);
         }
 
-        // カメラ：桟橋と魚の両方が入るように。寄せるほどアップに
-        Vector2 span = pos - landingPoint;
-        Vector2 focus = (pos + landingPoint) * 0.5f + new Vector2(0f, -30f);
-        float zoom = Mathf.Clamp(Mathf.Min(900f / (Mathf.Abs(span.y) + 380f), 1700f / (Mathf.Abs(span.x) + 500f)), 0.7f, 1.45f);
-        // 身構えた瞬間にぐっと寄り、暴れ出したら少し引いて揺らす
-        if (fightPhase == FightPhase.Warn) rig.Look(Vector2.Lerp(focus, pos, 0.3f), zoom + 0.1f, 0.15f);
-        else rig.Look(focus, zoom + (fightPhase == FightPhase.Thrash ? 0.04f : 0f), 0.4f);
-
-        if (Vector2.Distance(pos, landingPoint) < 70f) StartLanding();
+        // 暴れている魚はすくえない。おとなしい時に足元まで寄せたら釣り上げ
+        if (fightPhase == FightPhase.Calm && Vector2.Distance(pos, landingPoint) < 70f) StartLanding();
     }
 
-    void Lose(string message, bool broke)
+    const float JumpTime = 0.75f;
+
+    // ファイトで使う魚の体力（秒）
+    float FightStamina(FishSpecies s)
+    {
+        return Mathf.Max(s.stamina, staminaFloor) * fightStaminaScale;
+    }
+
+    void StartJump(Vector2 pos)
+    {
+        fightPhase = FightPhase.Jump;
+        fightTimer = JumpTime;
+        jumpOrigin = pos;
+        jumpMaxReel = 0f;
+
+        fightFish.SetHidden(true);
+
+        PlaySE(jumpSE);
+        Cam.SlowMo(0.35f, 0.5f);
+        Cam.Punch(0.12f);
+        Cam.Shake(0.4f);
+        Flash(0.2f);
+        SpawnRipple(pos, 240f, 0.7f, 0.7f);
+        if (backView != null) backView.Spray(pos, 1.6f, 26);
+        Pulse(1f, 1f, 0.3f);
+    }
+
+    // 着水。巻いていたら外れる（false を返したらファイト終了）
+    bool EndJump(FishSpecies s)
+    {
+        fightFish.SetHidden(false);
+        PlaySE(splashSE);
+        SpawnRipple(jumpOrigin, 220f, 0.7f, 0.6f);
+        if (backView != null) backView.Spray(jumpOrigin, 1.5f, 24);
+        Cam.Shake(0.3f);
+
+        // 深く掛かっているほど、多少巻いていても耐える
+        float allowed = 0.15f + 0.25f * hookHold;
+        if (jumpMaxReel > allowed || tension > 0.85f)
+        {
+            Lose("跳ねて外れた…", false, "跳んでる時は巻くのを止めよう！");
+            return false;
+        }
+
+        Say("ナイス！耐えた！");
+        Pulse(0.6f, 0.2f, 0.2f);
+        stamina = Mathf.Max(0f, stamina - 0.12f);  // 跳ぶと疲れる
+        fightPhase = FightPhase.Calm;
+        fightTimer = 1f;
+        return true;
+    }
+
+    // 竿の左右：右ドラッグ中のマウス左右 / 右スティック / A・D。操作していない時はまっすぐに戻る
+    void UpdateRodTilt(float dt)
+    {
+        bool input = false;
+        var mouse = Mouse.current;
+        if (mouse != null && mouse.rightButton.isPressed)
+        {
+            rodTilt += mouse.delta.ReadValue().x * mouseTiltSensitivity;
+            input = true;
+        }
+
+        var pad = Gamepad.current;
+        if (pad != null)
+        {
+            float x = pad.rightStick.ReadValue().x;
+            if (Mathf.Abs(x) > 0.3f)
+            {
+                rodTilt = Mathf.MoveTowards(rodTilt, x, dt * 4f);
+                input = true;
+            }
+        }
+
+        var kb = Keyboard.current;
+        if (kb != null)
+        {
+            float x = (kb.dKey.isPressed || kb.rightArrowKey.isPressed ? 1f : 0f) - (kb.aKey.isPressed || kb.leftArrowKey.isPressed ? 1f : 0f);
+            if (x != 0f)
+            {
+                rodTilt = Mathf.MoveTowards(rodTilt, x, dt * 4f);
+                input = true;
+            }
+        }
+
+        if (!input) rodTilt = Mathf.MoveTowards(rodTilt, 0f, dt * tiltReturnSpeed);
+        rodTilt = Mathf.Clamp(rodTilt, -1f, 1f);
+    }
+
+    // ファイト中の手応え：パッドの振動・ドラグ音・リールのカチカチ
+    void UpdateFightFeedback(Vector2 velocity, Vector2 dir, float power, float dt)
+    {
+        bool airborne = fightPhase == FightPhase.Jump;
+        rumbleLow = airborne ? 0f : thrashVisual * 0.45f * power + (fightPhase == FightPhase.JumpWarn ? 0.3f : 0f) + tension * 0.1f;
+        rumbleHigh = airborne ? 0f : Mathf.Max(0f, tension - 0.6f) * 1.6f;
+
+        // 魚に糸を引き出されている時だけドラグが鳴る
+        if (dragSource != null && dragSource.isPlaying)
+        {
+            float outward = Mathf.Max(0f, -Vector2.Dot(velocity, dir));
+            float target = airborne ? 0f : Mathf.Clamp01(outward / 250f) * (tension > 0.3f ? 1f : 0.5f);
+            dragSource.volume = Mathf.MoveTowards(dragSource.volume, target * 0.7f, dt * 4f);
+            dragSource.pitch = 0.85f + 0.4f * target;
+        }
+
+        if (reelInput.Angle - lastReelClickAngle >= 45f)
+        {
+            lastReelClickAngle = reelInput.Angle;
+            PlaySE(reelSE, 0.25f);
+        }
+    }
+
+    void StopFightFeedback()
+    {
+        rumbleLow = rumbleHigh = 0f;
+        pulseTimer = 0f;
+        if (dragSource != null) dragSource.Stop();
+        var pad = Gamepad.current;
+        if (pad != null) pad.SetMotorSpeeds(0f, 0f);
+    }
+
+    // 一瞬だけ強く振動させる
+    void Pulse(float low, float high, float duration)
+    {
+        pulseLow = low;
+        pulseHigh = high;
+        pulseTimer = duration;
+    }
+
+    void UpdateRumble(float dt)
+    {
+        var pad = Gamepad.current;
+        if (pad == null) return;
+        if (pulseTimer > 0f) pulseTimer -= dt;
+        bool pulsing = pulseTimer > 0f;
+        float low = Mathf.Max(pulsing ? pulseLow : 0f, phase == Phase.Fight ? rumbleLow : 0f);
+        float high = Mathf.Max(pulsing ? pulseHigh : 0f, phase == Phase.Fight ? rumbleHigh : 0f);
+        pad.SetMotorSpeeds(Mathf.Clamp01(low * rumbleScale), Mathf.Clamp01(high * rumbleScale));
+    }
+
+    void Lose(string message, bool broke, string robotLine)
     {
         var fish = fightFish;
         fightFish = null;
-        if (fish != null) fish.Flee();
-        robot.SetAssist(false);
+        if (fish != null)
+        {
+            jumpOrigin = fish.Position;
+            fish.SetHidden(false);
+            fish.Flee();
+        }
+        backView.SetAssist(false);
         if (reel != null) reel.gameObject.SetActive(false);
+        StopFightFeedback();
 
         timer = 0f;
         phase = Phase.Lost;
         ShowBig(message, new Color(0.75f, 0.8f, 0.9f));
-        PlaySE(failSE);
-        robot.Say(broke ? "ドンマイ…次は暴れてる時にゆるめよう" : "巻くのを止めすぎたかも…", 2.2f);
-        rig.Shake(broke ? 0.7f : 0.3f);
-        rig.Look(homeFocus, 1f, 0.8f);
+        PlaySE(broke && snapSE != null ? snapSE : failSE);
+        if (broke) Pulse(1f, 1f, 0.2f);
+        lineSnapped = broke;
+        if (broke && backView != null) backView.Snap();
+        Say(robotLine, 2.2f);
+        Cam.Shake(broke ? 0.7f : 0.3f);
         SetHint("");
     }
 
     void UpdateLost(float dt)
     {
         timer += dt;
+        // ファイト画面で魚が潜っていくのを見せてから、池の画面に戻る
+        if (backView != null && backView.InFight)
+        {
+            backView.FishDive(dt);
+            backView.TickFight(new FishingBackView.FightState
+            {
+                fishPos = jumpOrigin, fishLength = 0f,
+                rodTilt = rodTilt, reelAngle = reelInput.Angle, lineBroken = lineSnapped,
+            }, dt);
+            if (timer >= 0.9f) backView.EndFight();
+        }
         if (timer >= 1.6f) EnterAim();
     }
 
@@ -767,62 +1191,37 @@ public class MyTownFishing : MonoBehaviour
     {
         var fish = fightFish;
         fightFish = null;
-        robot.SetAssist(false);
+        backView.SetAssist(false);
         if (reel != null) reel.gameObject.SetActive(false);
+        StopFightFeedback();
 
         resultSpecies = fish.Species;
         resultSizeCm = fish.SizeCm;
         FishingRecord.Register(resultSpecies.id, resultSizeCm, out resultIsNew, out resultIsRecord);
+        backView.Spray(fish.Position, 1.8f, 30);
         fishes.Remove(fish);
         Destroy(fish.gameObject);
-
-        // 跳ねる魚の見た目
-        float len = resultSpecies.shadowLength * 1.4f;
-        catchFish.gameObject.SetActive(true);
-        catchFish.anchoredPosition = landingPoint;
-        catchFishBody.rectTransform.sizeDelta = new Vector2(len, len * resultSpecies.shadowWidthRate);
-        catchFishTail.rectTransform.sizeDelta = new Vector2(len * 0.32f, len * resultSpecies.shadowWidthRate * 0.85f);
-        catchFishTail.rectTransform.anchoredPosition = new Vector2(-len * 0.42f, 0f);
-        catchFishBody.color = catchFishTail.color = resultSpecies.color;
 
         timer = 0f;
         phase = Phase.Landing;
         SetHint("");
 
-        // 一番の見せ場：スロー＋アップ＋フラッシュ
-        rig.SlowMo(0.3f, 0.8f);
-        rig.Look(landingPoint + new Vector2(0f, 150f), 1.8f, 0.25f);
-        rig.Punch(0.1f);
-        rig.Shake(0.4f);
+        // 一番の見せ場：魚がこちらへ跳び上がってくる。スロー＋アップ＋フラッシュ
+        Cam.SlowMo(0.3f, 0.8f);
+        Cam.Punch(0.1f);
+        Cam.Shake(0.4f);
         Flash(0.6f);
         SpawnRipple(landingPoint, 260f, 0.9f, 0.7f);
-        SpawnRipple(landingPoint, 140f, 0.6f, 0.8f);
         ShowBig("釣れた！", new Color(1f, 0.9f, 0.4f));
         PlaySE(catchSE);
-        robot.Cheer(resultIsNew ? "はじめて見る魚だ！" : "やったー！");
+        Pulse(1f, 0.5f, 0.4f);
+        backView.Cheer(resultIsNew ? "はじめて見る魚だ！" : "やったー！");
     }
 
     void UpdateLanding(float dt)
     {
         timer += dt;
-        const float jumpTime = 0.9f;
-        float p = Mathf.Clamp01(timer / jumpTime);
-
-        if (p < 1f)
-        {
-            // 水面から高く跳ね上がって、桟橋に落ちる
-            catchFish.anchoredPosition = landingPoint + CatchRestOffset * p + new Vector2(0f, Mathf.Sin(p * Mathf.PI) * 300f);
-            catchFish.localScale = Vector3.one * Mathf.Lerp(0.7f, 1.3f, p);
-            catchFish.localRotation = Quaternion.Euler(0f, 0f, 90f + p * 300f);
-        }
-        else
-        {
-            // 桟橋でピチピチ跳ねる
-            float flop = Mathf.Abs(Mathf.Sin(timer * 12f));
-            catchFish.anchoredPosition = landingPoint + CatchRestOffset + new Vector2(0f, flop * 18f);
-            catchFish.localRotation = Quaternion.Euler(0f, 0f, 30f + Mathf.Sin(timer * 12f) * 25f);
-        }
-
+        backView.LandingJump(Mathf.Clamp01(timer / 0.9f), timer);
         if (timer >= 1.3f) ShowResult();
     }
 
@@ -837,7 +1236,7 @@ public class MyTownFishing : MonoBehaviour
         resultBadge.text = resultIsNew ? "NEW!" : resultIsRecord ? "最大記録更新！" : "";
         resultDescription.text = resultSpecies.description;
         resultFish.color = resultSpecies.color;
-        rig.Look(landingPoint + new Vector2(0f, 40f), 1.5f, 0.6f);
+        if (fishSide != null) resultFish.sprite = fishSide;
         SetHint("<b>続ける</b> クリック / A");
     }
 
@@ -845,14 +1244,13 @@ public class MyTownFishing : MonoBehaviour
     {
         timer += dt;
         resultPanel.transform.localScale = Vector3.Lerp(resultPanel.transform.localScale, Vector3.one, 1f - Mathf.Exp(-dt * 14f));
-        float flop = Mathf.Abs(Mathf.Sin(timer * 8f)) * Mathf.Exp(-timer);
-        catchFish.anchoredPosition = landingPoint + CatchRestOffset + new Vector2(0f, flop * 14f);
+        // 釣った魚は手前で跳ね続ける
+        backView.LandingJump(1f, 1.3f + timer);
 
         if (timer < 0.4f) return;
         if (ActionPressed() || CancelPressed())
         {
             resultPanel.SetActive(false);
-            catchFish.gameObject.SetActive(false);
             EnterAim();
         }
     }
@@ -885,28 +1283,28 @@ public class MyTownFishing : MonoBehaviour
         {
             if (assistUsed)
             {
-                robot.Say("もうエネルギーが…！");
+                Say("もうエネルギーが…！");
                 return;
             }
             assistUsed = true;
             assistTimer = assistDuration;
-            robot.SetAssist(true);
-            robot.Say("まかせて！いっしょに引くよ！", assistDuration);
+            backView.SetAssist(true);
+            Say("まかせて！いっしょに引くよ！", assistDuration);
             PlaySE(hookSE, 0.6f);
-            rig.Punch(0.05f);
+            Cam.Punch(0.05f);
             return;
         }
 
         if (phase != Phase.Aim && phase != Phase.Lure) return;
         if (scanTimer > 0f)
         {
-            robot.Say("充電中…", 0.8f);
+            Say("充電中…", 0.8f);
             return;
         }
 
         // サーチ：輪が届いた魚から順に光る
         scanTimer = scanCooldown;
-        robot.PlayScan();
+        backView.PlayScan();
         PlaySE(nibbleSE);
         int count = 0;
         bool rare = false;
@@ -915,9 +1313,9 @@ public class MyTownFishing : MonoBehaviour
             if (f.IsLeaving) continue;
             count++;
             if (f.Species.rarity <= 3f) rare = true;
-            f.Reveal(Vector2.Distance(robot.Position, f.Position) / robot.ScanSpeed, 4f);
+            f.Reveal(backView.ScanDelay(f.Position), 4f);
         }
-        robot.Say(rare ? "大きな気配がある…！金色の影を狙って！" : "魚が " + count + " 匹いるよ", 2.4f);
+        Say(rare ? "大きな気配がある…！金色の影を狙って！" : "魚が " + count + " 匹いるよ", 2.4f);
     }
 
     // ─── 魚 ────────────────────────────────────────────────────
@@ -987,6 +1385,8 @@ public class MyTownFishing : MonoBehaviour
         {
             angle *= 1f + tension * 0.25f;
             angle += Mathf.Sin(Time.unscaledTime * 30f) * tension * tension * 4f;
+            // 竿さばき：プレイヤーが倒した分だけ竿が傾く（右に倒す = 時計回り）
+            angle = Mathf.Clamp(angle - rodTilt * 40f, -85f, 85f);
         }
         rodAngle = Mathf.LerpAngle(rodAngle, angle, 1f - Mathf.Exp(-dt * 10f));
         rod.localRotation = Quaternion.Euler(0f, 0f, rodAngle);
@@ -1003,14 +1403,19 @@ public class MyTownFishing : MonoBehaviour
         {
             bobberDip = Mathf.MoveTowards(bobberDip, 0f, dt * 2.5f);
             float bob = Mathf.Sin(Time.unscaledTime * 3f) * 0.04f;
-            float sink = bobberSunk ? 0.55f : 1f - bobberDip * 0.35f;
-            bobber.anchoredPosition = BaitPosition + new Vector2(0f, bobberSunk ? -6f : 0f);
-            bobber.localScale = Vector3.one * (sink + bob);
+            // 消し込みは深く沈み、居食いはわずかに沈んだまま、食い上げは浮いて（上から見ると大きく）見える
+            float sink = !bobberSunk ? 1f - bobberDip * 0.35f
+                       : biteKind == FishingFish.BiteKind.Sudden ? 0.55f
+                       : biteKind == FishingFish.BiteKind.Hold ? 0.84f : 1.15f;
+            float offset = !bobberSunk ? 0f : biteKind == FishingFish.BiteKind.Sudden ? -6f : biteKind == FishingFish.BiteKind.Hold ? -2f : 4f;
+            bobber.anchoredPosition = BaitPosition + new Vector2(0f, offset);
+            bobber.localScale = Vector3.one * (sink + (bobberSunk && biteKind != FishingFish.BiteKind.Lift ? 0f : bob));
         }
         if (bobberImage != null)
         {
             var c = bobberImage.color;
-            c.a = phase == Phase.Lure && bobberSunk ? 0.35f : 1f;
+            c.a = phase != Phase.Lure || !bobberSunk ? 1f
+                : biteKind == FishingFish.BiteKind.Sudden ? 0.35f : biteKind == FishingFish.BiteKind.Hold ? 0.8f : 1f;
             bobberImage.color = c;
         }
 
@@ -1020,7 +1425,8 @@ public class MyTownFishing : MonoBehaviour
         if (!showLine) return;
 
         line.start = RodTip;
-        line.end = fightFish != null ? fightFish.Position : bobber.anchoredPosition;
+        line.end = fightFish == null ? bobber.anchoredPosition
+                 : fightFish.Position;
         if (phase == Phase.Fight)
         {
             // 張っているほどまっすぐ震え、色が赤みを帯びる。ゆるいとたるむ
@@ -1030,48 +1436,54 @@ public class MyTownFishing : MonoBehaviour
         }
         else
         {
-            line.sag = phase == Phase.Lure ? (bobberSunk ? 0.05f : 0.2f) : 0.15f;
-            line.vibration = bobberSunk ? 1.5f : 0f;
+            // 食い上げはウキが浮いて糸がたるむ。消し込みは糸がピンと張る
+            line.sag = phase != Phase.Lure ? 0.15f
+                     : !bobberSunk ? 0.2f
+                     : biteKind == FishingFish.BiteKind.Sudden ? 0.05f : biteKind == FishingFish.BiteKind.Hold ? 0.14f : 0.32f;
+            line.vibration = bobberSunk && biteKind == FishingFish.BiteKind.Sudden ? 1.5f : bobberSunk ? 0.4f : 0f;
             line.color = new Color(0.9f, 0.92f, 1f, 0.7f);
         }
         line.Refresh(dt);
     }
 
+    // ─── 後ろから見た画面へ状態を渡す ────────────────────────────
+    void UpdateBackView()
+    {
+        backView.SetAim(phase == Phase.Aim, reticlePos);
+        backView.SyncFish(fishes, fightFish);
+
+        int bite = phase == Phase.Lure && bobberSunk ? (int)biteKind : -1;
+        switch (phase)
+        {
+            case Phase.Casting:
+                backView.SetBobber(FishingBackView.BobberMode.Flying, castTo, castProgress, 0f, -1);
+                backView.SetRodTarget(castTo);
+                break;
+            case Phase.Lure:
+                backView.SetBobber(FishingBackView.BobberMode.Floating, BaitPosition, 0f, bobberDip, bite);
+                backView.SetRodTarget(BaitPosition);
+                break;
+            case Phase.ReelIn:
+                backView.SetBobber(FishingBackView.BobberMode.Returning, castFrom, castProgress, 0f, -1);
+                backView.SetRodTarget(castFrom);
+                break;
+            case Phase.Aim:
+            case Phase.Entering:
+            case Phase.Log:
+                backView.SetBobber(FishingBackView.BobberMode.Hanging, BaitPosition, 0f, 0f, -1);
+                backView.SetRodTarget(phase == Phase.Aim ? reticlePos : landingPoint + new Vector2(0f, 300f));
+                break;
+            default:
+                backView.SetBobber(FishingBackView.BobberMode.Hidden, BaitPosition, 0f, 0f, -1);
+                backView.SetRodTarget(landingPoint + new Vector2(0f, 300f));
+                break;
+        }
+    }
+
     // ─── 演出 ──────────────────────────────────────────────────
     void SpawnRipple(Vector2 position, float size, float duration, float alpha)
     {
-        Ripple r = null;
-        foreach (var x in ripples)
-            if (x.time >= x.duration) { r = x; break; }
-        if (r == null)
-        {
-            var go = new GameObject("Ripple", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
-            r = new Ripple { rect = go.GetComponent<RectTransform>(), image = go.GetComponent<Image>() };
-            r.rect.SetParent(rippleLayer, false);
-            r.image.sprite = circle;
-            r.image.raycastTarget = false;
-            ripples.Add(r);
-        }
-        r.rect.gameObject.SetActive(true);
-        r.rect.anchoredPosition = position;
-        r.time = 0f;
-        r.duration = duration;
-        r.size = size;
-        r.alpha = alpha;
-    }
-
-    void UpdateRipples(float dt)
-    {
-        foreach (var r in ripples)
-        {
-            if (r.time >= r.duration) continue;
-            r.time += dt;
-            float p = Mathf.Clamp01(r.time / r.duration);
-            float s = r.size * (0.3f + 0.7f * (1f - (1f - p) * (1f - p)));
-            r.rect.sizeDelta = new Vector2(s, s * 0.8f);
-            r.image.color = new Color(0.75f, 0.85f, 1f, r.alpha * (1f - p) * 0.6f);
-            if (p >= 1f) r.rect.gameObject.SetActive(false);
-        }
+        backView.Ripple(position, size, duration, alpha);
     }
 
     void ShowBig(string text, Color color)
@@ -1102,6 +1514,12 @@ public class MyTownFishing : MonoBehaviour
             c.a = Mathf.Clamp01(bigTimer / 0.4f);
             bigText.color = c;
         }
+    }
+
+    // ロボにしゃべらせる。ファイト画面が出ている間は、そちらの左下のロボが吹き出しを出す
+    void Say(string text, float duration = 1.6f)
+    {
+        backView.Say(text, duration);
     }
 
     void SetHint(string text)
@@ -1138,6 +1556,11 @@ public class MyTownFishing : MonoBehaviour
         return dir.sqrMagnitude > 1f ? dir.normalized : dir;
     }
 
+    static bool RightHeld()
+    {
+        return Mouse.current != null && Mouse.current.rightButton.isPressed;
+    }
+
     static bool IsSlowHeld()
     {
         var kb = Keyboard.current;
@@ -1146,7 +1569,7 @@ public class MyTownFishing : MonoBehaviour
 
     bool PointerOnButtons()
     {
-        return MenuInput.IsPointerOver(robot.Rect) || MenuInput.IsPointerOver(logButton);
+        return MenuInput.IsPointerOver(backView.RobotRect) || MenuInput.IsPointerOver(logButton);
     }
 
     // 投げる・合わせる。ロボや図鑑ボタンのクリックは除く
@@ -1179,11 +1602,5 @@ public class MyTownFishing : MonoBehaviour
         if (kb != null && kb.tabKey.wasPressedThisFrame) return true;
         var pad = Gamepad.current;
         return pad != null && pad.selectButton.wasPressedThisFrame;
-    }
-
-    Vector2 ScreenToContent(Vector2 screen)
-    {
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(content, screen, null, out var local);
-        return local;
     }
 }

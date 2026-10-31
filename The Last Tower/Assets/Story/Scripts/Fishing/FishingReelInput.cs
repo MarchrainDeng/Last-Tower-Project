@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 /// リールを巻く速さを読む
 ///
 /// - マウス  : カーソルをぐるぐる回す。回した中心は直近のカーソル位置の平均から求めるので、画面のどこで回してもよい
-/// - パッド  : スティックをぐるぐる回す
+/// - パッド  : 左スティックをぐるぐる回す（右スティックは竿を倒すのに使う）
 /// - キーボード: Space を押している間、一定の速さで巻く
 /// 往復させただけでは回転が打ち消し合って巻けない。回す向きはどちらでもよい
 /// </summary>
@@ -42,11 +42,15 @@ public class FishingReelInput
         Speed = 0f;
     }
 
-    public void Update(float deltaTime)
+    /// <summary>
+    /// ignoreMouse が true の間はマウスの動きを数えない（右ドラッグで竿を倒している時）
+    /// </summary>
+    public void Update(float deltaTime, bool ignoreMouse = false)
     {
         if (deltaTime <= 0f) return;
 
-        float delta = ReadMouse(deltaTime) + ReadStick();
+        float mouseDelta = ReadMouse(deltaTime);
+        float delta = (ignoreMouse ? 0f : mouseDelta) + ReadStick();
         float target = delta / deltaTime;
 
         // 往復運動は符号が入れ替わって打ち消し合う
@@ -86,10 +90,7 @@ public class FishingReelInput
         var pad = Gamepad.current;
         if (pad == null) return 0f;
 
-        // 左右どちらのスティックで回してもよい（大きく倒している方）
-        Vector2 left = pad.leftStick.ReadValue();
-        Vector2 right = pad.rightStick.ReadValue();
-        Vector2 stick = right.sqrMagnitude > left.sqrMagnitude ? right : left;
+        Vector2 stick = pad.leftStick.ReadValue();
 
         if (stick.magnitude < StickDeadZone)
         {
