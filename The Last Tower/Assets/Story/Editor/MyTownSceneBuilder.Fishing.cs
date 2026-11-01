@@ -380,21 +380,12 @@ public static partial class MyTownSceneBuilder
         Center(fv.reel, "Knob", new Vector2(0f, 54f), new Vector2(26f, 26f), new Color(0.95f, 0.75f, 0.3f), circle);
         Center(cam, "Hand", new Vector2(330f, -430f), new Vector2(110f, 90f), new Color(0.75f, 0.50f, 0.95f), circle);
 
-        // 合図の記号（横走りの向き・エラ洗いの予兆・竿を倒す向き）
-        fv.runArrow = MakeText(cam, "RunArrow", "≫", font, 110f, new Vector2(0.5f, 0.5f), new Vector2(220f, 140f));
-        fv.runArrow.color = new Color(0.9f, 0.97f, 1f);
-        fv.runArrow.fontStyle = FontStyles.Bold;
+        // 合図の記号（跳ねる前の「！」だけ）
         fv.jumpMark = MakeText(cam, "JumpMark", "！", font, 150f, new Vector2(0.5f, 0.5f), new Vector2(200f, 200f));
         fv.jumpMark.color = new Color(1f, 0.82f, 0.25f);
         fv.jumpMark.fontStyle = FontStyles.Bold;
-        fv.tiltHint = MakeText(cam, "TiltHint", "竿を右へ ▶", font, 44f, new Vector2(0.5f, 0.5f), new Vector2(420f, 70f));
-        fv.tiltHint.color = new Color(1f, 0.82f, 0.25f);
-        fv.tiltHint.fontStyle = FontStyles.Bold;
-        foreach (var t in new[] { fv.runArrow, fv.jumpMark, fv.tiltHint })
-        {
-            t.raycastTarget = false;
-            t.gameObject.SetActive(false);
-        }
+        fv.jumpMark.raycastTarget = false;
+        fv.jumpMark.gameObject.SetActive(false);
 
         // ロボ（左下。クリックでサーチ／アシスト）
         var face = new GameObject("Robot", typeof(RectTransform), typeof(Image), typeof(Button)).GetComponent<RectTransform>();

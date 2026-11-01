@@ -14,7 +14,8 @@ using UnityEngine.UI;
 /// - 投げる　：ウキが竿先から弧を描いて飛ぶ
 /// - 誘う　　：ウキが水面に浮き、魚の影が水中をうっすら泳ぐ
 /// - アタリ　：ウキが沈む（一気に／少しだけ）・倒れて流れる
-/// - ファイト：魚が水面に背中を出して走る。横走りは引き波と「≫」、跳ねる前は泡と「！」
+/// - ファイト：魚が水面に背中を出して走る。横へのダッシュは長い引き波と、竿が持っていかれる動きで見せる（記号は出さない）。
+///             跳ねる前だけ泡と「！」
 /// - 釣り上げ：魚がこちらへ跳んでくる
 /// ロボは左下にいて、吹き出しでしゃべる（クリックでサーチ／アシスト）
 /// </summary>
@@ -36,12 +37,10 @@ public class FishingBackView : MonoBehaviour
         public float tension;           // 糸の張り 0〜1
         public float rodTilt;           // 竿の倒し具合 -1〜1
         public float reelAngle;         // リールの回転（度）
-        public int runDir;              // 横走りの向き（-1 左 / 0 / 1 右）
+        public bool dashing;            // 横へダッシュしている
         public bool jumpWarn;           // 跳ねる前の予兆
         public bool airborne;           // 跳んでいる
         public float airProgress;       // 跳んでいる進み 0〜1
-        public bool tiltHint;           // 「竿をこっちへ」の案内を出す
-        public bool countering;         // 逆に倒せている
         public bool assisting;          // ロボのアシスト中
         public bool lineBroken;
     }
@@ -100,10 +99,8 @@ public class FishingBackView : MonoBehaviour
     public Vector2 rodBase = new Vector2(330f, -430f);   // 手元（プレイヤーの手）
     public float rodLength = 560f;
 
-    [Header("── 合図（少しだけの記号） ──────────")]
-    public TMP_Text runArrow;
+    [Header("── 合図（跳ねる前の「！」だけ） ──────")]
     public TMP_Text jumpMark;
-    public TMP_Text tiltHint;
 
     [Header("── ロボ ──────────────────────")]
     public RectTransform robot;
@@ -118,6 +115,7 @@ public class FishingBackView : MonoBehaviour
     public RectTransform sprayLayer;
 
     public TMP_FontAsset font;
+    public Color weedColor = new Color(0.10f, 0.20f, 0.13f, 1f);
 
     class Drop
     {
@@ -148,6 +146,7 @@ public class FishingBackView : MonoBehaviour
     readonly Dictionary<FishingFish, Shadow> shadows = new Dictionary<FishingFish, Shadow>();
 
     Vector2 landing;
+    RectTransform weeds;
     float bubbleTimer, alertTimer, scanTimer = -1f, robotHop;
     bool assisting;
     float sprayTimer, finPhase;
@@ -172,9 +171,10 @@ public class FishingBackView : MonoBehaviour
     public RectTransform RobotRect => robot;
 
     // ─── 開始・終了 ────────────────────────────────────────────
-    public void Open(Vector2 landingPoint)
+    public void Open(Vector2 landingPoint, Rect water, float weedMargin)
     {
         landing = landingPoint;
+        if (weeds == null) BuildWeeds(water, weedMargin);
         InFight = false;
         fishFade = 1f;
         rodSpring = 0f;
@@ -189,6 +189,43 @@ public class FishingBackView : MonoBehaviour
         // 町から寄ってきた続きに見えるよう、寄った状態から引く
         rig.Snap(new Vector2(0f, -120f), 1.5f);
         rig.Look(Vector2.zero, 1f, 0.7f);
+    }
+
+    // 池の左右の端に草を生やす（横に走られてここまで来ると糸が切れる）
+    void BuildWeeds(Rect water, float margin)
+    {
+        weeds = new GameObject("Weeds", typeof(RectTransform)).GetComponent<RectTransform>();
+        weeds.SetParent(world, false);
+        weeds.sizeDelta = Vector2.zero;
+        weeds.SetSiblingIndex(shadowLayer.GetSiblingIndex());   // 魚の影より奥
+
+        var dark = new Color(weedColor.r * 0.6f, weedColor.g * 0.7f, weedColor.b * 0.7f, 0.75f);
+        int n = 0;
+        for (float t = 0f; t <= 1.001f; t += 0.07f)
+        {
+            foreach (float sideSign in new[] { -1f, 1f })
+            {
+                float x = sideSign > 0f ? water.xMax - margin * 0.5f : water.xMin + margin * 0.5f;
+                Project(new Vector2(x, landing.y + t * depthRange), out var screen, out var scale);
+                // 水面に浮く藻のかたまり
+                var patch = MakeImage(weeds, "Patch_" + n, circle);
+                patch.color = dark;
+                patch.rectTransform.anchoredPosition = screen;
+                patch.rectTransform.sizeDelta = new Vector2(260f, 60f) * scale;
+                // 水面から突き出た葉（細い棒を少しずつ傾けて並べる）
+                for (int i = 0; i < 4; i++)
+                {
+                    var blade = MakeImage(weeds, "Blade_" + n + "_" + i, null);
+                    blade.color = weedColor;
+                    var rt = blade.rectTransform;
+                    rt.pivot = new Vector2(0.5f, 0f);
+                    rt.anchoredPosition = screen + new Vector2((i - 1.5f) * 34f * scale, 0f);
+                    rt.sizeDelta = new Vector2(8f, 70f + (i * 37 + n * 13) % 50) * scale;
+                    rt.localRotation = Quaternion.Euler(0f, 0f, (i - 1.5f) * -9f + sideSign * 4f);
+                }
+                n++;
+            }
+        }
     }
 
     public void Close()
@@ -538,9 +575,7 @@ public class FishingBackView : MonoBehaviour
 
     void HideFightMarks()
     {
-        runArrow.gameObject.SetActive(false);
         jumpMark.gameObject.SetActive(false);
-        tiltHint.gameObject.SetActive(false);
     }
 
     public void TickFight(FightState s, float dt)
@@ -548,9 +583,9 @@ public class FishingBackView : MonoBehaviour
         if (!InFight) return;
 
         Project(s.fishPos, out fishScreen, out fishScale);
-        // 横走りの強さは池の座標で見る（遠くの魚は画面上の動きが小さいので）
+        // 横の動きの強さは池の座標で見る（遠くの魚は画面上の動きが小さいので）
         float lateral = s.fishVelocity.x;
-        float lateralRate = Mathf.Clamp01(Mathf.Abs(lateral) / 200f);
+        float lateralRate = Mathf.Clamp01(Mathf.Abs(lateral) / 300f);
 
         // 魚：水面に出ている背中。上から見た形を泳ぐ向きに回すので、横に走ると長く、沖へ逃げると短く見える
         // 暴れるほど激しく体をくねらせ、疲れると浮いて腹（明るい色）を見せる
@@ -569,11 +604,12 @@ public class FishingBackView : MonoBehaviour
         fishFin.anchoredPosition = new Vector2(Mathf.Sin(finPhase) * len * 0.05f, len * 0.06f);
         fishFin.GetComponent<Image>().color = new Color(back.r, back.g, back.b, back.a * (1f - s.tired));
 
-        // 引き波：走る方向の反対側に白く伸びる
-        float wakeLen = len * (0.8f + 2.2f * lateralRate);
-        wake.rectTransform.sizeDelta = new Vector2(wakeLen, len * 0.3f);
-        wake.rectTransform.anchoredPosition = new Vector2(-Mathf.Sign(lateral) * wakeLen * 0.45f, -len * 0.05f);
-        wake.color = new Color(0.85f, 0.93f, 1f, (0.15f + 0.55f * Mathf.Max(lateralRate, s.thrash * 0.5f)) * fishFade * (s.airborne ? 0f : 1f));
+        // 引き波：走る方向の反対側に白く伸びる。ダッシュの時は水面を横切るほど長く、くっきり
+        float wakeLen = len * (0.8f + (s.dashing ? 3.8f : 1.5f) * lateralRate);
+        wake.rectTransform.sizeDelta = new Vector2(wakeLen, len * (s.dashing ? 0.36f : 0.3f));
+        wake.rectTransform.anchoredPosition = new Vector2(-Mathf.Sign(lateral) * wakeLen * 0.47f, -len * 0.05f);
+        float wakeAlpha = s.dashing ? 0.6f : 0.15f + 0.45f * Mathf.Max(lateralRate, s.thrash * 0.5f);
+        wake.color = new Color(0.85f, 0.93f, 1f, wakeAlpha * fishFade * (s.airborne ? 0f : 1f));
 
         // 暴れている間は水面が割れてしぶきが上がり続ける。跳ねる前は泡立つ
         sprayTimer -= dt;
@@ -594,16 +630,7 @@ public class FishingBackView : MonoBehaviour
             airFish.localRotation = Quaternion.Euler(0f, 0f, 70f + Mathf.Sin(p * 28f) * 45f);
         }
 
-        // 合図の記号
-        bool running = s.runDir != 0 && lateralRate > 0.45f && !s.airborne;
-        runArrow.gameObject.SetActive(running);
-        if (running)
-        {
-            runArrow.text = s.runDir > 0 ? "≫" : "≪";
-            runArrow.rectTransform.anchoredPosition = fishScreen + new Vector2(s.runDir * (len * 0.8f + 90f), len * 0.15f);
-            runArrow.alpha = 0.5f + 0.5f * Mathf.Abs(Mathf.Sin(Time.unscaledTime * 10f));
-        }
-
+        // 合図の記号は跳ねる前の「！」だけ
         jumpMark.gameObject.SetActive(s.jumpWarn);
         if (s.jumpWarn)
         {
@@ -626,16 +653,6 @@ public class FishingBackView : MonoBehaviour
             line.vibration = Mathf.Max(0f, tension - 0.5f) * 16f + s.thrash * 2f;
             line.color = Color.Lerp(new Color(0.92f, 0.94f, 1f, 0.9f), new Color(1f, 0.45f, 0.35f, 1f), Mathf.InverseLerp(0.6f, 1f, tension));
             line.Refresh(dt);
-        }
-
-        // 案内：最初の数回だけ、竿の先に「倒す向き」を出す
-        bool hint = s.tiltHint && s.runDir != 0 && !s.countering;
-        tiltHint.gameObject.SetActive(hint);
-        if (hint)
-        {
-            tiltHint.text = s.runDir > 0 ? "◀ 竿を左へ" : "竿を右へ ▶";
-            tiltHint.rectTransform.anchoredPosition = tip + new Vector2(-s.runDir * 170f, -40f);
-            tiltHint.alpha = 0.6f + 0.4f * Mathf.Abs(Mathf.Sin(Time.unscaledTime * 8f));
         }
 
         if (reel != null) reel.localRotation = Quaternion.Euler(0f, 0f, -s.reelAngle);

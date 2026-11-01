@@ -16,22 +16,23 @@ using UnityEngine.UI;
 ///           本アタリは 消し込み／居食い／食い上げ の3種類。合わせるタイミングで掛かり具合（浅い・しっかり・深い）が決まり、
 ///           待つほど深く食い込む（送り込み）。待ちすぎると餌だけ取られる。つつき中の早合わせでもたまに浅く掛かる
 /// Fight   : マウスをぐるぐる回してリールを巻く。魚が暴れている時に強く巻くと糸が切れ、
-///           巻かずに放っておくとバレる。魚が横に走ったら竿を逆に倒す（竿さばき）と寄せやすく、糸の負担も減る。
+///           巻かずに放っておくとバレる。魚は時々、横へ一気にダッシュして竿を持っていく。
+///           その間にマウスを反対へ引くと魚が向きを変え、引けないと大きく持っていかれる。池の端の草まで行かれると糸が切れる。
 ///           跳ねる魚はエラ洗いをする。跳んでいる間に巻くと外れる。浅掛かりは外れやすい
-///           ファイト中はプレイヤーの後ろから見た画面（FishingBackView）に切り替わり、竿のしなりと魚の走りを大きく見せる。
-///           ゲージは出さず、魚の動き・しぶき・糸の張り・竿のしなり・振動・ドラグ音・カメラで伝え、
-///           横走りの向き（≫）とエラ洗いの予兆（！）だけ小さな記号を添える。最初の数回はロボが一瞬スローにして教える
+///           ゲージは出さず、魚の動き・しぶき・糸の張り・竿のしなり・振動・ドラグ音・カメラで伝える。
+///           合図は場面ごとに1つ：その場で暴れる＝しぶき（ゆるめる）/ ダッシュ＝竿が持っていかれる（反対へ引く）/
+///           跳ねる＝泡と「！」（巻かない）/ 静か（巻く）。ダッシュと跳ねるは最初だけロボが一瞬止めて教える
 /// Landing : 魚が跳ねて釣り上げる演出 → Result（図鑑に記録）
 ///
 /// お助けロボット（FishingRobot）は サーチ（魚を光らせる）/ アタリの合図 / ファイト中のアシスト（1回）をしてくれる
 ///
 /// 【操作】
 /// - マウス  : カーソルで狙う、クリックで投げる・合わせる、左ドラッグで餌を動かす、ぐるぐる回して巻く、
-///             右ドラッグ中だけ左右で竿を倒す、右クリックで戻る
-/// - パッド  : 左スティックで狙う・餌を動かす、Aで投げる・合わせる、左スティックを回して巻く、右スティック左右で竿を倒す、
+///             ダッシュされたら反対へマウスを引く、右クリックで戻る
+/// - パッド  : 左スティックで狙う・餌を動かす、Aで投げる・合わせる、左スティックを回して巻く、ダッシュされたらスティックを反対へ、
 ///             Yでロボ、Viewで図鑑、Bで戻る（ファイト中は引きに合わせて振動する）
 /// - キーボード: WASD/矢印で狙う・餌を動かす（Shiftでゆっくり）、Space/Enterで投げる・合わせる、Space長押しで巻く、
-///              ファイト中は A/D で竿を倒す、Qでロボ、Tabで図鑑、Esc/Backspaceで戻る
+///              ダッシュされたら反対の A/D、Qでロボ、Tabで図鑑、Esc/Backspaceで戻る
 ///
 /// 計算は池の座標（真上から見た図。下が桟橋、上が池の奥）で行い、画面にはプレイヤーの後ろから見た構図で映す（FishingBackView）
 /// 真上から見た図（content 以下）は計算用に残しているだけで、画面には出さない
@@ -40,7 +41,7 @@ using UnityEngine.UI;
 public class MyTownFishing : MonoBehaviour
 {
     enum Phase { Hidden, Entering, Aim, Casting, Lure, ReelIn, Fight, Landing, Result, Lost, Log, Exiting }
-    enum FightPhase { Calm, Warn, Thrash, JumpWarn, Jump }
+    enum FightPhase { Calm, Warn, Thrash, Dash, JumpWarn, Jump }
     enum HookDepth { Shallow, Solid, Deep }
 
     [Header("── 町からの切り替え ────────────────")]
@@ -85,10 +86,12 @@ public class MyTownFishing : MonoBehaviour
     public float baitSpeed = 170f;
     public float slowBaitSpeed = 60f;
     public float stickDeadZone = 0.25f;
-    [Tooltip("右ドラッグ1pxで竿が倒れる量（-1〜1）")]
+    [Tooltip("ダッシュ中、マウス1pxで竿を引く量（-1〜1）")]
     public float mouseTiltSensitivity = 0.005f;
     [Tooltip("操作していない時に竿がまっすぐに戻る速さ")]
     public float tiltReturnSpeed = 1.5f;
+    [Tooltip("ダッシュした魚に竿が持っていかれる速さ")]
+    public float rodYankRate = 1.4f;
 
     [Header("── ファイト ────────────────────")]
     [Tooltip("ふつうの速さ（1秒に1回転）で巻いた時に寄ってくる速さ")]
@@ -103,6 +106,18 @@ public class MyTownFishing : MonoBehaviour
     public float nearPierDistance = 260f;
     [Tooltip("最後のひと暴れで沖へ走る最低の速さ（小さい魚でもしっかり走る）")]
     public float lastRunMinPull = 260f;
+    [Tooltip("池の端からこの距離まで横に走られると、草に巻かれて糸が切れる（池の座標）")]
+    public float weedMargin = 200f;
+    [Tooltip("暴れ出す時に、横へダッシュする確率（暴れやすい魚ほど高くなる）")]
+    [Range(0f, 1f)] public float dashChance = 0.6f;
+    [Tooltip("ダッシュが続く長さ（秒。引きの弱い魚〜強い魚）。反対へ引くまでこの間ずっと走り続ける")]
+    public float dashTimeMin = 1.4f;
+    public float dashTimeMax = 3.5f;
+    [Tooltip("ダッシュの速さ（引きの弱い魚〜強い魚）")]
+    public float dashSpeedMin = 320f;
+    public float dashSpeedMax = 650f;
+    [Tooltip("引き戻せなかった時、次のダッシュも同じ向きへ走る確率（草の方へ逃げ続ける）")]
+    [Range(0f, 1f)] public float runKeepChance = 0.75f;
     [Tooltip("暴れていない時にこれだけ巻かずにいるとバレる（秒）")]
     public float slackLimit = 2.5f;
     public float assistDuration = 2.5f;
@@ -115,7 +130,7 @@ public class MyTownFishing : MonoBehaviour
     [Range(0f, 1f)] public float shallowHookOutChance = 0.12f;
     [Tooltip("エラ洗いの予兆（水面が泡立ってから跳ぶまで）の時間")]
     public float jumpWarnTime = 0.8f;
-    [Tooltip("横走り・エラ洗いを、最初の何回までロボがスローにして教えるか")]
+    [Tooltip("跳ねるのを、最初の何回までロボがスローにして教えるか（ダッシュは最初の1回だけ）")]
     public int coachCount = 2;
     [Tooltip("パッドの振動の強さ（0で無効）")]
     [Range(0f, 1f)] public float rumbleScale = 1f;
@@ -200,10 +215,9 @@ public class MyTownFishing : MonoBehaviour
     HookDepth hookDepth;
     float hookHold;                      // 掛かりの深さ（浅 0.45 / しっかり 1 / 深 1.4）
     float rodTilt;                       // 竿の倒し具合 -1（左）〜 1（右）
-    int tiltCoachLeft = -1, jumpCoachLeft = -1, praiseLeft = -1;   // -1 = まだ数えていない
-    bool tiltHintThisThrash;             // この暴れでは「竿をこっちへ」の案内を出す
-    float goodTimer;                     // 逆に倒し続けている時間
-    bool turnedThisThrash;               // この暴れで魚の向きを変えさせた
+    int dashCoachLeft = -1, jumpCoachLeft = -1, praiseLeft = -1;   // -1 = まだ数えていない
+    float dashDir = 1f;                  // ダッシュの向き（-1 左 / 1 右）
+    bool lastDashFailed;                 // 前のダッシュで引き戻せなかった
     bool lineSnapped;
     Vector2 jumpOrigin;
     float jumpMaxReel;
@@ -279,8 +293,12 @@ public class MyTownFishing : MonoBehaviour
         EngagedFish = null;
         fightFish = null;
         scanTimer = 0f;
-        backView.Open(landingPoint);
-        if (tiltCoachLeft < 0) tiltCoachLeft = jumpCoachLeft = praiseLeft = coachCount;
+        backView.Open(landingPoint, water, weedMargin);
+        if (jumpCoachLeft < 0)
+        {
+            jumpCoachLeft = coachCount;
+            dashCoachLeft = praiseLeft = 1;
+        }
         timer = 0f;
         viewStarted = false;
         phase = Phase.Entering;
@@ -306,8 +324,8 @@ public class MyTownFishing : MonoBehaviour
 
         float dt = Time.unscaledDeltaTime;
         float simDt = dt * Cam.TimeScale;
-        // 右ドラッグ中は竿を倒す操作なので、マウスの動きをリールとして数えない
-        reelInput.Update(dt, RightHeld());
+        // ダッシュ中のマウスの動きは竿を引く操作なので、リールとして数えない
+        reelInput.Update(dt, phase == Phase.Fight && fightPhase == FightPhase.Dash);
         if (scanTimer > 0f) scanTimer -= dt;
 
         switch (phase)
@@ -702,9 +720,7 @@ public class MyTownFishing : MonoBehaviour
         hookDepth = depth;
         hookHold = depth == HookDepth.Shallow ? 0.45f : depth == HookDepth.Deep ? 1.4f : 1f;
         rodTilt = 0f;
-        goodTimer = 0f;
-        turnedThisThrash = false;
-        tiltHintThisThrash = false;
+        lastDashFailed = false;
         lineSnapped = false;
         lastReelClickAngle = reelInput.Angle;
         // ここからはプレイヤーの後ろから見た画面で戦う
@@ -749,8 +765,8 @@ public class MyTownFishing : MonoBehaviour
             dragSource.Play();
         }
 
-        SetHint("<b>巻く</b> マウスをぐるぐる / 左スティックを回す / Space長押し　<b>竿を倒す</b> 右ドラッグで左右 / 右スティック / A・D\n" +
-                "暴れたらゆるめる・横に走ったら逆へ倒す・跳ねたら巻かない　<b>ロボ（1回）</b> Q / Y");
+        SetHint("<b>巻く</b> マウスをぐるぐる / 左スティックを回す / Space長押し　<b>ロボ（1回）</b> Q / Y\n" +
+                "暴れたらゆるめる・横にダッシュされたら反対へ引く・跳ねたら巻かない");
     }
 
     void UpdateFight(float dt)
@@ -767,21 +783,20 @@ public class MyTownFishing : MonoBehaviour
             if (assistTimer <= 0f) backView.SetAssist(false);
         }
 
-        UpdateRodTilt(dt);
-
         float reelPower = Mathf.Clamp(reelInput.Speed / FishingReelInput.NormalSpeed, 0f, 2.5f);
         Vector2 pos = fightFish.Position;
         Vector2 toPier = landingPoint - pos;
         float distance = toPier.magnitude;
         Vector2 dir = distance > 0.01f ? toPier / distance : Vector2.down;
-        Vector2 side = new Vector2(-dir.y, dir.x) * swayDir;
+        Vector2 perp = new Vector2(-dir.y, dir.x);
         // 疲れるほど暴れる力が弱くなる
         float power = Mathf.Lerp(0.35f, 1f, stamina);
 
-        // 竿さばき：魚が横に走る向きと逆に竿を倒せているか（good）、同じ側に倒しているか（bad）
-        float runX = Mathf.Abs(side.x) > 0.2f ? Mathf.Sign(side.x) : 0f;
-        float good = Mathf.Max(0f, -rodTilt * runX);
-        float bad = Mathf.Max(0f, rodTilt * runX);
+        // 竿：ダッシュの間だけ魚に持っていかれ、プレイヤーは反対へ引く。それ以外の時はまっすぐに戻る
+        bool dashing = fightPhase == FightPhase.Dash;
+        UpdateRodTilt(dt, dashing, dashing ? dashDir * rodYankRate * power : 0f);
+        float pullBack = dashing ? Mathf.Max(0f, -rodTilt * dashDir) : 0f;   // 反対へ引けている度合い
+        float dragged = dashing ? Mathf.Max(0f, rodTilt * dashDir) : 0f;     // 持っていかれている度合い
         Vector2 velocity;
 
         fightTimer -= dt;
@@ -789,9 +804,9 @@ public class MyTownFishing : MonoBehaviour
         {
             case FightPhase.Calm:
             {
-                // おとなしい時：巻いた分だけ寄ってくる。魚はゆっくり横へ逃げようとする（逆に倒すと止まる）
-                velocity = -dir * s.strength * 0.12f * power + side * s.swimSpeed * 0.35f * (1f - 0.7f * good);
-                velocity += dir * reelPull * (reelPower * (assisting ? 1.4f : 1f) + 0.15f * good);
+                // おとなしい時：巻いた分だけ寄ってくる
+                velocity = -dir * s.strength * 0.12f * power;
+                velocity += dir * reelPull * reelPower * (assisting ? 1.4f : 1f);
                 // 巻きすぎていると張りが戻らず、次に暴れた時に切れやすい
                 tension = Mathf.MoveTowards(tension, 0.1f + 0.3f * reelPower, dt * tensionRecovery);
 
@@ -842,10 +857,10 @@ public class MyTownFishing : MonoBehaviour
                         return;
                     }
 
-                    swayDir = -swayDir;
+                    // 暴れ方は3通り：跳ねる / 横へダッシュ / その場で暴れる
                     if (s.jumps && distance < 750f && UnityEngine.Random.value < jumpChance)
                     {
-                        // エラ洗い：水面が泡立って「！」が出たあとに跳ぶ
+                        // 跳ねる：水面が泡立って「！」が出たあとに跳ぶ
                         fightPhase = FightPhase.JumpWarn;
                         fightTimer = jumpWarnTime;
                         Pulse(0.4f, 0.4f, 0.2f);
@@ -856,27 +871,18 @@ public class MyTownFishing : MonoBehaviour
                             Say("跳ぶよ！巻くのを止めて！", 1.6f);
                         }
                     }
+                    else if (!lastRun && UnityEngine.Random.value < dashChance * Mathf.Lerp(0.7f, 1.3f, s.aggression))
+                    {
+                        StartDash(pos);
+                    }
                     else
                     {
                         fightPhase = FightPhase.Thrash;
                         fightTimer = Mathf.Lerp(1.0f, 2.6f, s.aggression) * (0.6f + 0.4f * stamina) * UnityEngine.Random.Range(0.8f, 1.2f);
-                        goodTimer = 0f;
-                        turnedThisThrash = false;
-                        tiltHintThisThrash = false;
                         SpawnRipple(pos, 200f, 0.6f, 0.6f);
                         if (backView != null) backView.Spray(pos, 1.3f, 16);
                         Cam.Punch(0.04f);
                         Pulse(0.8f, 0.3f, 0.15f);
-
-                        // 最初の数回は、一瞬スローにして竿の倒し方を教える
-                        float newRunX = Mathf.Sign((new Vector2(-dir.y, dir.x) * swayDir).x);
-                        if (tiltCoachLeft > 0)
-                        {
-                            tiltCoachLeft--;
-                            tiltHintThisThrash = true;
-                            Cam.SlowMo(0.4f, 0.6f);
-                            Say(newRunX < 0f ? "左に走る！竿を右へ倒して！" : "右に走る！竿を左へ倒して！", 1.8f);
-                        }
                     }
                 }
                 break;
@@ -898,19 +904,46 @@ public class MyTownFishing : MonoBehaviour
                 if (fightTimer <= 0f && !EndJump(s)) return;
                 break;
             }
+            case FightPhase.Dash:
+            {
+                // 横へ一気に走る。巻いても寄らない。反対へ引くと向きを変え、引けないと大きく持っていかれる
+                float speed = Mathf.Lerp(dashSpeedMin, dashSpeedMax, Mathf.InverseLerp(120f, 420f, s.strength)) * power;
+                velocity = new Vector2(dashDir * speed * (1f - 0.7f * pullBack) * (1f + 0.4f * dragged), 0f)
+                         - dir * s.strength * 0.15f * power;
+                tension += (0.5f * dragged - 0.2f) * dt;
+                tension = Mathf.Max(tension, 0.25f);
+                slack = 0f;
+                stamina -= dt / FightStamina(s) * 1.2f;
+                thrashVisual = Mathf.MoveTowards(thrashVisual, 0.7f, dt * 6f);
+                Cam.Shake(dt * 0.8f * power);
+
+                if (pullBack > 0.6f)
+                {
+                    TurnFish(pos);
+                    break;
+                }
+                if (tension >= 1f) { Lose("糸が切れた！", true, "ドンマイ…次は暴れてる時にゆるめよう"); return; }
+                if (fightTimer <= 0f)
+                {
+                    // 引き戻せなかった：大きく持っていかれて糸に負担が残る。次もたいてい同じ方へ走る
+                    lastDashFailed = true;
+                    tension = Mathf.Min(0.95f, tension + 0.2f);
+                    fightPhase = FightPhase.Calm;
+                    fightTimer = Mathf.Lerp(1.6f, 0.7f, s.aggression);
+                }
+                break;
+            }
             default:
             {
-                // 暴れている時：奥へ、横へと走る。強く巻くほど糸に負担がかかる。逆に竿を倒すと横走りを止められる
+                // その場で暴れる：沖へ引っぱる。強く巻くほど糸に負担がかかる
                 float zig = Mathf.Sin(fightClock * Mathf.Lerp(5f, 11f, s.aggression));
                 float run = lastRun ? Mathf.Max(s.strength, lastRunMinPull) : s.strength;
-                velocity = -dir * run * thrashPullRate * power
-                         + side * s.strength * 0.5f * power * (1f - 0.75f * good)
-                         + side * zig * s.strength * 0.2f * power;
-                velocity += dir * reelPull * (reelPower * (assisting ? 0.7f : 0.35f) + 0.35f * good);
+                velocity = -dir * run * thrashPullRate * power + perp * zig * s.strength * 0.15f * power;
+                velocity += dir * reelPull * reelPower * (assisting ? 0.7f : 0.35f);
 
                 float strain = 1.25f * Mathf.Lerp(0.8f, 1.3f, Mathf.InverseLerp(120f, 420f, s.strength));
-                float gain = reelPower * strain * power * (assisting ? 0.35f : 1f) * (1f - 0.45f * good);
-                tension += (gain - tensionTolerance + 0.4f * bad) * dt;
+                float gain = reelPower * strain * power * (assisting ? 0.35f : 1f);
+                tension += (gain - tensionTolerance) * dt;
                 if (pos.y >= water.yMax - 80f) tension += 0.25f * dt;   // 池の奥まで走られると糸が出切る
                 tension = Mathf.Max(tension, 0.25f);
                 slack = 0f;
@@ -919,24 +952,6 @@ public class MyTownFishing : MonoBehaviour
                 stamina -= dt / FightStamina(s) * (reelPower < 0.5f ? 2f : 1.2f);
                 thrashVisual = Mathf.MoveTowards(thrashVisual, power, dt * 6f);
                 Cam.Shake(dt * 1.1f * power);
-
-                // 逆に倒し続けると、魚がグイッと向きを変える（うまくいった手応え）
-                goodTimer = good > 0.6f ? goodTimer + dt : 0f;
-                if (goodTimer > 0.35f && !turnedThisThrash)
-                {
-                    turnedThisThrash = true;
-                    tension = Mathf.Max(0.25f, tension - 0.12f);
-                    if (backView != null) backView.Spray(pos, 1.5f, 20);
-                    SpawnRipple(pos, 180f, 0.5f, 0.6f);
-                    PlaySE(splashSE, 0.7f);
-                    Cam.Punch(0.06f);
-                    Pulse(0.7f, 0.2f, 0.15f);
-                    if (praiseLeft > 0)
-                    {
-                        praiseLeft--;
-                        Say("いいね！向きが変わった！");
-                    }
-                }
 
                 if (tension > 0.8f && !warnedTension)
                 {
@@ -955,9 +970,17 @@ public class MyTownFishing : MonoBehaviour
                 break;
             }
         }
+        if (phase != Phase.Fight) return;
         stamina = Mathf.Max(0f, stamina);
 
         pos += velocity * dt;
+
+        // 池の端の草まで走られると、糸が草に巻かれて切れる
+        if (Mathf.Min(pos.x - water.xMin, water.xMax - pos.x) < weedMargin)
+        {
+            Lose("草に巻かれた…", true, "横に走られたら、反対へ引っぱろう！");
+            return;
+        }
         pos.x = Mathf.Clamp(pos.x, water.xMin + 40f, water.xMax - 40f);
         pos.y = Mathf.Clamp(pos.y, landingPoint.y - 20f, water.yMax - 40f);
         fightFish.SetHooked(pos, landingPoint, thrashVisual, 1f - stamina, dt);
@@ -979,12 +1002,10 @@ public class MyTownFishing : MonoBehaviour
                 tension = tension,
                 rodTilt = rodTilt,
                 reelAngle = reelInput.Angle,
-                runDir = fightPhase == FightPhase.Thrash || fightPhase == FightPhase.Calm ? (int)runX : 0,
+                dashing = dashing,
                 jumpWarn = fightPhase == FightPhase.JumpWarn,
                 airborne = fightPhase == FightPhase.Jump,
                 airProgress = fightPhase == FightPhase.Jump ? 1f - Mathf.Clamp01(fightTimer / JumpTime) : 0f,
-                tiltHint = tiltHintThisThrash,
-                countering = good > 0.4f,
                 assisting = assistTimer > 0f,
             }, dt);
         }
@@ -993,7 +1014,7 @@ public class MyTownFishing : MonoBehaviour
         splashTimer -= dt;
         if (splashTimer <= 0f && fightPhase != FightPhase.Jump)
         {
-            bool thrashing = fightPhase == FightPhase.Thrash || fightPhase == FightPhase.JumpWarn;
+            bool thrashing = fightPhase == FightPhase.Thrash || fightPhase == FightPhase.JumpWarn || fightPhase == FightPhase.Dash;
             splashTimer = thrashing ? 0.07f : 0.5f;
             float size = (thrashing ? 130f : 60f) * Mathf.Lerp(0.8f, 1.4f, Mathf.InverseLerp(60f, 220f, s.shadowLength));
             SpawnRipple(pos + UnityEngine.Random.insideUnitCircle * s.shadowLength * 0.3f, size, 0.5f, thrashing ? 0.55f : 0.25f);
@@ -1001,6 +1022,53 @@ public class MyTownFishing : MonoBehaviour
 
         // 暴れている魚はすくえない。おとなしい時に足元まで寄せたら釣り上げ
         if (fightPhase == FightPhase.Calm && Vector2.Distance(pos, landingPoint) < 70f) StartLanding();
+    }
+
+    // 横へのダッシュ：急に一方向へ長く走る。竿がその方向へ持っていかれる
+    void StartDash(Vector2 pos)
+    {
+        // 前のダッシュで引き戻せなかったら、たいてい同じ草の方へまた走る
+        if (!(lastDashFailed && UnityEngine.Random.value < runKeepChance))
+            dashDir = UnityEngine.Random.value < 0.5f ? -1f : 1f;
+        lastDashFailed = false;
+        fightPhase = FightPhase.Dash;
+        // 引きの強い魚ほど長く走り続ける（引き戻さないと草まで行かれる）
+        fightTimer = Mathf.Lerp(dashTimeMin, dashTimeMax, Mathf.InverseLerp(120f, 420f, fightFish.Species.strength));
+
+        SpawnRipple(pos, 220f, 0.6f, 0.6f);
+        if (backView != null) backView.Spray(pos, 1.4f, 18);
+        PlaySE(splashSE, 0.8f);
+        Cam.Punch(0.05f);
+        Pulse(0.9f, 0.5f, 0.25f);
+
+        // 最初の1回だけ、一瞬止めて教える
+        if (dashCoachLeft > 0)
+        {
+            dashCoachLeft--;
+            Cam.SlowMo(0.12f, 1.1f);
+            Say("反対へ引っぱって！", 1.8f);
+        }
+    }
+
+    // ダッシュ中に反対へ引けた：魚がグイッと向きを変える
+    void TurnFish(Vector2 pos)
+    {
+        fightPhase = FightPhase.Calm;
+        fightTimer = 1f;
+        lastDashFailed = false;
+        tension = Mathf.Max(0.25f, tension - 0.12f);
+        stamina = Mathf.Max(0f, stamina - 0.06f);
+
+        if (backView != null) backView.Spray(pos, 1.6f, 24);
+        SpawnRipple(pos, 200f, 0.5f, 0.6f);
+        PlaySE(splashSE, 0.9f);
+        Cam.Punch(0.08f);
+        Pulse(0.8f, 0.3f, 0.2f);
+        if (praiseLeft > 0)
+        {
+            praiseLeft--;
+            Say("いいね！向きが変わった！");
+        }
     }
 
     const float JumpTime = 0.75f;
@@ -1055,40 +1123,36 @@ public class MyTownFishing : MonoBehaviour
         return true;
     }
 
-    // 竿の左右：右ドラッグ中のマウス左右 / 右スティック / A・D。操作していない時はまっすぐに戻る
-    void UpdateRodTilt(float dt)
+    // 竿の左右：ダッシュの間だけ、マウスを左右に動かす（ボタンはいらない）/ 右スティック / A・D
+    // yank は魚に持っていかれる速さ。ダッシュ以外の時はまっすぐに戻る
+    // 入力の速さは、最初のダッシュの一時停止中でも動かせるようにスローの影響を受けない時間で進める
+    void UpdateRodTilt(float dt, bool active, float yank)
     {
-        bool input = false;
-        var mouse = Mouse.current;
-        if (mouse != null && mouse.rightButton.isPressed)
+        float realDt = Time.unscaledDeltaTime;
+        if (!active)
         {
-            rodTilt += mouse.delta.ReadValue().x * mouseTiltSensitivity;
-            input = true;
+            rodTilt = Mathf.MoveTowards(rodTilt, 0f, realDt * tiltReturnSpeed);
+            return;
         }
+
+        rodTilt += yank * dt;
+        var mouse = Mouse.current;
+        if (mouse != null) rodTilt += mouse.delta.ReadValue().x * mouseTiltSensitivity;
 
         var pad = Gamepad.current;
         if (pad != null)
         {
             float x = pad.rightStick.ReadValue().x;
-            if (Mathf.Abs(x) > 0.3f)
-            {
-                rodTilt = Mathf.MoveTowards(rodTilt, x, dt * 4f);
-                input = true;
-            }
+            if (Mathf.Abs(x) < 0.3f) x = pad.leftStick.ReadValue().x;
+            if (Mathf.Abs(x) > 0.3f) rodTilt = Mathf.MoveTowards(rodTilt, x, realDt * 5f);
         }
 
         var kb = Keyboard.current;
         if (kb != null)
         {
             float x = (kb.dKey.isPressed || kb.rightArrowKey.isPressed ? 1f : 0f) - (kb.aKey.isPressed || kb.leftArrowKey.isPressed ? 1f : 0f);
-            if (x != 0f)
-            {
-                rodTilt = Mathf.MoveTowards(rodTilt, x, dt * 4f);
-                input = true;
-            }
+            if (x != 0f) rodTilt = Mathf.MoveTowards(rodTilt, x, realDt * 5f);
         }
-
-        if (!input) rodTilt = Mathf.MoveTowards(rodTilt, 0f, dt * tiltReturnSpeed);
         rodTilt = Mathf.Clamp(rodTilt, -1f, 1f);
     }
 
@@ -1102,7 +1166,7 @@ public class MyTownFishing : MonoBehaviour
         // 魚に糸を引き出されている時だけドラグが鳴る
         if (dragSource != null && dragSource.isPlaying)
         {
-            float outward = Mathf.Max(0f, -Vector2.Dot(velocity, dir));
+            float outward = fightPhase == FightPhase.Dash ? velocity.magnitude : Mathf.Max(0f, -Vector2.Dot(velocity, dir));
             float target = airborne ? 0f : Mathf.Clamp01(outward / 250f) * (tension > 0.3f ? 1f : 0.5f);
             dragSource.volume = Mathf.MoveTowards(dragSource.volume, target * 0.7f, dt * 4f);
             dragSource.pitch = 0.85f + 0.4f * target;
@@ -1554,11 +1618,6 @@ public class MyTownFishing : MonoBehaviour
             if (stick.magnitude > stickDeadZone) dir += stick;
         }
         return dir.sqrMagnitude > 1f ? dir.normalized : dir;
-    }
-
-    static bool RightHeld()
-    {
-        return Mouse.current != null && Mouse.current.rightButton.isPressed;
     }
 
     static bool IsSlowHeld()
