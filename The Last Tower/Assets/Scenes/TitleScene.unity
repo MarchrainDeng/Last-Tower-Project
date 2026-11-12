@@ -969,7 +969,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c7d8211610b87343a16b708d8021c78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TutorialSceneTest
-  tutorialSceneName: TutorialScene
+  tutorialSceneName: DialogueTest
 --- !u!4 &787399709
 Transform:
   m_ObjectHideFlags: 0

@@ -155,7 +155,10 @@ public class BlockMoveController : MonoBehaviour
 
         // 暂停时禁止操作
         // ポーズ中は操作を無効化
-        if (GameStateManager.IsPaused)
+        // 暂停或对话期间禁止方块操作
+        // ポーズ中または会話中はブロック操作を禁止
+        if (GameStateManager.IsPaused ||
+            DialogueManager.IsInputBlocked)
         {
             moveInput = 0f;
             fastFallInput = false;
@@ -173,8 +176,10 @@ public class BlockMoveController : MonoBehaviour
     {
         // 暂停时禁止移动
         // ポーズ中は移動を無効化
-        if (GameStateManager.IsPaused)
+        if (GameStateManager.IsPaused ||DialogueManager.IsInputBlocked)
+        {
             return;
+        }
 
         if (isDead)
             return;
