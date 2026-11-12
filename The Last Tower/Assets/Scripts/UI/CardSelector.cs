@@ -144,10 +144,13 @@ public class CardSelector : MonoBehaviour
         if (!cardEnterController.CanAcceptInput)
             return;
 
-        // 设置画面等暂停中时不接受输入
-        // 設定画面などで一時停止中は操作を無効化する
-        if (GameStateManager.IsPaused)
+        // 暂停或对话期间禁止选择卡牌
+        // ポーズ中または会話中はカード選択を禁止
+        if (GameStateManager.IsPaused ||
+            DialogueManager.IsInputBlocked)
+        {
             return;
+        }
 
         gamepad = Gamepad.current;
 

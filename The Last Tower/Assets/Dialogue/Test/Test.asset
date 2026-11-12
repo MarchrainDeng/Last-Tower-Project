@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de0540b842a76fd4cb1755fc98b55cbb, type: 3}
+  m_Name: Test
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueData
+  lines:
+  - The core's color must never fall into the hands of the enemy.
+  - Look! The enemy is approaching from the right!
+  - Connect the power blocks and activate the defense tower!
