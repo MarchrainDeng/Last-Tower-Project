@@ -251,8 +251,19 @@ public class MyTownController : MonoBehaviour
 
     void OpenSelected()
     {
-        if (selectedIndex < 0 || panel == null) return;
+        if (selectedIndex < 0) return;
         if (player != null) player.StopWalking();
+
+        // 出発口はパネルを出さずにワールドマップへ
+        if (locations[selectedIndex].opensWorldMap)
+        {
+            PlaySE(confirmSE);
+            enabled = false;
+            WorldMapProgress.GoToWorldMapFromTown();
+            return;
+        }
+
+        if (panel == null) return;
         PlaySE(confirmSE);
         panel.Show(locations[selectedIndex].displayName);
     }

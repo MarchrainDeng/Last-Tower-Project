@@ -15,6 +15,8 @@ public class MyTownLocationButton : MonoBehaviour, IPointerClickHandler
     public string displayName;
     [Tooltip("ストーリー進行で解放されるまで使えない場所は OFF")]
     public bool unlockedByDefault = true;
+    [Tooltip("ON ならパネルを開かず、ワールドマップへ出発する")]
+    public bool opensWorldMap;
 
     [Header("── 表示 ──────────────────────")]
     public Image background;            // 建物の壁

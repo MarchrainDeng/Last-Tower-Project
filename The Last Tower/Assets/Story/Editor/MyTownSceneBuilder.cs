@@ -30,11 +30,12 @@ public static partial class MyTownSceneBuilder
     {
         public string id, name;
         public float x, y, width, height;
-        public bool tower;
-        public Spot(string id, string name, float x, float y, float width, float height, bool tower = false)
+        public bool tower, worldMapGate;
+        public Spot(string id, string name, float x, float y, float width, float height, bool tower = false, bool worldMapGate = false)
         {
             this.id = id; this.name = name; this.x = x; this.y = y;
             this.width = width; this.height = height; this.tower = tower;
+            this.worldMapGate = worldMapGate;
         }
     }
 
@@ -45,6 +46,8 @@ public static partial class MyTownSceneBuilder
         new Spot("hall",    "会館",            0f,   70f, 520f, 360f, tower: true),
         new Spot("storage", "倉庫",          450f,  -60f, 320f, 190f),
         new Spot("lab",     "ラボ",          700f, -330f, 300f, 220f, tower: true),
+        // 会館と工場の間の奥：ワールドマップへの出発口
+        new Spot("depart",  "出発口",       -235f,   75f, 170f, 150f, worldMapGate: true),
     };
 
     static Sprite circle;
@@ -293,6 +296,7 @@ public static partial class MyTownSceneBuilder
 
         btn.locationId = spot.id;
         btn.displayName = spot.name;
+        btn.opensWorldMap = spot.worldMapGate;
         btn.label = label;
         return btn;
     }

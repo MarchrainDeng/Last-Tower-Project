@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1005096921720a543a373db766af892a, type: 3}
+  m_Name: Stage_1-5
+  m_EditorClassIdentifier: Assembly-CSharp::WorldMapStageData
+  stageId: 1-5
+  stageNumber: 1-5
+  stageName: "\u6B6F\u8ECA\u306E\u57CE\u9580"
+  sceneName: 
+  unlockedByDefault: 0
+  unlockAfter: {fileID: 11400000, guid: f8b545c2abef79b4eb8286195fbd8e53, type: 2}
+  rewards:
+  - "\u30B3\u30A4\u30F3 \xD7400"
+  - "\u79F0\u53F7\uFF1A\u9580\u756A\u6BBA\u3057"
