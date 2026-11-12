@@ -12,7 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de0540b842a76fd4cb1755fc98b55cbb, type: 3}
   m_Name: Test
   m_EditorClassIdentifier: Assembly-CSharp::DialogueData
-  lines:
-  - The core's color must never fall into the hands of the enemy.
-  - Look! The enemy is approaching from the right!
-  - Connect the power blocks and activate the defense tower!
+  localizedLines:
+  - m_TableReference:
+      m_TableCollectionName: GUID:94073876c9ea4134093252c0f437cdfb
+    m_TableEntryReference:
+      m_KeyId: 30231457485967360
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  lines: []
+  references:
+    version: 2
+    RefIds: []

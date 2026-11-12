@@ -278,7 +278,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5461820b4e922774f8093857fef05bf2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DialogueTrigger
-  dialogueData: {fileID: 11400000, guid: bc27f54b507a551459fec3e47df416e6, type: 2}
+  dialogueData: {fileID: 11400000, guid: ba1f30577bf8b0f4595bd4fa0f8ed86d, type: 2}
   useWorldPosition: 0
   screenPosition: {x: 0.5, y: 0.18}
   worldTarget: {fileID: 0}

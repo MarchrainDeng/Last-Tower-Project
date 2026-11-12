@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Localization;
 
 [CreateAssetMenu(
     fileName = "NewDialogue",
@@ -6,10 +7,17 @@
 )]
 public class DialogueData : ScriptableObject
 {
-    [Header("Dialogue Lines")]
+    [Header("Localized Dialogue Lines")]
 
-    // 按顺序显示的对话文本
-    // 順番に表示するセリフ
+    // 多语言对话文本
+    // 多言語対応のセリフ
+    public LocalizedString[] localizedLines;
+
+
+    [Header("Legacy Dialogue Lines")]
+
+    // 旧版单语言文本，保留以兼容已有数据
+    // 旧バージョンのテキストとの互換性を維持する
     [TextArea(2, 5)]
     public string[] lines;
 }

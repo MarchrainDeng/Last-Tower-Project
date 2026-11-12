@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Localization;
 using TMPro;
 using System;
 
@@ -48,6 +49,9 @@ public class DialogueManager : MonoBehaviour
     private Transform worldTarget;
     private Action onDialogueFinished;
 
+    // 当前正在显示的多语言文本
+    // 現在表示中のローカライズされたテキスト
+    private LocalizedString activeLocalizedLine;
 
     private void Awake()
     {
@@ -190,9 +194,22 @@ public class DialogueManager : MonoBehaviour
         if (GameStateManager.IsPaused)
             return false;
 
-        if (data == null ||
-            data.lines == null ||
-            data.lines.Length == 0)
+        if (data == null)
+            return false;
+
+        // 是否存在多语言文本
+        // 多言語テキストが存在するか
+        bool hasLocalizedLines =
+            data.localizedLines != null &&
+            data.localizedLines.Length > 0;
+
+        // 是否存在旧版文本
+        // 旧バージョンのテキストが存在するか
+        bool hasLegacyLines =
+            data.lines != null &&
+            data.lines.Length > 0;
+
+        if (!hasLocalizedLines && !hasLegacyLines)
         {
             Debug.LogWarning("DialogueData is empty.");
             return false;
@@ -222,8 +239,67 @@ public class DialogueManager : MonoBehaviour
     /// </summary>
     private void DisplayCurrentLine()
     {
+        // 取消上一句文本的监听
+        // 前のセリフのイベント登録を解除する
+        UnsubscribeCurrentLine();
+
+        // 优先使用多语言文本
+        // 多言語テキストを優先して使用する
+        if (currentDialogue.localizedLines != null &&
+            currentDialogue.localizedLines.Length > 0)
+        {
+            activeLocalizedLine =
+                currentDialogue.localizedLines[currentLineIndex];
+
+            if (activeLocalizedLine == null ||
+                activeLocalizedLine.IsEmpty)
+            {
+                dialogueText.text = "";
+                return;
+            }
+
+            // 等待文本加载，并在切换语言时自动更新
+            // 読み込み完了時と言語変更時に自動更新する
+            dialogueText.text = "";
+
+            activeLocalizedLine.StringChanged +=
+                OnLocalizedLineChanged;
+
+            return;
+        }
+
+        // 兼容旧版文本
+        // 旧バージョンのテキストに対応する
         dialogueText.text =
             currentDialogue.lines[currentLineIndex];
+    }
+
+    /// <summary>
+    /// 更新多语言文本
+    /// ローカライズされたテキストを更新する
+    /// </summary>
+    private void OnLocalizedLineChanged(string value)
+    {
+        if (!isDialogueActive)
+            return;
+
+        dialogueText.text = value;
+    }
+
+
+    /// <summary>
+    /// 取消当前文本监听
+    /// 現在のテキストイベント登録を解除する
+    /// </summary>
+    private void UnsubscribeCurrentLine()
+    {
+        if (activeLocalizedLine == null)
+            return;
+
+        activeLocalizedLine.StringChanged -=
+            OnLocalizedLineChanged;
+
+        activeLocalizedLine = null;
     }
 
 
@@ -233,9 +309,20 @@ public class DialogueManager : MonoBehaviour
     /// </summary>
     private void NextLine()
     {
+        if (currentDialogue == null)
+            return;
+
         currentLineIndex++;
 
-        if (currentLineIndex >= currentDialogue.lines.Length)
+        // 优先获取多语言文本数量
+        // 多言語テキストの数を優先して取得する
+        int totalLines =
+            currentDialogue.localizedLines != null &&
+            currentDialogue.localizedLines.Length > 0
+            ? currentDialogue.localizedLines.Length
+            : currentDialogue.lines.Length;
+
+        if (currentLineIndex >= totalLines)
         {
             EndDialogue();
             return;
@@ -256,6 +343,8 @@ public class DialogueManager : MonoBehaviour
 
         isDialogueActive = false;
         closedFrame = Time.frameCount;
+
+        UnsubscribeCurrentLine();
 
         worldTarget = null;
         currentDialogue = null;
