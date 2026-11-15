@@ -409,19 +409,26 @@ public class CardSelector : MonoBehaviour
 
     private IEnumerator ConfirmCoroutine()
     {
-        // 被选择的卡牌先下沉，然后完全飞到上方
-        // 選択されたカードを下げてから完全に上へ移動させる
+        // 播放选中卡牌退场动画
+        // 選択カードの退場アニメーションを再生
         yield return StartCoroutine(
             cardEnterController.PlaySelectedAnimation(currentIndex)
         );
 
         SpawnSelectedBlock();
 
-        // 被选择卡牌完全离开后，其他卡牌同时向上飞出
-        // 選択カードが完全に退場した後、他のカードを同時に上へ移動させる
+        // 等待其他卡牌退场完成
+        // 他のカードの退場完了を待つ
         yield return StartCoroutine(
             cardEnterController.PlayUnselectedCardsAnimation(currentIndex)
         );
+
+        // 通知流程管理器：退场动画已经结束
+        // フローマネージャーへ退場完了を通知
+        if (flowManager != null)
+        {
+            flowManager.NotifySelectionExitCompleted();
+        }
     }
 
 

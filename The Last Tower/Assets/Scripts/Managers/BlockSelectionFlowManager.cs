@@ -3,25 +3,15 @@
 /*
 ----------------------------------------
 【功能 / 機能】
-统一管理普通方块、特殊方块与最终阶段方块的选择流程。
+管理普通、特殊及最终阶段的方块选择流程。
+防止重复选择请求以及卡牌动画之间的冲突。
 
-特殊选择只执行一次，完成后恢复为普通选择。
-进入最终阶段后，所有后续选择都固定为最终选择，
-普通选择与特殊选择请求将被忽略。
-
-通常ブロック、特殊ブロック、最終段階ブロックの
-選択フローを統一管理する。
-
-特殊選択は一度だけ実行され、その後通常選択へ戻る。
-最終段階に入った後は、すべての選択を最終選択に固定し、
-通常選択と特殊選択の要求を無視する。
+通常・特殊・最終段階のブロック選択を管理する。
+重複した選択要求とカードアニメーションの競合を防ぐ。
 
 【负责人 / 担当】
 Deng Guangpeng
 トウ　コウホウ
-
-【创建日期 / 作成日】
-2026/07/11
 ----------------------------------------
 */
 
@@ -29,8 +19,8 @@ public class BlockSelectionFlowManager : MonoBehaviour
 {
     [Header("References")]
 
-    // 方块选择UI的根对象
-    // ブロック選択UIのルートオブジェクト
+    // 方块选择UI
+    // ブロック選択UI
     [SerializeField]
     private GameObject cardSelectionUI;
 
@@ -39,59 +29,75 @@ public class BlockSelectionFlowManager : MonoBehaviour
     [SerializeField]
     private CardSelector cardSelector;
 
-    // 卡牌入场动画控制器
-    // カード登場アニメーションコントローラー
+    // 卡牌动画控制器
+    // カードアニメーションコントローラー
     [SerializeField]
     private CardEnterController cardEnterController;
 
+
     [Header("Pause Settings")]
 
-    // 进入方块选择时是否暂停游戏时间
-    // ブロック選択中にゲーム時間を停止するか
+    // 选择期间是否暂停游戏
+    // 選択中にゲームを停止するか
     [SerializeField]
     private bool pauseGameDuringSelection = true;
 
+
     [Header("Next Selection")]
 
-    // 下一次方块落地后开启的选择类型
-    // 次回の着地後に開始する選択タイプ
+    // 下一次选择类型
+    // 次回の選択タイプ
     [SerializeField]
     private BlockSelectionType nextSelectionType =
         BlockSelectionType.Normal;
 
+
     [Header("Final Phase")]
 
-    // 是否已经进入最终阶段
+    // 是否进入最终阶段
     // 最終段階に入っているか
     [SerializeField]
     private bool isFinalPhase;
 
-    // 当前正在进行的选择类型
-    // 現在実行中の選択タイプ
+
+    // 当前选择类型
+    // 現在の選択タイプ
     public BlockSelectionType CurrentSelectionType
     {
         get;
         private set;
     } = BlockSelectionType.None;
 
-    // 当前是否正在选择方块
-    // 現在ブロックを選択中か
+
+    // 是否正在选择方块
+    // ブロック選択中か
     public bool IsSelectingBlock =>
         CurrentSelectionType != BlockSelectionType.None;
 
-    // 对外提供最终阶段状态
-    // 最終段階状態を外部へ提供する
+
+    // 最终阶段状态
+    // 最終段階の状態
     public bool IsFinalPhase => isFinalPhase;
+
+
+    // 是否正在执行卡牌退场动画
+    // カード退場アニメーション中か
+    private bool isClosingSelection = false;
+
+    // 等待执行的选择请求
+    // 実行待ちの選択要求
+    private BlockSelectionType pendingSelectionType =
+        BlockSelectionType.None;
+
+    // 是否由本脚本暂停游戏
+    // このスクリプトがゲームを停止したか
+    private bool selectionOwnsPause = false;
+
 
     private void Start()
     {
-        /*
-         * 如果场景开始时已经设置为最终阶段，
-         * 则直接开启最终选择。
-         *
-         * シーン開始時に既に最終段階なら、
-         * 最終選択を開始する。
-         */
+        // 最终阶段优先
+        // 最終段階を優先する
         if (isFinalPhase ||
             nextSelectionType == BlockSelectionType.Final)
         {
@@ -104,127 +110,142 @@ public class BlockSelectionFlowManager : MonoBehaviour
         }
     }
 
+
     /// <summary>
-    /// 请求开启普通方块选择
-    /// 通常ブロック選択の開始を要求する
+    /// 请求普通选择
+    /// 通常選択を要求する
     /// </summary>
     public void RequestNormalSelection()
     {
-        // 最终阶段中禁止普通选择
-        // 最終段階では通常選択を禁止する
         if (isFinalPhase)
             return;
 
-        RequestSelection(
-            BlockSelectionType.Normal
-        );
+        RequestSelection(BlockSelectionType.Normal);
     }
 
+
     /// <summary>
-    /// 请求开启特殊方块选择
-    /// 特殊ブロック選択の開始を要求する
+    /// 请求特殊选择
+    /// 特殊選択を要求する
     /// </summary>
     public void RequestSpecialSelection()
     {
-        // 最终阶段中禁止特殊选择
-        // 最終段階では特殊選択を禁止する
         if (isFinalPhase)
             return;
 
-        RequestSelection(
-            BlockSelectionType.Special
-        );
+        RequestSelection(BlockSelectionType.Special);
     }
 
+
     /// <summary>
-    /// 请求开启最终阶段方块选择
-    /// 最終段階ブロック選択の開始を要求する
+    /// 请求最终选择
+    /// 最終選択を要求する
     /// </summary>
     public void RequestFinalSelection()
     {
-        // 请求最终选择时，同时锁定最终阶段
-        // 最終選択要求時に最終段階を固定する
         isFinalPhase = true;
-        nextSelectionType =
-            BlockSelectionType.Final;
+        nextSelectionType = BlockSelectionType.Final;
 
-        RequestSelection(
-            BlockSelectionType.Final
-        );
+        RequestSelection(BlockSelectionType.Final);
     }
 
+
     /// <summary>
-    /// 请求指定类型的方块选择
-    /// 指定タイプのブロック選択を要求する
+    /// 统一处理选择请求
+    /// 選択要求を統一して処理する
     /// </summary>
     private void RequestSelection(
         BlockSelectionType requestedType)
     {
-        if (requestedType ==
-            BlockSelectionType.None)
-        {
+        if (requestedType == BlockSelectionType.None)
             return;
-        }
 
-        /*
-         * 最终阶段中，无论其他脚本请求什么，
-         * 都只能执行最终选择。
-         *
-         * 最終段階では他のスクリプトが何を要求しても、
-         * 最終選択のみ実行する。
-         */
+        // 最终阶段只允许最终选择
+        // 最終段階では最終選択のみ許可
         if (isFinalPhase &&
             requestedType != BlockSelectionType.Final)
         {
             return;
         }
 
-        /*
-         * 当前已经是相同类型的选择时，
-         * 不重复刷新和开启。
-         *
-         * 同じタイプの選択中なら、
-         * 重複して開かない。
-         */
+        // 相同选择不重复执行
+        // 同じ選択を重複実行しない
         if (CurrentSelectionType == requestedType)
             return;
 
-        /*
-         * 特殊选择进行中时，不接受普通选择。
-         *
-         * 特殊選択中は通常選択を受け付けない。
-         */
-        if (CurrentSelectionType ==
-                BlockSelectionType.Special &&
-            requestedType ==
-                BlockSelectionType.Normal)
+        // 特殊选择期间不接受普通选择
+        // 特殊選択中は通常選択を受け付けない
+        if (CurrentSelectionType == BlockSelectionType.Special &&
+            requestedType == BlockSelectionType.Normal)
         {
             return;
         }
 
-        /*
-         * 最终选择进行中时，不接受其他任何选择。
-         *
-         * 最終選択中は他の選択を受け付けない。
-         */
-        if (CurrentSelectionType ==
-                BlockSelectionType.Final &&
-            requestedType !=
-                BlockSelectionType.Final)
+        // 最终选择期间不接受其他选择
+        // 最終選択中は他の選択を受け付けない
+        if (CurrentSelectionType == BlockSelectionType.Final &&
+            requestedType != BlockSelectionType.Final)
         {
+            return;
+        }
+
+        // 卡牌正在显示或退场时，不立即刷新UI
+        // カード表示中・退場中はすぐに更新しない
+        if (IsSelectingBlock || isClosingSelection)
+        {
+            QueueSelection(requestedType);
             return;
         }
 
         OpenSelection(requestedType);
     }
 
+
     /// <summary>
-    /// 开启指定类型的选择界面
-    /// 指定タイプの選択画面を開く
+    /// 保存等待中的选择请求
+    /// 選択要求を保留する
+    /// </summary>
+    private void QueueSelection(
+        BlockSelectionType requestedType)
+    {
+        // 最终选择拥有最高优先级
+        // 最終選択が最優先
+        if (isFinalPhase)
+        {
+            pendingSelectionType = BlockSelectionType.Final;
+            return;
+        }
+
+        // 特殊选择优先于普通选择
+        // 特殊選択は通常選択より優先
+        if (pendingSelectionType == BlockSelectionType.Special &&
+            requestedType == BlockSelectionType.Normal)
+        {
+            return;
+        }
+
+        pendingSelectionType = requestedType;
+    }
+
+
+    /// <summary>
+    /// 开启选择界面
+    /// 選択画面を開く
     /// </summary>
     private void OpenSelection(
         BlockSelectionType selectionType)
     {
+        if (selectionType == BlockSelectionType.None)
+            return;
+
+        // 退场期间禁止开启新选择
+        // 退場中は新しい選択を開始しない
+        if (isClosingSelection)
+        {
+            QueueSelection(selectionType);
+            return;
+        }
+
         CurrentSelectionType = selectionType;
 
         if (cardSelectionUI != null)
@@ -232,6 +253,8 @@ public class BlockSelectionFlowManager : MonoBehaviour
             cardSelectionUI.SetActive(true);
         }
 
+        // 开始卡牌入场动画
+        // カード登場アニメーション開始
         if (cardEnterController != null)
         {
             cardEnterController.ShowCardSelection();
@@ -239,12 +262,12 @@ public class BlockSelectionFlowManager : MonoBehaviour
 
         if (cardSelector != null)
         {
-            // 根据选择类型刷新相应卡池
-            // 選択タイプに応じてカードプールを更新する
+            // 刷新对应卡池
+            // 対応するカードプールを更新
             cardSelector.RefreshCards(selectionType);
 
             // 开启卡牌输入
-            // カード入力を有効にする
+            // カード入力を有効化
             cardSelector.SetInputEnabled(true);
         }
 
@@ -252,116 +275,132 @@ public class BlockSelectionFlowManager : MonoBehaviour
         {
             Time.timeScale = 0f;
             GameStateManager.SetPaused(true);
+
+            selectionOwnsPause = true;
         }
     }
 
+
     /// <summary>
-    /// 玩家完成选择后调用
-    /// プレイヤーが選択を完了した時に呼び出す
+    /// 完成当前选择
+    /// 現在の選択を完了する
     /// </summary>
     public void CompleteSelection()
     {
-        if (!IsSelectingBlock)
+        if (!IsSelectingBlock || isClosingSelection)
             return;
 
         CloseSelection();
     }
 
+
     /// <summary>
-    /// 关闭当前选择界面
-    /// 現在の選択画面を閉じる
+    /// 关闭选择并进入退场阶段
+    /// 選択を終了して退場段階へ移行
     /// </summary>
     private void CloseSelection()
     {
+        // 立即进入退场状态，防止重复处理
+        // 直ちに退場状態へ移行して重複処理を防ぐ
+        isClosingSelection = true;
+
         if (cardSelector != null)
         {
-            // 禁用卡牌输入
-            // カード入力を無効にする
             cardSelector.SetInputEnabled(false);
         }
 
-        /*
-         * 如果你的卡牌飞出动画完成后会自行隐藏UI，
-         * 这里可以保持不关闭。
-         *
-         * カード退場アニメーション後にUIを非表示にする場合、
-         * ここでは無効化しない。
-         */
-        // if (cardSelectionUI != null)
-        // {
-        //     cardSelectionUI.SetActive(false);
-        // }
+        // 不立即关闭UI，等待退场动画完成
+        // 退場アニメーション完了までUIを維持する
 
-        CurrentSelectionType =
-            BlockSelectionType.None;
+        CurrentSelectionType = BlockSelectionType.None;
 
-        if (pauseGameDuringSelection)
+        ResumeSelectionPause();
+    }
+
+
+    /// <summary>
+    /// 卡牌退场动画结束时调用
+    /// カード退場アニメーション完了時に呼び出す
+    /// </summary>
+    public void NotifySelectionExitCompleted()
+    {
+        if (!isClosingSelection)
+            return;
+
+        isClosingSelection = false;
+
+        // 如果存在等待中的请求，开始下一轮选择
+        // 保留された要求があれば次の選択を開始
+        if (pendingSelectionType != BlockSelectionType.None)
         {
-            Time.timeScale = 1f;
-            GameStateManager.SetPaused(false);
+            BlockSelectionType requestedType =
+                pendingSelectionType;
+
+            pendingSelectionType = BlockSelectionType.None;
+
+            // 最终阶段始终优先
+            // 最終段階を常に優先する
+            if (isFinalPhase)
+            {
+                requestedType = BlockSelectionType.Final;
+            }
+
+            RequestSelection(requestedType);
         }
     }
 
+
     /// <summary>
-    /// 当前操作方块落地时调用
-    /// 現在操作中のブロックが着地した時に呼び出す
+    /// 当前方块落地
+    /// 現在のブロックが着地
     /// </summary>
     public void OnCurrentBlockLanded()
     {
+        // 正在选择其他方块时忽略重复通知
+        // 他のブロックを選択中は重複通知を無視
+        if (IsSelectingBlock)
+            return;
+
         RequestNextSelection();
     }
 
+
     /// <summary>
-    /// 当前操作方块被摧毁时调用
-    /// 現在操作中のブロックが削除された時に呼び出す
+    /// 当前方块被摧毁
+    /// 現在のブロックが削除された
     /// </summary>
     public void OnCurrentBlockDestroyed()
     {
+        if (IsSelectingBlock)
+            return;
+
         RequestNextSelection();
     }
 
+
     /// <summary>
-    /// 根据当前状态开启下一次选择
-    /// 現在の状態に応じて次の選択を開始する
+    /// 请求下一次选择
+    /// 次回の選択を要求する
     /// </summary>
     private void RequestNextSelection()
     {
-        /*
-         * 最终阶段拥有最高优先级。
-         * 即使nextSelectionType被其他脚本错误修改，
-         * 也始终只开启最终选择。
-         *
-         * 最終段階を最優先する。
-         * 他のスクリプトがnextSelectionTypeを変更しても、
-         * 最終選択のみ開始する。
-         */
         if (isFinalPhase)
         {
             RequestFinalSelection();
             return;
         }
 
-        BlockSelectionType requestedType =
-            nextSelectionType;
-
-        switch (requestedType)
+        switch (nextSelectionType)
         {
             case BlockSelectionType.Normal:
                 RequestNormalSelection();
                 break;
 
             case BlockSelectionType.Special:
-                /*
-                 * 特殊选择只使用一次。
-                 * 在开启前先恢复默认值，
-                 * 防止特殊选择连续出现。
-                 *
-                 * 特殊選択は一度だけ使用する。
-                 * 開始前に通常選択へ戻し、
-                 * 特殊選択の連続発生を防止する。
-                 */
-                nextSelectionType =
-                    BlockSelectionType.Normal;
+
+                // 特殊选择只执行一次
+                // 特殊選択は一度のみ実行する
+                nextSelectionType = BlockSelectionType.Normal;
 
                 RequestSpecialSelection();
                 break;
@@ -376,36 +415,28 @@ public class BlockSelectionFlowManager : MonoBehaviour
 
             default:
                 Debug.LogWarning(
-                    $"Unsupported selection type: " +
-                    $"{requestedType}",
+                    $"Unsupported selection type: {nextSelectionType}",
                     this
                 );
                 break;
         }
     }
 
+
     /// <summary>
-    /// 设置下一次落地后开启的卡牌选择类型
-    /// 次回の着地後に開始するカード選択タイプを設定する
+    /// 设置下一次选择类型
+    /// 次回の選択タイプを設定する
     /// </summary>
     public void SetNextSelectionType(
         BlockSelectionType selectionType)
     {
-        /*
-         * 已经进入最终阶段后，
-         * 不允许再改回普通或特殊选择。
-         *
-         * 最終段階に入った後は、
-         * 通常選択や特殊選択へ戻せない。
-         */
         if (isFinalPhase &&
             selectionType != BlockSelectionType.Final)
         {
             return;
         }
 
-        if (selectionType ==
-            BlockSelectionType.Final)
+        if (selectionType == BlockSelectionType.Final)
         {
             EnterFinalPhase();
             return;
@@ -414,6 +445,7 @@ public class BlockSelectionFlowManager : MonoBehaviour
         nextSelectionType = selectionType;
     }
 
+
     /// <summary>
     /// 进入最终阶段
     /// 最終段階へ移行する
@@ -421,34 +453,50 @@ public class BlockSelectionFlowManager : MonoBehaviour
     public void EnterFinalPhase()
     {
         isFinalPhase = true;
-        nextSelectionType =
-            BlockSelectionType.Final;
+        nextSelectionType = BlockSelectionType.Final;
+
+        // 已排队的选择也改为最终选择
+        // 保留中の選択も最終選択に変更
+        if (pendingSelectionType != BlockSelectionType.None)
+        {
+            pendingSelectionType = BlockSelectionType.Final;
+        }
     }
 
+
     /// <summary>
-    /// 立即进入最终阶段并开启最终选择
-    /// 即座に最終段階へ移行し、最終選択を開始する
+    /// 立即进入最终阶段并请求最终选择
+    /// 最終段階へ移行して最終選択を要求
     /// </summary>
     public void EnterFinalPhaseAndOpenSelection()
     {
         EnterFinalPhase();
-
-        /*
-         * 如果当前正在显示普通或特殊选择，
-         * 这里会直接刷新成最终选择。
-         *
-         * 通常または特殊選択中でも、
-         * 最終選択へ切り替える。
-         */
         RequestFinalSelection();
     }
 
+
+    /// <summary>
+    /// 恢复由选择流程设置的暂停
+    /// 選択処理によるポーズを解除する
+    /// </summary>
+    private void ResumeSelectionPause()
+    {
+        if (!selectionOwnsPause)
+            return;
+
+        selectionOwnsPause = false;
+
+        Time.timeScale = 1f;
+        GameStateManager.SetPaused(false);
+    }
+
+
     private void OnDisable()
     {
-        if (pauseGameDuringSelection)
-        {
-            Time.timeScale = 1f;
-            GameStateManager.SetPaused(false);
-        }
+        ResumeSelectionPause();
+
+        isClosingSelection = false;
+        pendingSelectionType = BlockSelectionType.None;
+        CurrentSelectionType = BlockSelectionType.None;
     }
 }

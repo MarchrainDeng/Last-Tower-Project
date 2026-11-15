@@ -1717,7 +1717,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 3
+  orthographic size: 4.5
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -1742,7 +1742,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -2.1, z: -10}
+  m_LocalPosition: {x: 0, y: -0.5, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1794,7 +1794,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &563663862
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3452,7 +3452,7 @@ Transform:
   m_GameObject: {fileID: 1199447508}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.9, z: 0}
+  m_LocalPosition: {x: 0, y: 3.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4691,7 +4691,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1677760617
 Transform:
   m_ObjectHideFlags: 0
@@ -5250,25 +5250,35 @@ MonoBehaviour:
   cardBackground: {fileID: 257450402}
   highlightFrame: {fileID: 173939919}
   normalCardPool:
-  - typeName: Attack
-    cardSprite: {fileID: 21300000, guid: d8a3ebd734210d942896eef889fd9f98, type: 3}
-    blockPrefab: {fileID: 34065507497652870, guid: 7dbf3a957daec764eaf31e05607cf15e, type: 3}
-    cardUI: {fileID: 21300000, guid: 9ad462c3f38211a4385eb84e2dae82a4, type: 3}
+  - typeName: Energy
+    cardSprite: {fileID: 3416543745242346271, guid: 74abd5c361422eb4ab284faeaf18a2c0, type: 3}
+    blockPrefab: {fileID: 910735518559704705, guid: cfc13a59a70c25847b4f57f63d37c43d, type: 3}
+    cardUI: {fileID: 21300000, guid: 8931571c8ac4a0447b43eabd10264244, type: 3}
     cardBackground: {fileID: 21300000, guid: dd6cec7f0d0310d4da7f6acc053388b5, type: 3}
-  - typeName: Attack
-    cardSprite: {fileID: 21300000, guid: 3dea76a55ba0d2048b9c4843dfce6786, type: 3}
-    blockPrefab: {fileID: 1918330240339288222, guid: 9d5fc29753b365e458fd4998d3f4d54a, type: 3}
-    cardUI: {fileID: 21300000, guid: 9ad462c3f38211a4385eb84e2dae82a4, type: 3}
+  - typeName: Energy
+    cardSprite: {fileID: 21300000, guid: 4083deb2abad2e84989a9b6f5804d906, type: 3}
+    blockPrefab: {fileID: 7293525734129942407, guid: 051ae85f9d67c204eac64c6888dd5d13, type: 3}
+    cardUI: {fileID: 21300000, guid: 8931571c8ac4a0447b43eabd10264244, type: 3}
     cardBackground: {fileID: 21300000, guid: dd6cec7f0d0310d4da7f6acc053388b5, type: 3}
-  - typeName: Attack
-    cardSprite: {fileID: 21300000, guid: 4b539694aa54a724c8551c8e7e816f59, type: 3}
-    blockPrefab: {fileID: 6967059836585324227, guid: 4e43d83c950bea34fa93c33dff49148e, type: 3}
-    cardUI: {fileID: 21300000, guid: 9ad462c3f38211a4385eb84e2dae82a4, type: 3}
+  - typeName: Energy
+    cardSprite: {fileID: 21300000, guid: 69633a81cd0c2d54aaecd442762dfd9c, type: 3}
+    blockPrefab: {fileID: 6837638216086328337, guid: 7f74b1a24bdf8924891ae15b5b94ce7b, type: 3}
+    cardUI: {fileID: 21300000, guid: 8931571c8ac4a0447b43eabd10264244, type: 3}
     cardBackground: {fileID: 21300000, guid: dd6cec7f0d0310d4da7f6acc053388b5, type: 3}
-  - typeName: Attack
-    cardSprite: {fileID: 21300000, guid: f08215051f2e9284db24f8950faed54b, type: 3}
-    blockPrefab: {fileID: 5661478519432820911, guid: ff0f1f2d377fdc042a577caed4d344f6, type: 3}
-    cardUI: {fileID: 21300000, guid: 9ad462c3f38211a4385eb84e2dae82a4, type: 3}
+  - typeName: Energy
+    cardSprite: {fileID: 21300000, guid: 8a1076fb3f2b6e54eb958833643567df, type: 3}
+    blockPrefab: {fileID: 7822559887562711069, guid: 9a66c3a1f78ab8545a61df12321d9c68, type: 3}
+    cardUI: {fileID: 21300000, guid: 8931571c8ac4a0447b43eabd10264244, type: 3}
+    cardBackground: {fileID: 21300000, guid: dd6cec7f0d0310d4da7f6acc053388b5, type: 3}
+  - typeName: Energy
+    cardSprite: {fileID: 21300000, guid: 1ef2fbf3fb074d74b96b4d055715e676, type: 3}
+    blockPrefab: {fileID: 3736945173186785044, guid: 71210b6654fcb6a4c9e71eb25cdc4a0d, type: 3}
+    cardUI: {fileID: 21300000, guid: 8931571c8ac4a0447b43eabd10264244, type: 3}
+    cardBackground: {fileID: 21300000, guid: dd6cec7f0d0310d4da7f6acc053388b5, type: 3}
+  - typeName: Energy
+    cardSprite: {fileID: 21300000, guid: d43e6bca77382784388df2b2ae9b0893, type: 3}
+    blockPrefab: {fileID: 7630906839395595884, guid: 1f60c2645a82da24fa0a024b016700f8, type: 3}
+    cardUI: {fileID: 21300000, guid: 8931571c8ac4a0447b43eabd10264244, type: 3}
     cardBackground: {fileID: 21300000, guid: dd6cec7f0d0310d4da7f6acc053388b5, type: 3}
   specialCardPool:
   - typeName: Fixed
