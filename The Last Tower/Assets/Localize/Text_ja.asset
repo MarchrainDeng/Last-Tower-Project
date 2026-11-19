@@ -162,6 +162,14 @@ MonoBehaviour:
     m_Localized: "\u6575\u304C\u8FD1\u3065\u3044\u3066\u3044\u308B\uFF01"
     m_Metadata:
       m_Items: []
+  - m_Id: 32668281818992640
+    m_Localized: This is a dialogue for test. 01
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32668466011852800
+    m_Localized: This is a dialogue for test. 02
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

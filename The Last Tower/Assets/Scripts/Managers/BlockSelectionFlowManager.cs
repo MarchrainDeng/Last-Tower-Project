@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Events;
 
 /*
 ----------------------------------------
@@ -92,6 +93,12 @@ public class BlockSelectionFlowManager : MonoBehaviour
     // 是否由本脚本暂停游戏
     // このスクリプトがゲームを停止したか
     private bool selectionOwnsPause = false;
+
+    // 当前选择完成时触发，可在Inspector中配置
+    // 現在の選択完了時に実行する。Inspectorで設定可能
+    [Header("Selection Events")]
+    [SerializeField]
+    private UnityEvent onSelectionCompleted = new UnityEvent();
 
 
     private void Start()
@@ -291,6 +298,10 @@ public class BlockSelectionFlowManager : MonoBehaviour
             return;
 
         CloseSelection();
+
+        // 完成选择并处理暂停恢复后，通知其他功能
+        // 選択完了とポーズ解除処理後に他の機能へ通知する
+        onSelectionCompleted?.Invoke();
     }
 
 

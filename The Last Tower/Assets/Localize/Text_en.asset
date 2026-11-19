@@ -189,6 +189,14 @@ MonoBehaviour:
     m_Localized: Enemies are approaching!
     m_Metadata:
       m_Items: []
+  - m_Id: 32668281818992640
+    m_Localized: This is a dialogue for test. 01
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32668466011852800
+    m_Localized: This is a dialogue for test. 02
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
