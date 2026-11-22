@@ -2760,6 +2760,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FirstBlockSelectionDialogue
   nextDialogue: {fileID: 825675172}
   delay: 0.5
+  onDialogueFinished:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1824336502}
+        m_TargetAssemblyTypeName: BlockOperationTutorial, Assembly-CSharp
+        m_MethodName: BeginTutorial
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &825675172
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3071,6 +3086,54 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 902685051}
   m_CullTransparentMesh: 1
+--- !u!1 &955180455
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 955180457}
+  - component: {fileID: 955180456}
+  m_Layer: 0
+  m_Name: OperationSucceedDialogue
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &955180456
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 955180455}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5461820b4e922774f8093857fef05bf2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueTrigger
+  dialogueData: {fileID: 11400000, guid: bc27f54b507a551459fec3e47df416e6, type: 2}
+  useWorldPosition: 0
+  screenPosition: {x: 0.5, y: 0.18}
+  worldTarget: {fileID: 0}
+--- !u!4 &955180457
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 955180455}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1349726775}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &994465138
 GameObject:
   m_ObjectHideFlags: 0
@@ -4245,6 +4308,7 @@ Transform:
   - {fileID: 1001601335}
   - {fileID: 1046690800}
   - {fileID: 825675170}
+  - {fileID: 955180457}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1431652885
@@ -5478,6 +5542,60 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!1 &1824336501
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1824336503}
+  - component: {fileID: 1824336502}
+  m_Layer: 0
+  m_Name: OperationTutorial
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1824336502
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1824336501}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f65782c2649fc4f41ad711565e475ff8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BlockOperationTutorial
+  flowManager: {fileID: 1612657617}
+  successDialogue: {fileID: 955180456}
+  progressText: {fileID: 0}
+  requiredMoveDistance: 0.5
+  requiredSmoothAngle: 15
+  requiredFastFallDistance: 0.15
+  resumeSelectionAfterSuccessDialogue: 0
+  onCompleted:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!4 &1824336503
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1824336501}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 998.58417, y: 531.39484, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1866979306
 GameObject:
   m_ObjectHideFlags: 0
@@ -6181,3 +6299,4 @@ SceneRoots:
   - {fileID: 293305498}
   - {fileID: 1349726775}
   - {fileID: 432601732}
+  - {fileID: 1824336503}

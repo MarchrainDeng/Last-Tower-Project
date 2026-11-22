@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Events;
 
 public class FirstBlockSelectionDialogue : MonoBehaviour
 {
@@ -9,14 +10,17 @@ public class FirstBlockSelectionDialogue : MonoBehaviour
     [Min(0f)]
     [SerializeField] private float delay = 1f;
 
+    // 本脚本开启的第二段对话结束后触发
+    // このスクリプトが開始した2回目の会話終了後に実行する
+    [Header("Events")]
+    [SerializeField]
+    private UnityEvent onDialogueFinished = new UnityEvent();
+
     private bool hasReceivedSelection;
     private bool isWaiting;
+    private bool isWatchingDialogue;
     private float remainingTime;
 
-    /// <summary>
-    /// 接收选择完成通知，仅响应第一次
-    /// 選択完了通知を受け取る。初回のみ反応する
-    /// </summary>
     public void OnBlockSelected()
     {
         if (hasReceivedSelection)
@@ -38,34 +42,49 @@ public class FirstBlockSelectionDialogue : MonoBehaviour
 
     private void Update()
     {
-        if (!isWaiting)
-            return;
+        if (isWatchingDialogue)
+        {
+            // 等待结束帧的输入锁定解除，避免确认键计入教学
+            // 終了フレームの入力ロック解除を待ち、決定入力の誤判定を防ぐ
+            if (DialogueManager.IsInputBlocked)
+                return;
 
-        // 暂停或其他对话显示期间，暂缓计时与播放
-        // ポーズ中や別の会話表示中は、計時と再生を待機する
-        if (GameStateManager.IsPaused ||
-            DialogueManager.IsDialogueActive)
+            isWatchingDialogue = false;
+            onDialogueFinished?.Invoke();
+            return;
+        }
+
+        if (!isWaiting ||
+            GameStateManager.IsPaused ||
+            DialogueManager.IsInputBlocked)
         {
             return;
         }
 
         remainingTime -= Time.deltaTime;
 
-        if (remainingTime > 0f)
+        if (remainingTime > 0f ||
+            DialogueManager.Instance == null)
+        {
             return;
+        }
 
-        // 管理器尚未就绪时继续等待
-        // マネージャーの準備ができるまで待機する
-        if (DialogueManager.Instance == null)
-            return;
-
-        // 本次教学只播放一次
-        // 今回のチュートリアルでは一度だけ再生する
         isWaiting = false;
 
         if (nextDialogue != null)
         {
             nextDialogue.TriggerDialogue();
+
+            isWatchingDialogue =
+                DialogueManager.IsDialogueActive;
+
+            if (!isWatchingDialogue)
+            {
+                Debug.LogWarning(
+                    "Second dialogue could not start. Check Dialogue Data.",
+                    this
+                );
+            }
         }
     }
 }
