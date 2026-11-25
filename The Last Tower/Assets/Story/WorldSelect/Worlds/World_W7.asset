@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89ea68402ce1fbc45a4576a42558878c, type: 3}
+  m_Name: World_W7
+  m_EditorClassIdentifier: Assembly-CSharp::WorldData
+  worldId: W7
+  worldNumber: 7
+  worldName: NEO
+  description: "\u53F0\u5730\u306E\u4E0A\u306B\u7BC9\u304B\u308C\u305F\u672A\u6765\u90FD\u5E02\u3002\n\u3059\u3079\u3066\u306E\u5143\u51F6\u304C\u5F85\u3063\u3066\u3044\u308B\u3002"
+  isBoss: 1
+  stageMapScene: 
+  stages: []
+  unlockedByDefault: 0
+  unlockAfter:
+  - {fileID: 11400000, guid: 0a62d70872ca35b45b24c1f1c643ab0e, type: 2}
+  - {fileID: 11400000, guid: e2caa945d2d7635468801e300ae041c1, type: 2}
+  - {fileID: 11400000, guid: 6aafbd155c65f4a459fb254918fbd0f4, type: 2}
+  - {fileID: 11400000, guid: e6212a6cc3a37fa44873ca57ba678497, type: 2}
+  clearStageId: 

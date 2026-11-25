@@ -18,10 +18,11 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public static class WorldMapProgress
 {
-    public const string WorldMapSceneName = "WorldMapScene";
+    public const string WorldSelectSceneName = "WorldSelectScene";
+    public const string StageMapSceneName = "StageMapScene";
     public const string TownSceneName = "MyTownScene";
 
-    /// <summary>マイタウンへの出入口を表すID（復帰位置に使う）</summary>
+    /// <summary>ステージマップの出入口（ワールド選択へ戻る門）を表すID（復帰位置に使う）。保存データと合わせるため値は昔のまま</summary>
     public const string TownGateId = "__town";
 
     const string SaveKey = "WorldMap_Progress";
@@ -43,6 +44,7 @@ public static class WorldMapProgress
     class SaveData
     {
         public string lastStageId = "";
+        public string lastWorldId = "";
         public List<StageRecord> stages = new List<StageRecord>();
     }
 
@@ -122,7 +124,7 @@ public static class WorldMapProgress
 
         playingStage = null;
         ArrivalSpotId = stageId;
-        LoadScene(WorldMapSceneName);
+        LoadScene(StageMapSceneName);
     }
 
     /// <summary>
@@ -163,11 +165,53 @@ public static class WorldMapProgress
         JustClearedStageId = null;
     }
 
-    // ─── マイタウンとの行き来 ───────────────────────────────────────
-    public static void GoToWorldMapFromTown()
+    // ─── ワールド ──────────────────────────────────────────────────
+    /// <summary>最後に入ったワールド（ワールド選択に戻ったときのカーソル位置）</summary>
+    public static string LastWorldId => Data.lastWorldId;
+
+    public static bool IsWorldCleared(WorldData world)
     {
+        var r = world != null ? GetRecord(world.ClearRecordId) : null;
+        return r != null && r.cleared;
+    }
+
+    /// <summary>unlockAfter のワールドが全部クリア済みなら解放</summary>
+    public static bool IsWorldUnlocked(WorldData world)
+    {
+        if (world == null) return false;
+        if (world.unlockedByDefault) return true;
+        if (world.unlockAfter == null || world.unlockAfter.Length == 0) return false;
+        foreach (var w in world.unlockAfter)
+            if (w != null && !IsWorldCleared(w)) return false;
+        return true;
+    }
+
+    public static int ClearedStageCount(WorldData world)
+    {
+        int n = 0;
+        if (world != null && world.stages != null)
+            foreach (var s in world.stages)
+                if (IsCleared(s)) n++;
+        return n;
+    }
+
+    /// <summary>
+    /// ワールド選択からそのワールドのステージマップへ入る（入口の前に出る）
+    /// </summary>
+    public static void EnterWorld(WorldData world)
+    {
+        if (world == null || string.IsNullOrEmpty(world.stageMapScene)) return;
+        Data.lastWorldId = world.worldId;
+        Save();
         ArrivalSpotId = TownGateId;
-        LoadScene(WorldMapSceneName);
+        LoadScene(world.stageMapScene);
+    }
+
+    // ─── シーンの行き来 ─────────────────────────────────────────────
+    // マイタウン ⇄ ワールド選択 ⇄ ステージマップ ⇄ ステージ
+    public static void GoToWorldSelect()
+    {
+        LoadScene(WorldSelectSceneName);
     }
 
     public static void GoToTown()

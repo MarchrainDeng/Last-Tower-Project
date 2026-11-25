@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 ///
 /// 乗り物で自由に走り回り、台座に近づくと簡易情報、決定で詳細、もう一度決定でステージ開始
 /// 詳細を出している間は移動を止める。キャンセルで詳細を閉じて移動を再開
-/// マイタウン出入口で決定するとマイタウンへ戻る
+/// 出入口（門）で決定するとワールド選択へ戻る
 ///
 /// 【操作】
 /// - キーボード: WASD / 矢印キーで8方向移動、Space/Enter で決定、Esc/Backspace で戻る
@@ -24,7 +24,7 @@ public class WorldMapController : MonoBehaviour
     public WorldMapCameraFollow cameraFollow;
     public WorldMapDetailPanel detailPanel;
     public WorldMapSpot[] spots;
-    [Tooltip("記録が何も無いときの出現場所（ふつうはマイタウン出入口）")]
+    [Tooltip("記録が何も無いときの出現場所（ふつうは出入口）")]
     public WorldMapSpot defaultSpot;
 
     [Header("── 入力 ───────────────────────")]
@@ -146,7 +146,7 @@ public class WorldMapController : MonoBehaviour
             PlaySE(confirmSE);
             leaving = true;
             vehicle.SetInput(Vector2.zero);
-            WorldMapProgress.GoToTown();
+            WorldMapProgress.GoToWorldSelect();
             return;
         }
 

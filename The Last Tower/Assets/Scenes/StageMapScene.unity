@@ -17685,7 +17685,7 @@ MonoBehaviour:
   glowPulseSpeed: 4
   signRoot: {fileID: 435948057}
   signText: {fileID: 1042101883}
-  displayName: "\u30DE\u30A4\u30BF\u30A6\u30F3"
+  displayName: "\u30EF\u30FC\u30EB\u30C9\u9078\u629E"
 --- !u!4 &1156170779
 Transform:
   m_ObjectHideFlags: 0

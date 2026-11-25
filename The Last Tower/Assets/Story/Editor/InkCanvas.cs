@@ -97,20 +97,42 @@ public class InkCanvas
         Vector2 min = poly[0], max = poly[0];
         foreach (var p in poly) { min = Vector2.Min(min, p); max = Vector2.Max(max, p); }
         Bounds(min, max, out int x0, out int y0, out int x1, out int y1);
+        if (x1 < x0 || y1 < y0) return;
         float q = 0.25f / Ppu;
+        int bw = x1 - x0 + 1;
+        var count = new int[bw];
+        var cross = new List<float>();
+
+        // 1ピクセルを4点（上下2行×左右2列）で調べる。行ごとに辺との交点を求めて左から数える（大きな多角形でも速い）
         for (int y = y0; y <= y1; y++)
         {
+            System.Array.Clear(count, 0, bw);
             float py = (y + 0.5f) / Ppu;
-            for (int x = x0; x <= x1; x++)
+            for (int row = 0; row < 2; row++)
             {
-                float px = (x + 0.5f) / Ppu;
-                int n = 0;
-                if (Inside(poly, px - q, py - q)) n++;
-                if (Inside(poly, px + q, py - q)) n++;
-                if (Inside(poly, px - q, py + q)) n++;
-                if (Inside(poly, px + q, py + q)) n++;
-                if (n > 0) Blend(y * W + x, color, n * 0.25f);
+                float sy = row == 0 ? py - q : py + q;
+                cross.Clear();
+                for (int i = 0, j = poly.Count - 1; i < poly.Count; j = i++)
+                {
+                    Vector2 a = poly[i], b = poly[j];
+                    if ((a.y > sy) != (b.y > sy)) cross.Add((b.x - a.x) * (sy - a.y) / (b.y - a.y) + a.x);
+                }
+                if (cross.Count == 0) continue;
+                cross.Sort();
+                for (int col = 0; col < 2; col++)
+                {
+                    int k = 0;
+                    for (int x = x0; x <= x1; x++)
+                    {
+                        float sx = (x + 0.5f) / Ppu + (col == 0 ? -q : q);
+                        while (k < cross.Count && cross[k] <= sx) k++;
+                        // 右側に残っている交点の数が奇数なら内側
+                        if (((cross.Count - k) & 1) == 1) count[x - x0]++;
+                    }
+                }
             }
+            for (int x = 0; x < bw; x++)
+                if (count[x] > 0) Blend(y * W + x + x0, color, count[x] * 0.25f);
         }
     }
 

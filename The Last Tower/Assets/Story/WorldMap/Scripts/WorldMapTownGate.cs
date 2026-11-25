@@ -1,10 +1,10 @@
 /// <summary>
-/// ワールドマップからマイタウンへ戻る出入口
-/// マイタウンから来たときはこの手前に出る
+/// ステージマップからワールド選択へ戻る出入口
+/// ワールド選択から来たときはこの手前に出る
 /// </summary>
 public class WorldMapTownGate : WorldMapSpot
 {
-    public string displayName = "マイタウン";
+    public string displayName = "ワールド選択";
 
     public override string SpotId => WorldMapProgress.TownGateId;
     public override bool CanEnter => true;

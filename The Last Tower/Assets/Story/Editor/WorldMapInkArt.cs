@@ -437,7 +437,7 @@ public static class WorldMapInkArt
     }
 
     // ─── 建物 ─────────────────────────────────────────────────────
-    static void ConeTower(InkCanvas c, float cx, float y0, float w, float body, float roof, System.Random rnd)
+    public static void ConeTower(InkCanvas c, float cx, float y0, float w, float body, float roof, System.Random rnd)
     {
         c.Shape(Rect(cx - w * 0.5f, y0, cx + w * 0.5f, y0 + body), Paper, LW, InkC);
         c.Hatch(Rect(cx + w * 0.18f, y0, cx + w * 0.5f, y0 + body), 80f, 0.08f, Thin, InkC);
@@ -450,7 +450,7 @@ public static class WorldMapInkArt
         c.Fill(new List<Vector2> { new Vector2(cx, y0 + body + roof + 0.3f), new Vector2(cx + 0.22f, y0 + body + roof + 0.24f), new Vector2(cx, y0 + body + roof + 0.17f) }, InkC);
     }
 
-    static void Merlons(InkCanvas c, float x0, float x1, float y)
+    public static void Merlons(InkCanvas c, float x0, float x1, float y)
     {
         for (float x = x0; x + 0.2f <= x1; x += 0.36f)
             c.Shape(Rect(x, y, x + 0.2f, y + 0.18f), Paper, Thin * 1.3f, InkC);
@@ -566,14 +566,14 @@ public static class WorldMapInkArt
         return c.Save(dir + "/House.png", new Vector2(0.5f, y0 / h));
     }
 
-    static void Puff(InkCanvas c, Vector2 at, float s, System.Random rnd)
+    public static void Puff(InkCanvas c, Vector2 at, float s, System.Random rnd)
     {
         var blobs = new (float x, float y, float r)[] { (0f, 0f, 0.28f), (0.3f, 0.12f, 0.32f), (0.62f, 0.3f, 0.36f), (0.25f, 0.4f, 0.26f), (0.95f, 0.55f, 0.3f) };
         foreach (var b in blobs)
             c.Shape(Ellipse(at + new Vector2(b.x, b.y) * s, b.r * s, b.r * s * 0.85f, 20), Paper, Thin * 1.4f, InkC);
     }
 
-    static void Tube(InkCanvas c, IList<Vector2> pts, float width)
+    public static void Tube(InkCanvas c, IList<Vector2> pts, float width)
     {
         c.Stroke(pts, width, InkC);
         c.Stroke(pts, width - LW * 2f, Paper);

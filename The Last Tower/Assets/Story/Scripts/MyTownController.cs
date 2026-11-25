@@ -254,12 +254,12 @@ public class MyTownController : MonoBehaviour
         if (selectedIndex < 0) return;
         if (player != null) player.StopWalking();
 
-        // 出発口はパネルを出さずにワールドマップへ
+        // 出発口はパネルを出さずにワールド選択へ
         if (locations[selectedIndex].opensWorldMap)
         {
             PlaySE(confirmSE);
             enabled = false;
-            WorldMapProgress.GoToWorldMapFromTown();
+            WorldMapProgress.GoToWorldSelect();
             return;
         }
 

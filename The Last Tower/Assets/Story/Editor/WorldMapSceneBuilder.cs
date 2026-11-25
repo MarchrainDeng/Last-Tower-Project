@@ -13,7 +13,7 @@ using Art = WorldMapInkArt;
 
 /// <summary>
 /// ワールドマップのシーンを組み立てるエディタツール
-/// メニュー Tools/Story/Build World Map Scene で Assets/Scenes/WorldMapScene.unity を作り直す
+/// メニュー Tools/Story/Build World Map Scene で Assets/Scenes/StageMapScene.unity を作り直す
 ///
 /// 見た目は仕様書の例イメージ（白黒のペン画）に合わせ、絵はすべてコードで描いて Assets/Story/WorldMap/Art/ に書き出す
 /// - 左上：風車と城、左：教会と池、右上：崖の上の工場と大歯車と門、右下：山脈、あちこちに針葉樹
@@ -25,7 +25,7 @@ using Art = WorldMapInkArt;
 /// </summary>
 public static class WorldMapSceneBuilder
 {
-    const string ScenePath = "Assets/Scenes/WorldMapScene.unity";
+    const string ScenePath = "Assets/Scenes/StageMapScene.unity";
     const string ArtDir = "Assets/Story/WorldMap/Art";
     const string StageDir = "Assets/Story/WorldMap/Stages";
     const string FontPath = "Assets/Sasaki/JA_KO SDF.asset";
