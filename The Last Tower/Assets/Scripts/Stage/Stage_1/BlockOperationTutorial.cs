@@ -18,10 +18,34 @@ public class BlockOperationTutorial : MonoBehaviour
     [SerializeField]
     private DialogueTrigger successDialogue;
 
-    // 可选：显示任务进度的文本
-    // 任意：タスクの進捗を表示するテキスト
+    [Header("Task UI")]
+
+    // 五项任务文字的共同父物体
+    // 5つのタスクテキストの共通親オブジェクト
     [SerializeField]
-    private TMP_Text progressText;
+    private GameObject taskPanel;
+
+    // 各项任务的文字
+    // 各タスクのテキスト
+    [SerializeField] private TMP_Text moveLeftText;
+    [SerializeField] private TMP_Text moveRightText;
+    [SerializeField] private TMP_Text smoothRotateText;
+    [SerializeField] private TMP_Text snapRotateText;
+    [SerializeField] private TMP_Text fastFallText;
+
+    [Header("Task Colors")]
+
+    // 未完成：深灰色 #62666A
+    // 未完了：濃いグレー #62666A
+    [SerializeField]
+    private Color incompleteColor =
+        new Color32(98, 102, 106, 255);
+
+    // 已完成：深绿色 #237343
+    // 完了：濃いグリーン #237343
+    [SerializeField]
+    private Color completedColor =
+        new Color32(35, 115, 67, 255);
 
     [Header("Required Operation Amounts")]
 
@@ -119,9 +143,11 @@ public class BlockOperationTutorial : MonoBehaviour
             );
         }
 
-        if (progressText != null)
+        // 场景开始时隐藏任务面板
+        // シーン開始時はタスクパネルを非表示にする
+        if (taskPanel != null)
         {
-            progressText.gameObject.SetActive(false);
+            taskPanel.SetActive(false);
         }
     }
 
@@ -147,9 +173,11 @@ public class BlockOperationTutorial : MonoBehaviour
 
         ResetProgress();
 
-        if (progressText != null)
+        // 第二段对话结束后显示五项任务
+        // 2回目の会話終了後に5つのタスクを表示する
+        if (taskPanel != null)
         {
-            progressText.gameObject.SetActive(true);
+            taskPanel.SetActive(true);
         }
 
         phase = currentBlock != null
@@ -459,9 +487,11 @@ public class BlockOperationTutorial : MonoBehaviour
         {
             phase = Phase.Complete;
 
-            if (progressText != null)
+            // 成功对话结束后隐藏任务面板
+            // 成功会話終了後にタスクパネルを非表示にする
+            if (taskPanel != null)
             {
-                progressText.gameObject.SetActive(false);
+                taskPanel.SetActive(false);
             }
 
             if (resumeSelectionAfterSuccessDialogue &&
@@ -487,19 +517,50 @@ public class BlockOperationTutorial : MonoBehaviour
         RefreshProgress();
     }
 
+    /// <summary>
+    /// 根据任务进度更新颜色，不修改本地化文字
+    /// タスクの進捗に応じて色を更新し、ローカライズテキストは変更しない
+    /// </summary>
     private void RefreshProgress()
     {
-        if (progressText == null)
+        SetTaskColor(
+            moveLeftText,
+            leftDistance >= requiredMoveDistance
+        );
+
+        SetTaskColor(
+            moveRightText,
+            rightDistance >= requiredMoveDistance
+        );
+
+        SetTaskColor(
+            smoothRotateText,
+            smoothAngle >= requiredSmoothAngle
+        );
+
+        SetTaskColor(
+            snapRotateText,
+            snapRotationDone
+        );
+
+        SetTaskColor(
+            fastFallText,
+            fastFallDistance >= requiredFastFallDistance
+        );
+    }
+
+    /// <summary>
+    /// 设置单项任务的文字颜色
+    /// 個別タスクのテキスト色を設定する
+    /// </summary>
+    private void SetTaskColor(TMP_Text taskText, bool completed)
+    {
+        if (taskText == null)
             return;
 
-        // 此处文本可根据实际UI语言修改
-        // 実際のUI言語に合わせて表示テキストを変更できる
-        progressText.text =
-            $"[{Mark(leftDistance >= requiredMoveDistance)}] 左移 / 左移動\n" +
-            $"[{Mark(rightDistance >= requiredMoveDistance)}] 右移 / 右移動\n" +
-            $"[{Mark(smoothAngle >= requiredSmoothAngle)}] 平滑旋转 / スムーズ回転\n" +
-            $"[{Mark(snapRotationDone)}] 90°旋转 / 90度回転\n" +
-            $"[{Mark(fastFallDistance >= requiredFastFallDistance)}] 快速下落 / 高速落下";
+        taskText.color = completed
+            ? completedColor
+            : incompleteColor;
     }
 
     private string Mark(bool done)

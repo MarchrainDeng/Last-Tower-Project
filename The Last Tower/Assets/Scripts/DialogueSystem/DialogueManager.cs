@@ -1,24 +1,36 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections;
+using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Localization;
 using TMPro;
-using System;
 
 public class DialogueManager : MonoBehaviour
 {
     public static DialogueManager Instance { get; private set; }
 
-    // 对话是否正在显示
-    // 会話が表示中かどうか
+    // 包含入场、正文和出场阶段
+    // 登場・会話本文・退場の各段階を含む
     public static bool IsDialogueActive =>
         Instance != null && Instance.isDialogueActive;
 
-    // 对话结束的同一帧也阻止游戏输入
-    // 会話終了フレームもゲーム入力を禁止する
+    // 对话期间及结束帧禁止游戏输入
+    // 会話中と終了フレームはゲーム入力を禁止する
     public static bool IsInputBlocked =>
         Instance != null &&
-        (Instance.isDialogueActive ||
-         Time.frameCount == Instance.closedFrame);
+        (
+            Instance.isDialogueActive ||
+            Time.frameCount == Instance.closedFrame
+        );
+
+    // 动画期间及动画结束帧禁止所有输入，包括暂停输入
+    // アニメーション中と終了フレームはポーズを含む入力を禁止する
+    public static bool IsTransitionInputBlocked =>
+        Instance != null &&
+        (
+            Instance.isTransitioning ||
+            Time.frameCount == Instance.transitionFinishedFrame
+        );
 
     [Header("UI")]
 
@@ -29,15 +41,17 @@ public class DialogueManager : MonoBehaviour
 
     [Header("Position")]
 
-    // 默认屏幕位置，左下角为(0,0)，右上角为(1,1)
+    // 默认屏幕位置
     // デフォルト画面位置
     [SerializeField]
-    private Vector2 defaultPosition = new Vector2(0.5f, 0.18f);
+    private Vector2 defaultPosition =
+        new Vector2(0.5f, 0.18f);
 
     // 对话框与世界目标之间的偏移
     // 会話枠とワールドターゲットのオフセット
     [SerializeField]
-    private Vector3 worldOffset = new Vector3(0f, 1.5f, 0f);
+    private Vector3 worldOffset =
+        new Vector3(0f, 1.5f, 0f);
 
     private DialogueData currentDialogue;
     private int currentLineIndex;
@@ -48,10 +62,15 @@ public class DialogueManager : MonoBehaviour
 
     private Transform worldTarget;
     private Action onDialogueFinished;
-
-    // 当前正在显示的多语言文本
-    // 現在表示中のローカライズされたテキスト
     private LocalizedString activeLocalizedLine;
+
+    // 只在本次对话指定动画时使用
+    // 今回の会話にアニメーションが指定された場合のみ使用する
+    private DialogueSlideEffect activeSlideEffect;
+
+    private bool isTransitioning;
+    private bool isClosing;
+    private int transitionFinishedFrame = -1;
 
     private void Awake()
     {
@@ -70,43 +89,42 @@ public class DialogueManager : MonoBehaviour
         }
     }
 
-
     private void OnDestroy()
     {
+        UnsubscribeCurrentLine();
+
         if (Instance == this)
         {
             Instance = null;
         }
     }
 
-
     private void Update()
     {
         if (!isDialogueActive)
             return;
 
-        // 暂停菜单打开时，不处理对话输入
-        // ポーズメニュー表示中は会話入力を処理しない
+        // 入场与出场期间不接受推进对话输入
+        // 登場・退場中は会話送り入力を受け付けない
+        if (isClosing || IsTransitionInputBlocked)
+            return;
+
         if (GameStateManager.IsPaused)
             return;
 
-        // 防止触发对话的同一次点击立即跳过第一句
-        // 会話開始時の入力で最初のセリフを飛ばさない
+        // 避免开始对话或动画结束的同一帧跳过文字
+        // 会話開始・アニメーション終了フレームの文字送りを防ぐ
         if (Time.frameCount == openedFrame)
             return;
 
         bool confirmPressed = false;
 
-        // 鼠标左键
-        // マウス左ボタン
         if (Mouse.current != null &&
             Mouse.current.leftButton.wasPressedThisFrame)
         {
             confirmPressed = true;
         }
 
-        // 手柄A键
-        // ゲームパッドAボタン
         if (Gamepad.current != null &&
             Gamepad.current.buttonSouth.wasPressedThisFrame)
         {
@@ -119,59 +137,70 @@ public class DialogueManager : MonoBehaviour
         }
     }
 
-
     private void LateUpdate()
     {
-        // 有指定世界目标时，持续跟随目标
-        // ワールドターゲットがある場合は追従する
-        if (isDialogueActive && worldTarget != null)
+        // 动画期间不更新世界位置，避免覆盖动画坐标
+        // アニメーション中はワールド位置更新による座標上書きを防ぐ
+        if (isDialogueActive &&
+            !isTransitioning &&
+            !isClosing &&
+            worldTarget != null)
         {
             UpdateWorldPosition();
         }
     }
 
-
-    /// <summary>
-    /// 在默认位置显示对话
-    /// デフォルト位置で会話を表示
-    /// </summary>
     public void ShowDialogue(DialogueData data)
     {
         ShowDialogue(data, defaultPosition);
     }
 
-
-    /// <summary>
-    /// 在指定的屏幕比例位置显示对话
-    /// 指定した画面位置で会話を表示
-    /// </summary>
+    // 原接口：不使用动画
+    // 既存の呼び出し：アニメーションなし
     public void ShowDialogue(
         DialogueData data,
         Vector2 normalizedPosition)
+    {
+        ShowDialogue(data, normalizedPosition, null);
+    }
+
+    // 新增接口：可指定独立的滑动效果
+    // 追加の呼び出し：個別のスライド演出を指定可能
+    public void ShowDialogue(
+        DialogueData data,
+        Vector2 normalizedPosition,
+        DialogueSlideEffect slideEffect)
     {
         if (!CanStartDialogue(data))
             return;
 
         worldTarget = null;
+        SetSlideEffect(slideEffect);
 
         StartDialogue(data);
-
         SetScreenPosition(normalizedPosition);
+        BeginEntryTransition();
     }
 
-
-    /// <summary>
-    /// 在世界目标附近显示对话
-    /// ワールドターゲット付近に会話を表示
-    /// </summary>
+    // 原接口：不使用动画
+    // 既存の呼び出し：アニメーションなし
     public void ShowDialogue(
         DialogueData data,
         Transform target)
+    {
+        ShowDialogue(data, target, null);
+    }
+
+    public void ShowDialogue(
+        DialogueData data,
+        Transform target,
+        DialogueSlideEffect slideEffect)
     {
         if (!CanStartDialogue(data))
             return;
 
         worldTarget = target;
+        SetSlideEffect(slideEffect);
 
         StartDialogue(data);
 
@@ -183,8 +212,29 @@ public class DialogueManager : MonoBehaviour
         {
             SetScreenPosition(defaultPosition);
         }
+
+        BeginEntryTransition();
     }
 
+    private void SetSlideEffect(DialogueSlideEffect slideEffect)
+    {
+        activeSlideEffect = null;
+
+        if (slideEffect == null)
+            return;
+
+        if (!slideEffect.CanAnimate)
+        {
+            Debug.LogWarning(
+                "DialogueSlideEffect is not ready. " +
+                "Check its component and Dialogue Panel reference.",
+                slideEffect
+            );
+            return;
+        }
+
+        activeSlideEffect = slideEffect;
+    }
 
     private bool CanStartDialogue(DialogueData data)
     {
@@ -197,14 +247,10 @@ public class DialogueManager : MonoBehaviour
         if (data == null)
             return false;
 
-        // 是否存在多语言文本
-        // 多言語テキストが存在するか
         bool hasLocalizedLines =
             data.localizedLines != null &&
             data.localizedLines.Length > 0;
 
-        // 是否存在旧版文本
-        // 旧バージョンのテキストが存在するか
         bool hasLegacyLines =
             data.lines != null &&
             data.lines.Length > 0;
@@ -218,13 +264,14 @@ public class DialogueManager : MonoBehaviour
         return true;
     }
 
-
     private void StartDialogue(DialogueData data)
     {
         currentDialogue = data;
         currentLineIndex = 0;
 
         isDialogueActive = true;
+        isClosing = false;
+        isTransitioning = false;
         openedFrame = Time.frameCount;
 
         dialogueCanvas.SetActive(true);
@@ -232,19 +279,34 @@ public class DialogueManager : MonoBehaviour
         DisplayCurrentLine();
     }
 
+    private void BeginEntryTransition()
+    {
+        Debug.Log(
+            $"[对话动画] 开始检查，管理物体：{name}，" +
+            $"动画组件：{(activeSlideEffect != null ? activeSlideEffect.name : "未指定")}",
+            this
+        );
 
-    /// <summary>
-    /// 显示当前句
-    /// 現在のセリフを表示
-    /// </summary>
+        if (activeSlideEffect == null)
+            return;
+
+        isTransitioning = true;
+        StartCoroutine(PlayEntryTransition());
+    }
+
+    private IEnumerator PlayEntryTransition()
+    {
+        yield return activeSlideEffect.PlayEnter();
+
+        isTransitioning = false;
+        transitionFinishedFrame = Time.frameCount;
+        openedFrame = Time.frameCount;
+    }
+
     private void DisplayCurrentLine()
     {
-        // 取消上一句文本的监听
-        // 前のセリフのイベント登録を解除する
         UnsubscribeCurrentLine();
 
-        // 优先使用多语言文本
-        // 多言語テキストを優先して使用する
         if (currentDialogue.localizedLines != null &&
             currentDialogue.localizedLines.Length > 0)
         {
@@ -258,8 +320,6 @@ public class DialogueManager : MonoBehaviour
                 return;
             }
 
-            // 等待文本加载，并在切换语言时自动更新
-            // 読み込み完了時と言語変更時に自動更新する
             dialogueText.text = "";
 
             activeLocalizedLine.StringChanged +=
@@ -268,16 +328,10 @@ public class DialogueManager : MonoBehaviour
             return;
         }
 
-        // 兼容旧版文本
-        // 旧バージョンのテキストに対応する
         dialogueText.text =
             currentDialogue.lines[currentLineIndex];
     }
 
-    /// <summary>
-    /// 更新多语言文本
-    /// ローカライズされたテキストを更新する
-    /// </summary>
     private void OnLocalizedLineChanged(string value)
     {
         if (!isDialogueActive)
@@ -286,11 +340,6 @@ public class DialogueManager : MonoBehaviour
         dialogueText.text = value;
     }
 
-
-    /// <summary>
-    /// 取消当前文本监听
-    /// 現在のテキストイベント登録を解除する
-    /// </summary>
     private void UnsubscribeCurrentLine()
     {
         if (activeLocalizedLine == null)
@@ -302,11 +351,6 @@ public class DialogueManager : MonoBehaviour
         activeLocalizedLine = null;
     }
 
-
-    /// <summary>
-    /// 切换下一句
-    /// 次のセリフに切り替える
-    /// </summary>
     private void NextLine()
     {
         if (currentDialogue == null)
@@ -314,13 +358,11 @@ public class DialogueManager : MonoBehaviour
 
         currentLineIndex++;
 
-        // 优先获取多语言文本数量
-        // 多言語テキストの数を優先して取得する
         int totalLines =
             currentDialogue.localizedLines != null &&
             currentDialogue.localizedLines.Length > 0
-            ? currentDialogue.localizedLines.Length
-            : currentDialogue.lines.Length;
+                ? currentDialogue.localizedLines.Length
+                : currentDialogue.lines.Length;
 
         if (currentLineIndex >= totalLines)
         {
@@ -331,17 +373,46 @@ public class DialogueManager : MonoBehaviour
         DisplayCurrentLine();
     }
 
-
-    /// <summary>
-    /// 结束对话
-    /// 会話を終了する
-    /// </summary>
     public void EndDialogue()
     {
-        if (!isDialogueActive)
+        // 防止动画期间或连续调用导致重复结束
+        // 演出中や連続呼び出しによる重複終了を防ぐ
+        if (!isDialogueActive ||
+            isClosing ||
+            IsTransitionInputBlocked)
+        {
             return;
+        }
 
+        isClosing = true;
+
+        if (activeSlideEffect != null &&
+            activeSlideEffect.CanAnimate)
+        {
+            isTransitioning = true;
+            StartCoroutine(PlayExitTransition());
+        }
+        else
+        {
+            FinishDialogue();
+        }
+    }
+
+    private IEnumerator PlayExitTransition()
+    {
+        yield return activeSlideEffect.PlayExit();
+
+        isTransitioning = false;
+        transitionFinishedFrame = Time.frameCount;
+
+        FinishDialogue();
+    }
+
+    private void FinishDialogue()
+    {
         isDialogueActive = false;
+        isClosing = false;
+        isTransitioning = false;
         closedFrame = Time.frameCount;
 
         UnsubscribeCurrentLine();
@@ -349,40 +420,36 @@ public class DialogueManager : MonoBehaviour
         worldTarget = null;
         currentDialogue = null;
 
+        // 先隐藏，再恢复位置，避免画面中出现位置跳变
+        // 先に非表示にしてから位置を戻し、画面上の瞬間移動を防ぐ
         dialogueCanvas.SetActive(false);
 
+        if (activeSlideEffect != null)
+        {
+            activeSlideEffect.RestorePosition();
+        }
+
+        activeSlideEffect = null;
+
+        // 出场完成后才执行结束回调
+        // 退場完了後に終了コールバックを実行する
         Action callback = onDialogueFinished;
         onDialogueFinished = null;
 
         callback?.Invoke();
     }
 
-
-    /// <summary>
-    /// 设置对话结束回调
-    /// 会話終了時のコールバックを設定する
-    /// </summary>
     public void SetOnDialogueFinished(Action callback)
     {
         onDialogueFinished = callback;
     }
 
-
-    /// <summary>
-    /// 设置屏幕相对位置
-    /// 画面の相対位置を設定する
-    /// </summary>
     private void SetScreenPosition(Vector2 position)
     {
-        // 使用Inspector中预先设置的位置
-        // Inspectorで設定された位置を使用する
+        // 保留原有方式，使用Inspector设置的显示位置
+        // 既存の方式を維持し、Inspectorの表示位置を使用する
     }
 
-
-    /// <summary>
-    /// 将世界坐标转换为UI位置
-    /// ワールド座標をUI座標へ変換する
-    /// </summary>
     private void UpdateWorldPosition()
     {
         Camera mainCamera = Camera.main;
@@ -402,8 +469,6 @@ public class DialogueManager : MonoBehaviour
         RectTransform canvasRect =
             canvas.GetComponent<RectTransform>();
 
-        // Overlay Canvas的UI相机参数为null
-        // Overlay Canvasの場合はカメラにnullを指定する
         if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
             canvasRect,
             screenPosition,

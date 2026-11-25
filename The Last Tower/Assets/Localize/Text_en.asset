@@ -197,6 +197,26 @@ MonoBehaviour:
     m_Localized: This is a dialogue for test. 02
     m_Metadata:
       m_Items: []
+  - m_Id: 34933691427737600
+    m_Localized: Move left
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34933695630430208
+    m_Localized: Move right
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34933696523816960
+    m_Localized: Rotate smoothly
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34933697949880320
+    m_Localized: "Rotate in 90\xB0 steps"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34933704643989504
+    m_Localized: Fall faster
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

@@ -171,6 +171,26 @@ MonoBehaviour:
     m_Key: Test_s1_02
     m_Metadata:
       m_Items: []
+  - m_Id: 34933691427737600
+    m_Key: tutorial_move_left
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34933695630430208
+    m_Key: tutorial_move_right
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34933696523816960
+    m_Key: tutorial_smooth_rotate
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34933697949880320
+    m_Key: tutorial_snap_rotate
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34933704643989504
+    m_Key: tutorial_fast_fall
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
